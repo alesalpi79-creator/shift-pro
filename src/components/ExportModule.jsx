@@ -1,0 +1,243 @@
+import React, { useState, useMemo } from 'react';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+import { useApp } from '../context/AppContext';
+import { calculateDailyShifts } from '../logic/ShiftEngine';
+
+export default function ExportModule({ onClose, currentViewDate }) {
+  const { employees, exceptions, config } = useApp();
+  const [format, setFormat] = useState('pdf');
+  const [period, setPeriod] = useState('current'); // 'current', 'specific', 'year'
+  const [specificMonth, setSpecificMonth] = useState(currentViewDate.getMonth());
+
+  const months = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+  const viewYear = currentViewDate.getFullYear();
+
+  const getMonthData = (year, monthIdx) => {
+    const lastDay = new Date(year, monthIdx + 1, 0).getDate();
+    const headers = ['Dipendente'];
+    for(let d=1; d<=lastDay; d++) {
+        headers.push(`${d}`);
+    }
+
+    const activeEmployeesMap = new Set();
+    const monthlyShifts = [];
+    for(let d=1; d<=lastDay; d++) {
+        const date = new Date(year, monthIdx, d);
+        const dailyShifts = calculateDailyShifts(employees, date, exceptions, config);
+        monthlyShifts.push(dailyShifts);
+        dailyShifts.forEach(s => {
+             if (['A', 'B', 'C'].includes(s.finalShift)) {
+                 activeEmployeesMap.add(s.name);
+             }
+        });
+    }
+
+    const visibleEmployees = employees.filter(emp => activeEmployeesMap.has(emp.name));
+
+    const body = visibleEmployees.map(emp => {
+      const row = [emp.name];
+      for(let d=1; d<=lastDay; d++) {
+        const dailyShifts = monthlyShifts[d-1];
+        const myShift = dailyShifts.find(s => s.name === emp.name);
+        row.push(myShift ? (myShift.finalShift === 'R' ? '' : myShift.finalShift) : '');
+      }
+      return row;
+    });
+
+    return { headers, body, monthName: months[monthIdx] };
+  };
+
+  const handleExport = async () => {
+    // Generate data
+    const dataToExport = [];
+    if (period === 'year') {
+        for(let i=0; i<12; i++) {
+            dataToExport.push(getMonthData(viewYear, i));
+        }
+    } else {
+        const targetMonth = period === 'current' ? currentViewDate.getMonth() : parseInt(specificMonth);
+        dataToExport.push(getMonthData(viewYear, targetMonth));
+    }
+
+    const titlePrefix = config.appName ? `${config.appName}_` : 'Turni_';
+    let outputBase64 = '';
+    let fileName = '';
+
+    try {
+        if (format === 'excel') {
+            const wb = XLSX.utils.book_new();
+            dataToExport.forEach(monthData => {
+                const ws = XLSX.utils.aoa_to_sheet([monthData.headers, ...monthData.body]);
+                XLSX.utils.book_append_sheet(wb, ws, monthData.monthName);
+            });
+            fileName = period === 'year' ? `Pianificazione_Annuale_${viewYear}.xlsx` : `Pianificazione_${dataToExport[0].monthName}_${viewYear}.xlsx`;
+            fileName = titlePrefix + fileName;
+            
+            // Get raw Base64 from SheetJS
+            outputBase64 = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+            
+        } else {
+            const doc = new jsPDF({ orientation: 'landscape', format: 'a4' });
+            
+            dataToExport.forEach((monthData, index) => {
+                if (index > 0) doc.addPage();
+                
+                doc.setFontSize(16);
+                doc.text(`${config.appName || 'Turni Pro'} - Pianificazione - ${monthData.monthName} ${viewYear}`, 14, 15);
+                
+                doc.autoTable({
+                   startY: 22,
+                   head: [monthData.headers],
+                   body: monthData.body,
+                   theme: 'grid',
+                   styles: { 
+                     fontSize: 7, 
+                     halign: 'center',
+                     cellPadding: 1,
+                     lineColor: [200, 200, 200]
+                   },
+                   headStyles: { 
+                       fillColor: [99, 102, 241], 
+                       textColor: 255, 
+                       fontStyle: 'bold',
+                       halign: 'center'
+                   },
+                   columnStyles: { 0: { halign: 'left', fontStyle: 'bold', minCellWidth: 35 } },
+                   didParseCell: function(data) {
+                       if (data.section === 'body') {
+                           if (data.column.index === 0) {
+                               const empName = data.cell.raw;
+                               const emp = employees.find(e => e.name === empName);
+                               if (emp) {
+                                    const roleColor = config.roles?.find(r => r.id === emp.role)?.color || (emp.role === 'CT' ? '#ef4444' : (emp.role === 'OP' ? '#64748b' : '#000000'));
+                                    const hex = roleColor.replace('#', '');
+                                    const r = parseInt(hex.substring(0,2), 16) || 0;
+                                    const g = parseInt(hex.substring(2,4), 16) || 0;
+                                    const b = parseInt(hex.substring(4,6), 16) || 0;
+                                    data.cell.styles.textColor = [r, g, b];
+                                    data.cell.styles.fontStyle = 'bold';
+                               }
+                           } else if (data.column.index > 0) {
+                               const val = data.cell.raw;
+                               if (val === 'A') { data.cell.styles.fillColor = [14, 165, 233]; data.cell.styles.textColor = 255; data.cell.styles.fontStyle = 'bold'; }
+                               else if (val === 'B') { data.cell.styles.fillColor = [139, 92, 246]; data.cell.styles.textColor = 255; data.cell.styles.fontStyle = 'bold'; }
+                               else if (val === 'C') { data.cell.styles.fillColor = [245, 158, 11]; data.cell.styles.textColor = 255; data.cell.styles.fontStyle = 'bold'; }
+                               else if (val === 'R') { data.cell.styles.textColor = 160; }
+                           }
+                       }
+                   }
+                });
+            });
+
+            fileName = period === 'year' ? `Pianificazione_Annuale_${viewYear}.pdf` : `Pianificazione_${dataToExport[0].monthName}_${viewYear}.pdf`;
+            fileName = titlePrefix + fileName;
+            
+            // Get Base64 from jsPDF string
+            const pdfDataUri = doc.output('datauristring');
+            outputBase64 = pdfDataUri.split(',')[1];
+        }
+
+        // Setup download fallback helper
+        const triggerWebDownload = (base64, filename, mimeType) => {
+            const link = document.createElement('a');
+            link.href = `data:${mimeType};base64,${base64}`;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        try {
+            // Attempt native Capacitor save
+            if (typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+                const result = await Filesystem.writeFile({
+                    path: fileName,
+                    data: outputBase64,
+                    directory: Directory.Cache
+                });
+                await Share.share({
+                    title: fileName,
+                    text: 'Ecco i turni esportati.',
+                    url: result.uri,
+                    dialogTitle: 'Salva o Condividi i Turni'
+                });
+            } else {
+                throw new Error("Not a native platform");
+            }
+        } catch (capacitorError) {
+            // Web browser download fallback
+            const mimeType = format === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/pdf';
+            triggerWebDownload(outputBase64, fileName, mimeType);
+        }
+
+        onClose();
+        
+    } catch (e) {
+        console.error('Export Failed:', e);
+        alert('Errore di esportazione: ' + e.message);
+    }
+  };
+
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="glass-card fade-in" style={{ width: '90%', maxWidth: '400px', padding: '2rem', background: 'var(--bg-main)' }}>
+        <h2 style={{ marginBottom: '1.5rem', fontSize: '1.3rem' }}>Stampa ed Esporta</h2>
+        
+        <div className="form-group" style={{ marginBottom: '1rem' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Formato Output</label>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button 
+               className={`btn-primary ${format === 'pdf' ? '' : 'inactive'}`} 
+               style={{ flex: 1, opacity: format === 'pdf' ? 1 : 0.5 }}
+               onClick={() => setFormat('pdf')}
+            >📄 PDF</button>
+            <button 
+               className={`btn-primary ${format === 'excel' ? '' : 'inactive'}`} 
+               style={{ flex: 1, opacity: format === 'excel' ? 1 : 0.5, background: '#10b981' }}
+               onClick={() => setFormat('excel')}
+            >📊 Excel</button>
+          </div>
+        </div>
+
+        <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Intervallo Temporale ({viewYear})</label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <input type="radio" checked={period === 'current'} onChange={() => setPeriod('current')} />
+                Mese Visualizzato ({months[currentViewDate.getMonth()]})
+             </label>
+             
+             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                    <input type="radio" checked={period === 'specific'} onChange={() => setPeriod('specific')} />
+                    Mese Specifico:
+                </label>
+                <select 
+                   className="input-main" 
+                   style={{ padding: '0.4rem', border: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.3)', color: 'white', borderRadius: '4px', flex: 1 }}
+                   value={specificMonth} 
+                   onChange={e => { setPeriod('specific'); setSpecificMonth(e.target.value); }}
+                >
+                    {months.map((m, idx) => <option key={idx} value={idx}>{m}</option>)}
+                </select>
+             </div>
+
+             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginTop: '0.5rem' }}>
+                <input type="radio" checked={period === 'year'} onChange={() => setPeriod('year')} />
+                <b>Tutto l'anno (12 Mesi) {period === 'year' && format === 'excel' ? '- Multi Fogli' : ''}</b>
+             </label>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+          <button onClick={onClose} style={{ flex: 1, padding: '0.75rem', background: 'transparent', border: '1px solid var(--glass-border)', color: 'white', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}>Annulla</button>
+          <button onClick={handleExport} className="btn-primary" style={{ flex: 1, background: 'var(--primary)' }}>Genera File</button>
+        </div>
+      </div>
+    </div>
+  );
+}
