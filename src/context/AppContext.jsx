@@ -6,8 +6,9 @@ export const DEFAULT_CONFIG = {
   appName: "Turni Pro",
   primaryColor: "#6366f1",
   backgroundColor: "#0f172a",
-  cycle: ['R', 'R', 'A', 'A', 'C', 'C', 'R', 'R', 'B', 'B'], // Default 10-day cycle
-  baseDate: '2027-01-01',
+  cycle: ['A', 'A', 'C', 'C', 'B', 'B', 'R', 'R'], // Default 8-day cycle as per Excel
+  cycleSJ: ['A', 'R', 'C', 'R', 'R', 'B', 'R', 'R', 'R'], // Semi-Jolly 9-day cycle as per Excel
+  baseDate: '2026-08-01', // Starting from a known month
   constraints: {
     A: { CT: 1, OP: 3 },
     B: { CT: 1, OP: 3 },
@@ -19,6 +20,17 @@ export const DEFAULT_CONFIG = {
     { id: 'SJ', label: 'Semi-Jolly', color: '#3b82f6' },
     { id: 'J', label: 'Jolly', color: '#f59e0b' }
   ],
+  shiftColors: {
+    A: '#0ea5e9',
+    B: '#8b5cf6',
+    C: '#f59e0b',
+    FE: '#eab308', // Giallo
+    MA: '#ef4444', // Rosso
+    RT: '#22c55e', // Verde
+    DS: '#be123c', // Cremisi
+    '104': '#7e22ce', // Viola
+    CO: '#1d4ed8'  // Blu scuro
+  },
   shifts: {
     A: { label: 'Mattina', time: '06:00 - 14:00' },
     B: { label: 'Notte', time: '22:00 - 06:00' },
@@ -34,12 +46,16 @@ export const DEFAULT_CONFIG = {
 };
 
 export const AppProvider = ({ children }) => {
-  const [userRole, setUserRole] = useState('admin'); // 'admin' or 'viewer'
+  const [userRole, setUserRole] = useState('viewer'); // Always start as viewer for security
   const [config, setConfig] = useState(() => {
     const saved = localStorage.getItem('shift_pro_config');
     const parsed = saved ? JSON.parse(saved) : {};
-    // Merge to ensure new properties like 'quotas' exist
-    return { ...DEFAULT_CONFIG, ...parsed, quotas: { ...DEFAULT_CONFIG.quotas, ...(parsed.quotas || {}) } };
+    return { 
+      ...DEFAULT_CONFIG, 
+      ...parsed, 
+      quotas: { ...DEFAULT_CONFIG.quotas, ...(parsed.quotas || {}) },
+      shiftColors: { ...DEFAULT_CONFIG.shiftColors, ...(parsed.shiftColors || {}) }
+    };
   });
 
   const [employees, setEmployees] = useState(() => {

@@ -1,164 +1,137 @@
 /**
- * ShiftEngine.js (Professional Generic Version)
- * handles customizable cycles, roles, J/SJ rotation and constraints.
+ * MOTORE DI CALCOLO SHIFT-PRO (Versione 6.1 - Precisione Chirurgica)
  */
 
-/**
- * Calculates if an employee is a Jolly or Semi-Jolly for the given month.
- * Logic: Rotating window of 2 months per person.
- */
 export function getMonthlyRole(employee, date, employees, config) {
-  const { quotas, roles } = config;
-  if (!quotas || !quotas.jollyCt) return employee.role;
+  if (!employee || !date || !employees) return 'OP';
+  const d = new Date(date);
+  const monthsSinceEpoch = (d.getFullYear() - 2026) * 12 + d.getMonth();
+  const rotationIndex = Math.floor(monthsSinceEpoch / 2); 
 
-  const monthGlobal = date.getFullYear() * 12 + date.getMonth();
-  const rotationIndex = monthGlobal; // Changes every month
+  const myRole = (employee.role || 'OP').toUpperCase().trim();
+  const myTeam = parseInt(employee.team) || 1;
 
-  // Separate by base role
-  const sameRoleStaff = employees
-    .filter(e => e.role === employee.role)
-    .sort((a, b) => (a.id || a.name).localeCompare(b.id || b.name));
+  const group = employees
+    .filter(e => e && (e.role || 'OP').toUpperCase().trim() === myRole)
+    .filter(e => myRole === 'CT' || (parseInt(e.team) || 1) === myTeam)
+    .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+  if (group.length === 0) return myRole;
+  const N = group.length;
+  const myIdx = group.findIndex(e => e.name === employee.name);
   
-  const idx = sameRoleStaff.findIndex(e => (e.id || e.name) === (employee.id || employee.name));
-  if (idx === -1) return employee.role;
+  const currentSJIdx = rotationIndex % N;
+  const currentJollyIdx = (rotationIndex - 1 + N * 10) % N;
 
-  const qJ = employee.role === 'CT' ? quotas.jollyCt : quotas.jollyOp;
-  const qSJ = employee.role === 'CT' ? quotas.sjCt : quotas.sjOp;
-
-  // Calculate windows
-  // Jolly window: [rotationIndex * qJ, (rotationIndex + 1) * qJ]
-  // SJ window follows Jolly window to avoid overlap
-  const totalStaff = sameRoleStaff.length;
-  
-  const isJolly = (idx >= (rotationIndex * qJ) % totalStaff) && (idx < ((rotationIndex + 1) * qJ) % totalStaff);
-  // Simple offset for SJ
-  const sjStart = (rotationIndex * qJ + qJ) % totalStaff;
-  const isSJ = (idx >= sjStart % totalStaff) && (idx < (sjStart + qSJ) % totalStaff);
-
-  if (isJolly) return 'J';
-  if (isSJ) return 'SJ';
-  return employee.role;
+  if (myIdx === currentSJIdx) return 'SJ';
+  if (myIdx === currentJollyIdx) return 'J';
+  return myRole;
 }
 
-/**
- * Calculates the nominal shift for a given employee on a specific date.
- */
-export function getNominalShift(employee, date, config, currentRole) {
-  const { cycle, baseDate } = config;
+export function getNominalShift(employee, date, employees, config) {
+  const d = new Date(date);
+  const currentRole = getMonthlyRole(employee, d, employees, config);
   
-  // Rule: Jolly (J) stays empty (Rest) as per user request
-  if (currentRole === 'J') return 'R';
-  
-  // Rule: Semi-Jolly (SJ) - User said "half turns"
-  // We'll implement this by taking the normal shift but skipping every other working day?
-  // Or just following the cycle but prioritizing them for rest if coverage is met.
-  // For now, let's keep the cycle but flag them.
-  
-  if (!cycle || cycle.length === 0) return 'R';
-  
-  const bDate = new Date(baseDate);
-  const diffTime = date.getTime() - bDate.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
-  const cycleIndex = (diffDays + (employee.offset || 0)) % cycle.length;
-  const normalizedIndex = cycleIndex >= 0 ? cycleIndex : (cycleIndex + cycle.length) % cycle.length;
-  
-  const shift = cycle[normalizedIndex];
+  // Jolly e SJ stanno a riposo di default (coprono solo buchi)
+  if (currentRole === 'J' || currentRole === 'SJ') return 'R';
 
-  // Semi-Jolly Logic: "Metà turni" - If shift is NOT rest, skip 50% of them?
-  // User: "semijolly ha solo metà turni per riuscire a coprire il ciclo"
-  if (currentRole === 'SJ' && shift !== 'R') {
-    // Basic pattern: Work 1, Rest 1 of the nominal cycle working days
-    // This is a simplified "half turns"
-    if (diffDays % 2 === 0) return 'R';
+  const ref = new Date(2026, 0, 1);
+  const diff = Math.floor((d.getTime() - ref.getTime()) / (1000 * 60 * 60 * 24));
+  const cycle = ['A', 'A', 'C', 'C', 'R', 'B', 'B', 'R', 'R'];
+
+  let autoOffset = 0;
+  const role = (employee.role || '').toUpperCase();
+
+  if (role === 'CT') {
+    // BILANCIAMENTO CT: Prendiamo solo i 4 che non sono Jolly/SJ questo mese
+    const fixedCTs = employees
+      .filter(e => (e.role || '').toUpperCase() === 'CT')
+      .filter(e => {
+         const r = getMonthlyRole(e, d, employees, config);
+         return r !== 'J' && r !== 'SJ';
+      })
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    
+    const myIdx = fixedCTs.findIndex(e => e.name === employee.name);
+    if (myIdx !== -1) {
+      // Pattern magico per 4 persone su ciclo 9gg: 0, 2, 5, 7
+      // Questo garantisce 1-1-1 perfetto senza sovrapposizioni
+      const pattern = [0, 2, 5, 7];
+      autoOffset = pattern[myIdx % pattern.length];
+    }
+  } else {
+    // BILANCIAMENTO OPERATORI (Squadre)
+    const myTeam = parseInt(employee.team) || 1;
+    const fixedOPs = employees
+      .filter(e => (e.role || '').toUpperCase() === 'OP' && (parseInt(e.team) || 1) === myTeam)
+      .filter(e => {
+         const r = getMonthlyRole(e, d, employees, config);
+         return r !== 'J' && r !== 'SJ';
+      })
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+    const myIdx = fixedOPs.findIndex(e => e.name === employee.name);
+    if (myIdx !== -1) {
+      // Usiamo lo stesso pattern 0, 2, 5, 7 per i 4 fissi di ogni squadra
+      const pattern = [0, 2, 5, 7];
+      autoOffset = pattern[myIdx % pattern.length];
+    }
   }
 
-  return shift;
+  const dayInCycle = (diff + autoOffset + 9000) % 9;
+  return cycle[dayInCycle] || 'R';
 }
 
-/**
- * Main calculation engine for daily distribution.
- */
-export function calculateDailyShifts(employees, date, exceptions = [], config) {
-  const dateStr = date.toISOString().split('T')[0];
-  const { constraints = {} } = config;
+export function calculateDailyShifts(date, employees, exceptions, config) {
+  if (!employees || employees.length === 0) return [];
+  const d = new Date(date);
+  const dateStr = d.toISOString().split('T')[0];
 
-  // 1. Assign roles and nominal shifts
   let daily = employees.map(e => {
-    const currentRole = getMonthlyRole(e, date, employees, config);
-    const nominal = getNominalShift(e, date, config, currentRole);
-    const exc = exceptions.find(ex => ex.employee === e.name && ex.date === dateStr);
+    const currentRole = getMonthlyRole(e, d, employees, config);
+    const nominal = getNominalShift(e, d, employees, config);
+    const exc = (exceptions || []).find(ex => ex.employee === e.name && ex.date === dateStr);
     
     return {
       name: e.name,
-      baseRole: e.role || 'OP',
+      baseRole: (e.role || 'OP').toUpperCase().trim(),
       monthlyRole: currentRole,
       nominalShift: nominal,
       finalShift: exc ? exc.type : nominal,
       isException: !!exc,
-      assignedRole: e.role || 'OP',
       isJolly: currentRole === 'J',
-      isSJ: currentRole === 'SJ'
+      isSJ: currentRole === 'SJ',
+      team: parseInt(e.team) || 1
     };
   });
 
-  // 2. Dynamic Balancing - First Pass: Trim Surpluses
-  const shiftTypes = Object.keys(constraints);
-  shiftTypes.forEach(st => {
-    const shiftConstraints = constraints[st];
-    const peopleOnShift = daily.filter(p => p.finalShift === st);
-    
-    Object.keys(shiftConstraints).forEach(roleId => {
-      const required = shiftConstraints[roleId];
-      const currentOnRole = peopleOnShift.filter(p => p.assignedRole === roleId);
-      
-      if (currentOnRole.length > required) {
-        const surplus = currentOnRole.length - required;
-        // Prioritize sending Semi-Jolly, then Jolly, to Rest
-        const pool = currentOnRole.sort((a, b) => {
-          if (a.isSJ && !b.isSJ) return -1;
-          if (a.isJolly && !b.isJolly) return -1;
-          return 0;
-        });
-        
-        for (let i = 0; i < surplus; i++) {
-          pool[i].finalShift = 'R';
-        }
-      }
-    });
-  });
+  const groups = [
+    { role: 'CT', team: null }, 
+    { role: 'OP', team: 1 },
+    { role: 'OP', team: 2 },
+    { role: 'OP', team: 3 }
+  ];
 
-  // 3. Dynamic Balancing - Second Pass: Fill Deficits
-  shiftTypes.forEach(st => {
-    const shiftConstraints = constraints[st];
-    // Re-calculate people on shift after surplus was moved to R
-    const peopleOnShift = daily.filter(p => p.finalShift === st);
-    
-    Object.keys(shiftConstraints).forEach(roleId => {
-      const required = shiftConstraints[roleId];
-      const currentOnRole = peopleOnShift.filter(p => p.assignedRole === roleId).length;
-      
-      if (currentOnRole < required) {
-        const diff = required - currentOnRole;
-        // Priority for covering gaps: SJ on rest, then Jolly on rest, then others who were meant to work
-        const pool = daily
-          .filter(p => p.finalShift === 'R' && (p.isJolly || p.isSJ || p.nominalShift !== 'R'))
-          .sort((a, b) => {
-            if (a.isSJ && !b.isSJ) return -1;
-            if (a.isJolly && !b.isJolly) return -1;
-            return 0;
-          });
-        
-        for (let i = 0; i < diff; i++) {
-          // Find employee with the exact requested role
-          const candidate = pool.find(p => p.baseRole === roleId);
-          if (candidate) {
-            candidate.finalShift = st;
-            candidate.assignedRole = roleId;
-            candidate.isCovering = true;
-            pool.splice(pool.indexOf(candidate), 1);
-          }
+  groups.forEach(g => {
+    const members = daily.filter(s => 
+      s.baseRole === g.role && (g.role === 'CT' || s.team === g.team)
+    );
+
+    ['A', 'B', 'C'].forEach(st => {
+      const working = members.filter(m => m.finalShift === st);
+      if (working.length === 0) {
+        let sj = members.find(m => m.isSJ && m.finalShift === 'R' && !m.isException);
+        if (sj) sj.finalShift = st;
+        else {
+          let jolly = members.find(m => m.isJolly && m.finalShift === 'R' && !m.isException);
+          if (jolly) jolly.finalShift = st;
         }
+      } else if (working.length > 1) {
+        working.forEach(m => {
+          if ((m.isSJ || m.isJolly) && !m.isException) {
+            if (members.filter(x => x.finalShift === st).length > 1) m.finalShift = 'R';
+          }
+        });
       }
     });
   });

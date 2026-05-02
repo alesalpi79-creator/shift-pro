@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { useApp } from '../context/AppContext';
@@ -27,10 +27,10 @@ export default function ExportModule({ onClose, currentViewDate }) {
     const monthlyShifts = [];
     for(let d=1; d<=lastDay; d++) {
         const date = new Date(year, monthIdx, d);
-        const dailyShifts = calculateDailyShifts(employees, date, exceptions, config);
+        const dailyShifts = calculateDailyShifts(date, employees, exceptions, config);
         monthlyShifts.push(dailyShifts);
         dailyShifts.forEach(s => {
-             if (['A', 'B', 'C'].includes(s.finalShift)) {
+             if (config.shiftColors[s.finalShift]) {
                  activeEmployeesMap.add(s.name);
              }
         });
@@ -43,7 +43,8 @@ export default function ExportModule({ onClose, currentViewDate }) {
       for(let d=1; d<=lastDay; d++) {
         const dailyShifts = monthlyShifts[d-1];
         const myShift = dailyShifts.find(s => s.name === emp.name);
-        row.push(myShift ? (myShift.finalShift === 'R' ? '' : myShift.finalShift) : '');
+        const val = myShift ? (myShift.finalShift === 'R' ? '' : (config.shiftLabels?.[myShift.finalShift] || myShift.finalShift)) : '';
+        row.push(val);
       }
       return row;
     });
@@ -86,10 +87,23 @@ export default function ExportModule({ onClose, currentViewDate }) {
             dataToExport.forEach((monthData, index) => {
                 if (index > 0) doc.addPage();
                 
-                doc.setFontSize(16);
-                doc.text(`${config.appName || 'Turni Pro'} - Pianificazione - ${monthData.monthName} ${viewYear}`, 14, 15);
+                let startY = 22;
+                if (config.appLogo) {
+                    try {
+                        doc.addImage(config.appLogo, 'PNG', 14, 10, 15, 15);
+                        doc.setFontSize(16);
+                        doc.text(`${config.appName || 'Turni Pro'} - Pianificazione - ${monthData.monthName} ${viewYear}`, 32, 20);
+                        startY = 30;
+                    } catch(e) {
+                        doc.setFontSize(16);
+                        doc.text(`${config.appName || 'Turni Pro'} - Pianificazione - ${monthData.monthName} ${viewYear}`, 14, 15);
+                    }
+                } else {
+                    doc.setFontSize(16);
+                    doc.text(`${config.appName || 'Turni Pro'} - Pianificazione - ${monthData.monthName} ${viewYear}`, 14, 15);
+                }
                 
-                doc.autoTable({
+                autoTable(doc, {
                    startY: 22,
                    head: [monthData.headers],
                    body: monthData.body,
@@ -113,20 +127,40 @@ export default function ExportModule({ onClose, currentViewDate }) {
                                const empName = data.cell.raw;
                                const emp = employees.find(e => e.name === empName);
                                if (emp) {
-                                    const roleColor = config.roles?.find(r => r.id === emp.role)?.color || (emp.role === 'CT' ? '#ef4444' : (emp.role === 'OP' ? '#64748b' : '#000000'));
-                                    const hex = roleColor.replace('#', '');
-                                    const r = parseInt(hex.substring(0,2), 16) || 0;
-                                    const g = parseInt(hex.substring(2,4), 16) || 0;
-                                    const b = parseInt(hex.substring(4,6), 16) || 0;
-                                    data.cell.styles.textColor = [r, g, b];
-                                    data.cell.styles.fontStyle = 'bold';
+                                   const roleColor = config.roles?.find(r => r.id === emp.role)?.color || (emp.role === 'CT' ? '#ef4444' : (emp.role === 'OP' ? '#64748b' : '#000000'));
+                                   if (roleColor && roleColor.startsWith('#')) {
+                                       try {
+                                           const hex = roleColor.replace('#', '');
+                                           const r = parseInt(hex.substring(0,2), 16) || 0;
+                                           const g = parseInt(hex.substring(2,4), 16) || 0;
+                                           const b = parseInt(hex.substring(4,6), 16) || 0;
+                                           data.cell.styles.textColor = [r, g, b];
+                                       } catch(err) {
+                                           data.cell.styles.textColor = [0, 0, 0];
+                                       }
+                                   } else {
+                                       data.cell.styles.textColor = [0, 0, 0];
+                                   }
+                                   data.cell.styles.fontStyle = 'bold';
                                }
                            } else if (data.column.index > 0) {
                                const val = data.cell.raw;
-                               if (val === 'A') { data.cell.styles.fillColor = [14, 165, 233]; data.cell.styles.textColor = 255; data.cell.styles.fontStyle = 'bold'; }
-                               else if (val === 'B') { data.cell.styles.fillColor = [139, 92, 246]; data.cell.styles.textColor = 255; data.cell.styles.fontStyle = 'bold'; }
-                               else if (val === 'C') { data.cell.styles.fillColor = [245, 158, 11]; data.cell.styles.textColor = 255; data.cell.styles.fontStyle = 'bold'; }
-                               else if (val === 'R') { data.cell.styles.textColor = 160; }
+                               const shiftKey = Object.keys(config.shiftLabels || {}).find(k => config.shiftLabels[k] === val) || val;
+                               const hexColor = config.shiftColors?.[shiftKey];
+                               
+                               if (hexColor && hexColor.startsWith('#')) {
+                                   try {
+                                       const hex = hexColor.replace('#', '');
+                                       const r = parseInt(hex.substring(0,2), 16);
+                                       const g = parseInt(hex.substring(2,4), 16);
+                                       const b = parseInt(hex.substring(4,6), 16);
+                                       data.cell.styles.fillColor = [r, g, b];
+                                       data.cell.styles.textColor = 255;
+                                       data.cell.styles.fontStyle = 'bold';
+                                   } catch(e) {}
+                               } else if (shiftKey === 'R' || val === '') { 
+                                   data.cell.styles.textColor = 160; 
+                               }
                            }
                        }
                    }

@@ -4,6 +4,7 @@ import { getMonthlyRole } from '../logic/ShiftEngine';
 
 export default function RuleSettings() {
   const { config, setConfig, employees } = useApp();
+  const [activeSection, setActiveSection] = useState('design');
   const [tempCycle, setTempCycle] = useState(config.cycle.join(', '));
 
   const saveConfig = (key, value) => {
@@ -20,90 +21,231 @@ export default function RuleSettings() {
     saveConfig('quotas', { ...currentQuotas, [key]: parseInt(val) || 0 });
   };
 
+  const addNewShift = () => {
+    const name = window.prompt("Inserisci la sigla del nuovo turno (es. ST, PERM, ...):");
+    if (name && name.trim()) {
+      const id = name.trim().toUpperCase();
+      if (config.shiftColors[id]) {
+        alert("Questa sigla esiste già!");
+        return;
+      }
+      const newColors = { ...config.shiftColors, [id]: '#6366f1' };
+      const newLabels = { ...config.shiftLabels, [id]: id };
+      setConfig(prev => ({
+        ...prev,
+        shiftColors: newColors,
+        shiftLabels: newLabels
+      }));
+    }
+  };
+
+  const removeShift = (id) => {
+    if (['A', 'B', 'C', 'R'].includes(id)) {
+      alert("I turni base (A, B, C, R) non possono essere rimossi.");
+      return;
+    }
+    if (window.confirm(`Rimuovere la sigla ${id}?`)) {
+      const newColors = { ...config.shiftColors };
+      const newLabels = { ...config.shiftLabels };
+      delete newColors[id];
+      delete newLabels[id];
+      setConfig(prev => ({
+        ...prev,
+        shiftColors: newColors,
+        shiftLabels: newLabels
+      }));
+    }
+  };
+
   const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 
-  return (
-    <div className="fade-in" style={{ paddingBottom: '5rem' }}>
-      <div className="glass-card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ marginBottom: '1.5rem' }}>Identità Applicazione</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2rem' }}>
+  const renderDesign = () => (
+    <div className="fade-in">
+      <div className="glass-card" style={{ marginBottom: '1.5rem' }}>
+        <h3 style={{ marginBottom: '1.25rem', fontSize: '1rem' }}>Identità App</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="form-group" style={{ gridColumn: 'span 2' }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Logo Aziendale (Sostituisce l'iniziale)</label>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              {config.appLogo ? (
+                <img src={config.appLogo} alt="Logo Preview" style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'contain', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }} />
+              ) : (
+                <div style={{ width: '42px', height: '42px', borderRadius: '8px', background: config.primaryColor, display: 'grid', placeItems: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>{config.appName.charAt(0)}</div>
+              )}
+              <label className="btn-primary" style={{ flex: 1, textAlign: 'center', cursor: 'pointer', fontSize: '0.75rem' }}>
+                {config.appLogo ? '🔄 Cambia Logo' : '🖼️ Carica Logo'}
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  style={{ display: 'none' }} 
+                  onChange={e => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => saveConfig('appLogo', reader.result);
+                      reader.readAsDataURL(file);
+                    }
+                  }} 
+                />
+              </label>
+              {config.appLogo && (
+                <button 
+                  className="btn-primary" 
+                  style={{ background: 'var(--accent-danger)', padding: '0 10px' }}
+                  onClick={() => saveConfig('appLogo', '')}
+                >✕</button>
+              )}
+            </div>
+          </div>
+
           <div className="form-group">
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Nome App</label>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Nome App</label>
+            <input className="input-main" value={config.appName} onChange={e => saveConfig('appName', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Colore Primario</label>
+            <input type="color" style={{ width: '100%', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }} value={config.primaryColor} onChange={e => saveConfig('primaryColor', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Colore Sfondo</label>
+            <input type="color" style={{ width: '100%', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }} value={config.backgroundColor || '#0f172a'} onChange={e => saveConfig('backgroundColor', e.target.value)} />
+          </div>
+          <div className="form-group" style={{ gridColumn: 'span 2' }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sfondo (Carica Foto o incolla URL)</label>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <input 
+                className="input-main" 
+                style={{ flex: 1 }}
+                placeholder="Incolla URL immagine..." 
+                value={config.backgroundImage && !config.backgroundImage.startsWith('data:') ? config.backgroundImage : ''} 
+                onChange={e => saveConfig('backgroundImage', e.target.value)} 
+              />
+              <label className="btn-primary" style={{ padding: '0 15px', display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.7rem' }}>
+                📁 Carica
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  style={{ display: 'none' }} 
+                  onChange={e => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      if (file.size > 2 * 1024 * 1024) {
+                        alert("L'immagine è troppo grande! Usa una foto sotto i 2MB.");
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        saveConfig('backgroundImage', reader.result);
+                        saveConfig('backgroundMode', 'cover');
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }} 
+                />
+              </label>
+              {config.backgroundImage && (
+                <button 
+                  className="btn-primary" 
+                  style={{ background: 'var(--accent-danger)', padding: '0 10px' }}
+                  onClick={() => saveConfig('backgroundImage', '')}
+                >✕</button>
+              )}
+            </div>
+            
+            {config.backgroundImage && (
+              <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                {['cover', 'repeat', 'contain'].map(mode => (
+                  <button 
+                    key={mode}
+                    className={`toggle-btn ${config.backgroundMode === mode ? 'active' : ''}`}
+                    style={{ flex: 1, fontSize: '0.7rem', padding: '6px' }}
+                    onClick={() => saveConfig('backgroundMode', mode)}
+                  >
+                    {mode === 'cover' ? '🖼️ Copri' : mode === 'repeat' ? '🔁 Ripeti' : '🎯 Centro'}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="form-group" style={{ gridColumn: 'span 2' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Opacità Finestre (Vetro)</label>
+              <span style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{Math.round((config.glassOpacity || 0.4) * 100)}%</span>
+            </div>
             <input 
-              className="input-main"
-              value={config.appName}
-              onChange={e => saveConfig('appName', e.target.value)}
+              type="range" 
+              min="0.1" 
+              max="0.9" 
+              step="0.05" 
+              style={{ width: '100%', accentColor: 'var(--primary)' }}
+              value={config.glassOpacity || 0.4} 
+              onChange={e => saveConfig('glassOpacity', parseFloat(e.target.value))} 
             />
-          </div>
-          <div className="form-group">
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Colore Primario</label>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-               <input 
-                type="color" 
-                style={{ width: '50px', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }}
-                value={config.primaryColor}
-                onChange={e => saveConfig('primaryColor', e.target.value)}
-              />
-              <input 
-                className="input-main"
-                value={config.primaryColor}
-                onChange={e => saveConfig('primaryColor', e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="form-group">
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Colore Sfondo</label>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-               <input 
-                type="color" 
-                style={{ width: '50px', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }}
-                value={config.backgroundColor || '#0f172a'}
-                onChange={e => saveConfig('backgroundColor', e.target.value)}
-              />
-              <input 
-                className="input-main"
-                value={config.backgroundColor || '#0f172a'}
-                onChange={e => saveConfig('backgroundColor', e.target.value)}
-              />
-            </div>
           </div>
         </div>
       </div>
 
-      <div className="glass-card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ marginBottom: '1.5rem' }}>Personalizzazione Colori Turni</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2rem' }}>
-          {[
-            { id: 'A', label: 'Mattina (A)', default: '#0ea5e9' },
-            { id: 'B', label: 'Notte (B)', default: '#8b5cf6' },
-            { id: 'C', label: 'Pomeriggio (C)', default: '#f59e0b' }
-          ].map(shift => (
-            <div className="form-group" key={shift.id}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{shift.label}</label>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div className="glass-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <h3 style={{ fontSize: '1rem', margin: 0 }}>Colori e Sigle Turni</h3>
+          <button 
+            onClick={addNewShift}
+            style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 'bold', display: 'grid', placeItems: 'center', boxShadow: '0 4px 10px var(--primary)44' }}
+          >+</button>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '1.5rem 1rem' }}>
+          {Object.keys(config.shiftColors).map(id => (
+            <div key={id} style={{ textAlign: 'center', position: 'relative' }}>
+              { !['A', 'B', 'C', 'R'].includes(id) && (
+                <button 
+                  onClick={() => removeShift(id)}
+                  style={{ position: 'absolute', top: '-5px', right: '15px', width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '0.6rem', cursor: 'pointer' }}
+                >✕</button>
+              )}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                 <input 
                   type="color" 
-                  style={{ width: '50px', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }}
-                  value={config.shiftColors?.[shift.id] || shift.default}
-                  onChange={e => saveConfig('shiftColors', { ...config.shiftColors, [shift.id]: e.target.value })}
+                  style={{ width: '45px', height: '45px', borderRadius: '12px', border: '2px solid var(--glass-border)', background: 'transparent', cursor: 'pointer' }}
+                  value={config.shiftColors[id]}
+                  onChange={e => saveConfig('shiftColors', { ...config.shiftColors, [id]: e.target.value })}
                 />
                 <input 
                   className="input-main"
-                  value={config.shiftColors?.[shift.id] || shift.default}
-                  onChange={e => saveConfig('shiftColors', { ...config.shiftColors, [shift.id]: e.target.value })}
+                  style={{ width: '70px', textAlign: 'center', fontSize: '0.75rem', padding: '5px', fontWeight: 'bold' }}
+                  value={config.shiftLabels[id] || id}
+                  onChange={e => saveConfig('shiftLabels', { ...config.shiftLabels, [id]: e.target.value.toUpperCase() })}
                 />
               </div>
             </div>
           ))}
         </div>
       </div>
+    </div>
+  );
 
-      <div className="glass-card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
-          Rotazione Jolly e Semi-Jolly (Quotas)
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Rotazione ogni 2 mesi</span>
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+  const renderRules = () => (
+    <div className="fade-in">
+      <div style={{ 
+        background: 'rgba(0,0,0,0.4)',
+        backdropFilter: 'blur(25px)',
+        borderRadius: '50%', width: '280px', height: '280px', margin: '0 auto 2rem auto',
+        display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+        border: '2px solid var(--glass-border)', boxShadow: '0 10px 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.05)'
+      }}>
+        <h3 style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>Ciclo Turni</h3>
+        <input 
+          className="input-main" 
+          style={{ width: '80%', textAlign: 'center' }} 
+          value={tempCycle} 
+          onChange={e => setTempCycle(e.target.value)} 
+        />
+        <button className="btn-primary" onClick={handleCycleSave} style={{ marginTop: '1rem', borderRadius: '2rem' }}>Salva Ciclo</button>
+      </div>
+
+      <div className="glass-card">
+        <h3 style={{ marginBottom: '1rem', fontSize: '1rem' }}>Quote Jolly / SJ</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
           <div className="form-group">
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Jolly CT</label>
             <input type="number" className="input-main" value={config.quotas.jollyCt} onChange={e => updateQuota('jollyCt', e.target.value)} />
@@ -121,111 +263,92 @@ export default function RuleSettings() {
             <input type="number" className="input-main" value={config.quotas.sjOp} onChange={e => updateQuota('sjOp', e.target.value)} />
           </div>
         </div>
-
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem' }}>
-            <thead>
-              <tr>
-                <th style={{ textAlign: 'left', padding: '0.5rem', color: 'var(--text-muted)' }}>Dipendente</th>
-                {months.map(m => <th key={m} style={{ padding: '0.5rem', color: 'var(--text-muted)' }}>{m}</th>)}
-              </tr>
-            </thead>
-            <tbody>
-              {employees.map(e => (
-                <tr key={e.id} style={{ borderTop: '1px solid var(--glass-border)' }}>
-                  <td style={{ padding: '0.5rem', fontWeight: 'bold' }}>{e.name}</td>
-                  {months.map((m, mIdx) => {
-                    const role = getMonthlyRole(e, new Date(new Date().getFullYear(), mIdx, 1), employees, config);
-                    let color = 'transparent';
-                    let text = '-';
-                    if (role === 'J') { color = 'var(--accent-warning)'; text = 'L'; }
-                    if (role === 'SJ') { color = 'var(--primary)'; text = 'SJ'; }
-                    return (
-                      <td key={m} style={{ padding: '0.5rem', textAlign: 'center' }}>
-                        <span style={{ 
-                          padding: '2px 6px', 
-                          borderRadius: '4px', 
-                          background: color === 'transparent' ? 'transparent' : color + '33',
-                          border: color === 'transparent' ? 'none' : `1px solid ${color}66`,
-                          color: color === 'transparent' ? 'var(--text-muted)' : color
-                        }}>
-                          {text}
-                        </span>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
+    </div>
+  );
 
-      <div className="glass-card" style={{ marginBottom: '2rem' }}>
-        <h3 style={{ marginBottom: '1.5rem' }}>Configurazione Ciclo Turni</h3>
-        <div className="form-group">
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>Sequenza Ciclo (es. R, R, A, A, C, C, R, R, B, B)</label>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <input 
-              className="input-main"
-              value={tempCycle}
-              onChange={e => setTempCycle(e.target.value)}
-            />
-            <button className="btn-primary" onClick={handleCycleSave}>Salva Ciclo</button>
-          </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-            Attualmente il ciclo dura <strong>{config.cycle.length} giorni</strong>. Legenda: A=Mattina, B=Notte, C=Pomeriggio, R=Riposo.
-          </p>
-        </div>
-      </div>
-
-      <div className="glass-card">
-        <h3 style={{ marginBottom: '1.5rem' }}>Vincoli di Copertura per Turno</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
-          {['A', 'B', 'C'].map(shiftId => (
-            <div key={shiftId} style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem' }}>Turno {config.shifts[shiftId].label}</div>
-              {config.roles.map(role => (
-                <div key={role.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.85rem' }}>{role.label}</span>
-                  <input 
-                    type="number"
-                    style={{ width: '50px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--glass-border)', color: 'white', borderRadius: '4px', textAlign: 'center' }}
-                    value={config.constraints[shiftId]?.[role.id] || 0}
-                    onChange={e => {
+  const renderConstraints = () => (
+    <div className="fade-in">
+      <div style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem' }} className="no-scrollbar">
+        {['A', 'B', 'C'].map(shiftId => (
+          <div key={shiftId} className="glass-card" style={{ minWidth: '260px', flex: '0 0 260px' }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem', color: config.shiftColors[shiftId] }}>
+              Turno {config.shiftLabels[shiftId] || shiftId}
+            </div>
+            {config.roles.map(role => (
+              <div key={role.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{role.label}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button 
+                    onClick={() => {
+                      const val = Math.max(0, (config.constraints[shiftId]?.[role.id] || 0) - 1);
                       const newConstraints = { ...config.constraints };
                       if (!newConstraints[shiftId]) newConstraints[shiftId] = {};
-                      newConstraints[shiftId][role.id] = parseInt(e.target.value) || 0;
+                      newConstraints[shiftId][role.id] = val;
                       saveConfig('constraints', newConstraints);
                     }}
-                  />
+                    style={{ width: '24px', height: '24px', borderRadius: '4px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
+                  >-</button>
+                  <span style={{ minWidth: '15px', textAlign: 'center', fontWeight: 'bold', fontSize: '0.9rem' }}>{config.constraints[shiftId]?.[role.id] || 0}</span>
+                  <button 
+                    onClick={() => {
+                      const val = (config.constraints[shiftId]?.[role.id] || 0) + 1;
+                      const newConstraints = { ...config.constraints };
+                      if (!newConstraints[shiftId]) newConstraints[shiftId] = {};
+                      newConstraints[shiftId][role.id] = val;
+                      saveConfig('constraints', newConstraints);
+                    }}
+                    style={{ width: '24px', height: '24px', borderRadius: '4px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
+                  >+</button>
                 </div>
-              ))}
-            </div>
-          ))}
-        </div>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
-
+      
       <div className="glass-card" style={{ marginTop: '2rem', border: '1px solid var(--accent-danger)' }}>
-        <h3 style={{ marginBottom: '1.5rem', color: 'var(--accent-danger)' }}>Area Pericolosa</h3>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-          Usa questo pulsante per eliminare tutti i dati salvati (nomi, dipendenti, eccezioni e impostazioni) e riportare l'app allo stato iniziale. Utile se vuoi fare una nuova installazione pulita.
-        </p>
+        <h3 style={{ color: 'var(--accent-danger)', fontSize: '1rem', marginBottom: '1rem' }}>Reset Totale</h3>
         <button 
           className="btn-primary" 
-          style={{ background: 'var(--accent-danger)', color: 'white' }}
+          style={{ background: 'var(--accent-danger)', width: '100%' }}
           onClick={() => {
-            if(window.confirm("Sei sicuro di voler CANCELLARE TUTTI I DATI? Questa azione non può essere annullata!")) {
-              localStorage.removeItem('shift_pro_config');
-              localStorage.removeItem('shift_pro_employees');
-              localStorage.removeItem('shift_pro_exceptions');
-              localStorage.removeItem('onboarding_complete');
+            if(window.confirm("CANCELLARE TUTTO?")) {
+              localStorage.clear();
               window.location.reload();
             }
           }}
         >
-          🗑️ Ripristino Dati di Fabbrica
+          🗑️ Ripristino Fabbrica
         </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="settings-container" style={{ maxWidth: '600px', margin: '0 auto' }}>
+      <div className="glass-card" style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', padding: '8px', borderBottom: '1px solid var(--glass-border)', backdropFilter: 'blur(20px)' }}>
+        <button 
+          className={`toggle-btn ${activeSection === 'design' ? 'active' : ''}`} 
+          style={{ flex: 1, textShadow: activeSection === 'design' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'design' ? 'white' : 'rgba(255,255,255,0.7)' }} 
+          onClick={() => setActiveSection('design')}
+        >🎨 Estetica</button>
+        <button 
+          className={`toggle-btn ${activeSection === 'rules' ? 'active' : ''}`} 
+          style={{ flex: 1, textShadow: activeSection === 'rules' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'rules' ? 'white' : 'rgba(255,255,255,0.7)' }} 
+          onClick={() => setActiveSection('rules')}
+        >📊 Regole</button>
+        <button 
+          className={`toggle-btn ${activeSection === 'constraints' ? 'active' : ''}`} 
+          style={{ flex: 1, textShadow: activeSection === 'constraints' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'constraints' ? 'white' : 'rgba(255,255,255,0.7)' }} 
+          onClick={() => setActiveSection('constraints')}
+        >⚠️ Sicurezza</button>
+      </div>
+
+      <div className="section-content">
+        {activeSection === 'design' && renderDesign()}
+        {activeSection === 'rules' && renderRules()}
+        {activeSection === 'constraints' && renderConstraints()}
       </div>
     </div>
   );
