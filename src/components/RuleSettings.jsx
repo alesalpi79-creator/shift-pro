@@ -259,19 +259,19 @@ export default function RuleSettings() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
           <div className="form-group">
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Jolly CT</label>
-            <input type="number" className="input-main" value={config.quotas.jollyCt} onChange={e => updateQuota('jollyCt', e.target.value)} />
+            <input type="number" className="input-main" value={(config.quotas && config.quotas.jollyCt) || 0} onChange={e => updateQuota('jollyCt', e.target.value)} />
           </div>
           <div className="form-group">
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>SJ CT</label>
-            <input type="number" className="input-main" value={config.quotas.sjCt} onChange={e => updateQuota('sjCt', e.target.value)} />
+            <input type="number" className="input-main" value={(config.quotas && config.quotas.sjCt) || 0} onChange={e => updateQuota('sjCt', e.target.value)} />
           </div>
           <div className="form-group">
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Jolly OP</label>
-            <input type="number" className="input-main" value={config.quotas.jollyOp} onChange={e => updateQuota('jollyOp', e.target.value)} />
+            <input type="number" className="input-main" value={(config.quotas && config.quotas.jollyOp) || 0} onChange={e => updateQuota('jollyOp', e.target.value)} />
           </div>
           <div className="form-group">
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>SJ OP</label>
-            <input type="number" className="input-main" value={config.quotas.sjOp} onChange={e => updateQuota('sjOp', e.target.value)} />
+            <input type="number" className="input-main" value={(config.quotas && config.quotas.sjOp) || 0} onChange={e => updateQuota('sjOp', e.target.value)} />
           </div>
         </div>
       </div>
@@ -281,18 +281,19 @@ export default function RuleSettings() {
   const renderConstraints = () => (
     <div className="fade-in">
       <div style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem' }} className="no-scrollbar">
-        {['A', 'B', 'C'].map(shiftId => (
+        {(['A', 'B', 'C']).map(shiftId => (
           <div key={shiftId} className="glass-card" style={{ minWidth: '260px', flex: '0 0 260px' }}>
-            <div style={{ fontWeight: 'bold', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem', color: config.shiftColors[shiftId] }}>
-              Turno {config.shiftLabels[shiftId] || shiftId}
+            <div style={{ fontWeight: 'bold', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem', color: safeShiftColors[shiftId] || 'var(--primary)' }}>
+              Turno {safeShiftLabels[shiftId] || shiftId}
             </div>
-            {config.roles.map(role => (
+            {(config.roles || []).map(role => (
               <div key={role.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{role.label}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <button 
                     onClick={() => {
-                      const val = Math.max(0, (config.constraints[shiftId]?.[role.id] || 0) - 1);
+                      const constraints = config.constraints || {};
+                      const val = Math.max(0, (constraints[shiftId]?.[role.id] || 0) - 1);
                       const newConstraints = { ...config.constraints };
                       if (!newConstraints[shiftId]) newConstraints[shiftId] = {};
                       newConstraints[shiftId][role.id] = val;
