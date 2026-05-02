@@ -5,11 +5,18 @@ import { getMonthlyRole } from '../logic/ShiftEngine';
 export default function RuleSettings() {
   const { config, setConfig, employees } = useApp();
   const [activeSection, setActiveSection] = useState('design');
-  const [tempCycle, setTempCycle] = useState(config.cycle.join(', '));
+  const [tempCycle, setTempCycle] = useState(() => {
+    const cycle = config.cycle || [];
+    return Array.isArray(cycle) ? cycle.join(', ') : (typeof cycle === 'string' ? cycle : '');
+  });
 
   const saveConfig = (key, value) => {
     setConfig(prev => ({ ...prev, [key]: value }));
   };
+
+  const safeShiftLabels = config.shiftLabels || {};
+  const safeShiftColors = config.shiftColors || {};
+  const safeCycle = Array.isArray(config.cycle) ? config.cycle : (typeof config.cycle === 'string' ? config.cycle.split(',').map(s => s.trim()) : []);
 
   const handleCycleSave = () => {
     const newCycle = tempCycle.split(',').map(s => s.trim().toUpperCase()).filter(s => s.length > 0);
@@ -29,8 +36,8 @@ export default function RuleSettings() {
         alert("Questa sigla esiste già!");
         return;
       }
-      const newColors = { ...config.shiftColors, [id]: '#6366f1' };
-      const newLabels = { ...config.shiftLabels, [id]: id };
+      const newColors = { ...safeShiftColors, [id]: '#6366f1' };
+      const newLabels = { ...safeShiftLabels, [id]: id };
       setConfig(prev => ({
         ...prev,
         shiftColors: newColors,
@@ -45,8 +52,8 @@ export default function RuleSettings() {
       return;
     }
     if (window.confirm(`Rimuovere la sigla ${id}?`)) {
-      const newColors = { ...config.shiftColors };
-      const newLabels = { ...config.shiftLabels };
+      const newColors = { ...safeShiftColors };
+      const newLabels = { ...safeShiftLabels };
       delete newColors[id];
       delete newLabels[id];
       setConfig(prev => ({
@@ -207,14 +214,18 @@ export default function RuleSettings() {
                 <input 
                   type="color" 
                   style={{ width: '45px', height: '45px', borderRadius: '12px', border: '2px solid var(--glass-border)', background: 'transparent', cursor: 'pointer' }}
-                  value={config.shiftColors[id]}
-                  onChange={e => saveConfig('shiftColors', { ...config.shiftColors, [id]: e.target.value })}
+                  value={safeShiftColors[id] || '#6366f1'}
+                  onChange={e => saveConfig('shiftColors', { ...safeShiftColors, [id]: e.target.value })}
                 />
                 <input 
                   className="input-main"
                   style={{ width: '70px', textAlign: 'center', fontSize: '0.75rem', padding: '5px', fontWeight: 'bold' }}
-                  value={config.shiftLabels[id] || id}
-                  onChange={e => saveConfig('shiftLabels', { ...config.shiftLabels, [id]: e.target.value.toUpperCase() })}
+                  value={safeShiftLabels[id] || id}
+                  onChange={e => {
+                    const newLabels = { ...safeShiftLabels };
+                    newLabels[id] = e.target.value.toUpperCase();
+                    saveConfig('shiftLabels', newLabels);
+                  }}
                 />
               </div>
             </div>
