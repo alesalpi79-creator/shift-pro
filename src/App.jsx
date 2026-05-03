@@ -178,7 +178,7 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
     return shifts.filter(s => s.name === selectedEmployee);
   }, [shifts, selectedEmployee]);
 
-  const dateStr = date.toISOString().split('T')[0];
+  const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
   const updateShift = (employeeName, type) => {
     if (userRole !== 'admin') return;
@@ -223,7 +223,8 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: '240px' }}>
                   {['A', 'B', 'C', 'G', 'R', 'FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].map(st => {
                     let bgColor = 'transparent';
-                    if (s.finalShift === st) {
+                    const isSelected = s.finalShift === st;
+                    if (isSelected) {
                       if (st === 'R') bgColor = 'rgba(255,255,255,0.15)';
                       else bgColor = config.shiftColors[st] || 'var(--primary)';
                     }
@@ -231,14 +232,13 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
                       <button 
                         key={st}
                         onClick={() => updateShift(s.name, st)}
-                        disabled={userRole !== 'admin'}
                         data-shift={st}
                         style={{ 
-                          width: '28px', height: '28px', borderRadius: '6px', border: '1px solid var(--glass-border)',
+                          width: '28px', height: '28px', borderRadius: '6px', border: isSelected ? '1px solid white' : '1px solid var(--glass-border)',
                           background: bgColor,
-                          color: s.finalShift === st ? 'white' : 'var(--text-muted)',
-                          fontSize: '0.65rem', fontWeight: 'bold', cursor: userRole === 'admin' ? 'pointer' : 'default',
-                          opacity: userRole === 'admin' ? 1 : 0.6
+                          color: isSelected ? 'white' : 'var(--text-muted)',
+                          fontSize: '0.65rem', fontWeight: 'bold', cursor: 'pointer',
+                          transition: 'all 0.2s'
                         }}
                         title={config.shiftLabels?.[st] || st}
                       >
