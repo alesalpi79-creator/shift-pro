@@ -367,20 +367,23 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
         e.preventDefault();
         const type = isDelete ? null : keyMap[key];
         
+        // Fermiamo subito il trascinamento e puliamo la selezione
+        setIsSelecting(false);
+        const toProcess = [...currentSelection];
+        setSelection([]); 
+
         setExceptions(prev => {
           const filtered = prev.filter(ex => 
-            !currentSelection.some(sel => sel.empName === ex.employee && sel.dateStr === ex.date)
+            !toProcess.some(sel => sel.empName === ex.employee && sel.dateStr === ex.date)
           );
           if (!type) return filtered;
-          const newEntries = currentSelection.map(sel => ({
+          const newEntries = toProcess.map(sel => ({
             employee: sel.empName,
             date: sel.dateStr,
             type
           }));
           return [...filtered, ...newEntries];
         });
-        
-        setSelection([]); 
       }
     };
 
