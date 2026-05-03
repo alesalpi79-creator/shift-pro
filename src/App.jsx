@@ -340,10 +340,14 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
   const [selection, setSelection] = useState([]); // Array di { empName, dateStr, time }
   const [isSelecting, setIsSelecting] = useState(false);
 
+  const selectionRef = React.useRef(selection);
+  useEffect(() => { selectionRef.current = selection; }, [selection]);
+
   // Gestione Scorciatoie da Tastiera
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (userRole !== 'admin' || selection.length === 0) return;
+      const currentSelection = selectionRef.current;
+      if (userRole !== 'admin' || currentSelection.length === 0) return;
 
       const keyMap = {
         'A': 'A', 'B': 'B', 'C': 'C', 'G': 'G', 'R': 'R',
@@ -358,25 +362,30 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
         const type = isDelete ? null : keyMap[key];
         
         setExceptions(prev => {
-          let updated = [...prev];
-          selection.forEach(sel => {
-            // Rimuoviamo eccezioni esistenti per questa data/dipendente
-            updated = updated.filter(ex => !(ex.employee === sel.empName && ex.date === sel.dateStr));
-            // Aggiungiamo la nuova se non stiamo cancellando
-            if (type) {
-              updated.push({ employee: sel.empName, date: sel.dateStr, type });
-            }
-          });
-          return updated;
+          // Filtriamo via in un colpo solo tutte le caselle selezionate
+          const filtered = prev.filter(ex => 
+            !currentSelection.some(sel => sel.empName === ex.employee && sel.dateStr === ex.date)
+          );
+          
+          if (!type) return filtered;
+
+          // Aggiungiamo i nuovi turni
+          const newEntries = currentSelection.map(sel => ({
+            employee: sel.empName,
+            date: sel.dateStr,
+            type
+          }));
+          
+          return [...filtered, ...newEntries];
         });
         
-        setSelection([]); // Pulisci selezione dopo l'invio riuscito
+        setSelection([]); 
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selection, setExceptions, userRole]);
+  }, [setExceptions, userRole]);
 
   const handleMouseDown = (empName, date) => {
     if (userRole !== 'admin') return;
