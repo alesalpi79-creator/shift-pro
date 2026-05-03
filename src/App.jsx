@@ -469,7 +469,7 @@ const CalendarView = () => {
             <h1 style={{ fontSize: '1.8rem', fontWeight: 700, margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
               {monthName.charAt(0).toUpperCase() + monthName.slice(1)}
             </h1>
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <div style={{ position: 'relative' }}>
               <input 
                 type="month" 
                 value={`${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}`}
@@ -478,10 +478,22 @@ const CalendarView = () => {
                   if (y && m) setViewDate(new Date(parseInt(y), parseInt(m) - 1, 1));
                 }}
                 style={{ 
-                  position: 'absolute', opacity: 0, width: '40px', height: '40px', cursor: 'pointer', zIndex: 2
+                  background: 'rgba(255,255,255,0.1)', 
+                  border: '1px solid var(--glass-border)',
+                  borderRadius: '50%',
+                  width: '42px',
+                  height: '42px',
+                  padding: '8px',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '1.2rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  appearance: 'none',
+                  WebkitAppearance: 'none'
                 }} 
               />
-              <button className="btn-primary" style={{ padding: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%', width: '36px', height: '36px', display: 'grid', placeItems: 'center' }}>📅</button>
             </div>
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>Pianificazione e bilanciamento turni giornalieri</p>
