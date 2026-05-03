@@ -323,6 +323,27 @@ export default function RuleSettings() {
 
   const renderConstraints = () => (
     <div className="fade-in">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h3 style={{ fontSize: '1rem', margin: 0 }}>Vincoli Personale per Turno</h3>
+        <button 
+          onClick={() => {
+            const name = window.prompt("Nome del nuovo ruolo (es. Supervisore, Tecnico...):");
+            if (name && name.trim()) {
+              const newRoles = [...(config.roles || [])];
+              const id = name.trim().toUpperCase().substring(0, 3);
+              if (newRoles.find(r => r.id === id)) {
+                alert("Esiste già un ruolo con ID simile.");
+                return;
+              }
+              newRoles.push({ id, label: name.trim(), color: '#6366f1' });
+              saveConfig('roles', newRoles);
+            }
+          }}
+          className="btn-primary" 
+          style={{ padding: '6px 12px', fontSize: '0.7rem' }}
+        >+ Nuovo Ruolo</button>
+      </div>
+
       <div style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem' }} className="no-scrollbar">
         {(['A', 'B', 'C']).map(shiftId => (
           <div key={shiftId} className="glass-card" style={{ minWidth: '260px', flex: '0 0 260px' }}>
@@ -331,7 +352,30 @@ export default function RuleSettings() {
             </div>
             {(config.roles || []).map(role => (
               <div key={role.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{role.label}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span 
+                    style={{ fontSize: '0.8rem', color: 'var(--text-muted)', cursor: 'pointer' }}
+                    title="Clicca per rinominare"
+                    onClick={() => {
+                      const newName = window.prompt(`Rinomina "${role.label}":`, role.label);
+                      if (newName && newName.trim()) {
+                        const newRoles = config.roles.map(r => r.id === role.id ? { ...r, label: newName.trim() } : r);
+                        saveConfig('roles', newRoles);
+                      }
+                    }}
+                  >{role.label}</span>
+                  { !['CT', 'OP'].includes(role.id) && (
+                    <button 
+                      onClick={() => {
+                        if (window.confirm(`Eliminare il ruolo "${role.label}"?`)) {
+                          const newRoles = config.roles.filter(r => r.id !== role.id);
+                          saveConfig('roles', newRoles);
+                        }
+                      }}
+                      style={{ background: 'transparent', border: 'none', color: 'var(--accent-danger)', fontSize: '0.6rem', cursor: 'pointer', padding: 0 }}
+                    >🗑️</button>
+                  )}
+                </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <button 
                     onClick={() => {
