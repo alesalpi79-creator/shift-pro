@@ -281,23 +281,23 @@ export default function RuleSettings() {
   const renderRules = () => (
     <div className="fade-in">
       <div style={{ 
-        background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.3), rgba(124, 58, 237, 0.3))',
-        backdropFilter: 'blur(30px)',
+        background: 'rgba(15, 23, 42, 0.95)', // Quasi solido per bloccare lo sfondo
+        backdropFilter: 'blur(40px)',
         borderRadius: '50%', width: '280px', height: '280px', margin: '0 auto 2rem auto',
         display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-        border: '3px solid rgba(99, 102, 241, 0.6)', 
-        boxShadow: '0 0 50px rgba(99, 102, 241, 0.25), inset 0 0 30px rgba(0,0,0,0.2)',
+        border: '5px solid #6366f1', // Bordo molto più spesso e solido
+        boxShadow: '0 0 80px rgba(99, 102, 241, 0.5), inset 0 0 30px rgba(0,0,0,0.8)',
         position: 'relative'
       }}>
-        <div style={{ position: 'absolute', top: '15%', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', color: 'rgba(255,255,255,0.6)', fontWeight: 'bold' }}>Algoritmo</div>
-        <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'white', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>Ciclo Turni</h3>
+        <div style={{ position: 'absolute', top: '15%', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '3px', color: '#818cf8', fontWeight: '900' }}>Algoritmo</div>
+        <h3 style={{ fontSize: '1.2rem', marginBottom: '1.25rem', color: 'white', textShadow: '0 2px 10px rgba(0,0,0,1)' }}>Ciclo Turni</h3>
         <input 
           className="input-main" 
-          style={{ width: '80%', textAlign: 'center', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', fontSize: '1.1rem', letterSpacing: '2px', fontWeight: 'bold' }} 
+          style={{ width: '85%', textAlign: 'center', background: '#000', border: '2px solid #6366f1', fontSize: '1.2rem', letterSpacing: '2px', fontWeight: 'bold', borderRadius: '10px', color: 'white' }} 
           value={tempCycle} 
           onChange={e => setTempCycle(e.target.value.toUpperCase())} 
         />
-        <button className="btn-primary" onClick={handleCycleSave} style={{ marginTop: '1.25rem', borderRadius: '2rem', padding: '10px 24px', background: 'var(--primary)', boxShadow: '0 5px 15px var(--primary)66' }}>Salva Ciclo</button>
+        <button className="btn-primary" onClick={handleCycleSave} style={{ marginTop: '1.5rem', borderRadius: '2rem', padding: '12px 30px', background: '#6366f1', fontWeight: 'bold', boxShadow: '0 10px 20px rgba(99, 102, 241, 0.4)' }}>Salva Ciclo</button>
       </div>
 
       <div className="glass-card">
