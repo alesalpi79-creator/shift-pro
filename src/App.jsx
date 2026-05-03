@@ -345,12 +345,43 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
         <thead>
           <tr>
             <th>Dipendente</th>
-            {days.filter(d => d).map(d => (
-              <th key={d.toISOString()}>
-                <div style={{ fontSize: '0.6rem', opacity: 0.7 }}>{d.toLocaleDateString('it-IT', { weekday: 'short' }).slice(0, 1)}</div>
-                {d.getDate()}
-              </th>
-            ))}
+            {days.filter(d => d).map((d, i) => {
+              const dayIdx = i + (days[0] === null ? days.filter(x => x === null).length : 0);
+              const dayShifts = gridData[dayIdx];
+              
+              let isUnderstaffed = false;
+              let missingDesc = [];
+
+              if (dayShifts && config.constraints) {
+                 ['A', 'B', 'C'].forEach(st => {
+                    const ctCount = dayShifts.filter(s => s.finalShift === st && s.baseRole === 'CT').length;
+                    const opCount = dayShifts.filter(s => s.finalShift === st && s.baseRole === 'OP').length;
+                    const reqCT = config.constraints?.[st]?.CT || 1;
+                    const reqOP = config.constraints?.[st]?.OP || 3;
+                    
+                    if (ctCount !== reqCT) {
+                       isUnderstaffed = true;
+                       missingDesc.push(`${config.shiftLabels?.[st] || st}: ${ctCount}/${reqCT} CT`);
+                    }
+                    if (opCount !== reqOP) {
+                       isUnderstaffed = true;
+                       missingDesc.push(`${config.shiftLabels?.[st] || st}: ${opCount}/${reqOP} OP`);
+                    }
+                 });
+              }
+
+              return (
+                <th key={d.toISOString()} title={isUnderstaffed ? missingDesc.join(' | ') : 'Copertura OK'}>
+                  <div style={{ fontSize: '0.6rem', opacity: 0.7 }}>{d.toLocaleDateString('it-IT', { weekday: 'short' }).slice(0, 1)}</div>
+                  <div style={{ position: 'relative', display: 'inline-block' }}>
+                    {d.getDate()}
+                    {isUnderstaffed && (
+                      <span style={{ position: 'absolute', top: '-10px', right: '-12px', fontSize: '0.7rem' }}>⚠️</span>
+                    )}
+                  </div>
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
