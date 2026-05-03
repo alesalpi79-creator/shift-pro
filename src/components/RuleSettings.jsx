@@ -405,42 +405,6 @@ export default function RuleSettings() {
           </div>
         ))}
       </div>
-      
-      <div className="glass-card" style={{ marginTop: '2rem', border: '1px solid var(--primary)' }}>
-        <h3 style={{ color: 'var(--primary)', fontSize: '1rem', marginBottom: '1rem' }}>📦 Backup & Ripristino</h3>
-        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-          Usa questi tasti per spostare i dati tra PC e Telefono.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <button 
-            className="btn-primary" 
-            style={{ width: '100%', fontSize: '0.8rem' }}
-            onClick={handleExport}
-          >
-            📤 Esporta
-          </button>
-          <label className="btn-primary" style={{ width: '100%', fontSize: '0.8rem', textAlign: 'center', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }}>
-            📥 Importa
-            <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
-          </label>
-        </div>
-      </div>
-
-      <div className="glass-card" style={{ marginTop: '1.5rem', border: '1px solid var(--accent-danger)' }}>
-        <h3 style={{ color: 'var(--accent-danger)', fontSize: '1rem', marginBottom: '1rem' }}>Reset Totale</h3>
-        <button 
-          className="btn-primary" 
-          style={{ background: 'var(--accent-danger)', width: '100%' }}
-          onClick={() => {
-            if(window.confirm("CANCELLARE TUTTO?")) {
-              localStorage.clear();
-              window.location.reload();
-            }
-          }}
-        >
-          🗑️ Ripristino Fabbrica
-        </button>
-      </div>
     </div>
   );
 
@@ -494,6 +458,22 @@ export default function RuleSettings() {
             <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
           </label>
         </div>
+      </div>
+
+      <div className="glass-card" style={{ marginTop: '1.5rem', border: '1px solid var(--accent-danger)' }}>
+        <h3 style={{ color: 'var(--accent-danger)', fontSize: '1rem', marginBottom: '1rem' }}>Reset Totale</h3>
+        <button 
+          className="btn-primary" 
+          style={{ background: 'var(--accent-danger)', width: '100%' }}
+          onClick={() => {
+            if(window.confirm("CANCELLARE TUTTO?")) {
+              localStorage.clear();
+              window.location.reload();
+            }
+          }}
+        >
+          🗑️ Ripristino Fabbrica
+        </button>
       </div>
     </div>
   );

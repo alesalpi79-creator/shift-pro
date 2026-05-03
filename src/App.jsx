@@ -382,11 +382,28 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                 </th>
               );
             })}
+            <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-a)', fontSize: '0.65rem' }}>A</th>
+            <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-b)', fontSize: '0.65rem' }}>B</th>
+            <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-c)', fontSize: '0.65rem' }}>C</th>
+            <th style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.65rem' }}>Tot.</th>
           </tr>
         </thead>
         <tbody>
           {visibleEmployees.map((emp) => {
             const roleColor = config.roles?.find(r => r.id === emp.role)?.color || (emp.role === 'CT' ? '#ef4444' : (emp.role === 'OP' ? '#64748b' : config.primaryColor));
+            
+            // Calcolo conteggio per ogni tipologia di turno
+            const counts = realDays.reduce((acc, _, i) => {
+              const dayShifts = gridData[i];
+              const empShift = dayShifts?.find(s => s.name === emp.name);
+              const shiftType = empShift?.finalShift || 'R';
+              if (['A', 'B', 'C'].includes(shiftType)) {
+                acc[shiftType] = (acc[shiftType] || 0) + 1;
+                acc.total += 1;
+              }
+              return acc;
+            }, { A: 0, B: 0, C: 0, total: 0 });
+
             return (
               <tr key={emp.name}>
                 <td>
@@ -423,6 +440,14 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                     </td>
                   );
                 })}
+                <td style={{ textAlign: 'center', fontSize: '0.7rem', opacity: 0.8, background: 'rgba(255,255,255,0.01)' }}>{counts.A}</td>
+                <td style={{ textAlign: 'center', fontSize: '0.7rem', opacity: 0.8, background: 'rgba(255,255,255,0.01)' }}>{counts.B}</td>
+                <td style={{ textAlign: 'center', fontSize: '0.7rem', opacity: 0.8, background: 'rgba(255,255,255,0.01)' }}>{counts.C}</td>
+                <td style={{ textAlign: 'center', fontWeight: 'bold', background: 'rgba(255,255,255,0.03)', color: 'var(--primary)' }}>
+                  <div style={{ padding: '2px 4px', fontSize: '0.75rem' }}>
+                    {counts.total}
+                  </div>
+                </td>
               </tr>
             );
           })}
