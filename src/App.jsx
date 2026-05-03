@@ -393,7 +393,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                 <th key={d.toISOString()} title={isUnderstaffed ? missingDesc.join(' | ') : 'Copertura OK'}
                   style={{ 
                     background: (d.getDay() === 0 || d.getDay() === 6 || isHoliday(d)) ? 'rgba(255,255,255,0.03)' : 'transparent',
-                    color: isHoliday(d) ? 'var(--accent-danger)' : (d.getDay() === 0 ? 'var(--accent-warning)' : 'inherit')
+                    color: (isHoliday(d) || d.getDay() === 0 || d.getDay() === 6) ? 'var(--accent-warning)' : 'inherit'
                   }}
                 >
                   <div style={{ fontSize: '0.6rem', opacity: 0.7 }}>{d.toLocaleDateString('it-IT', { weekday: 'short' }).slice(0, 1)}</div>
@@ -468,7 +468,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                       onClick={() => onDayClick(date, emp.name)} 
                       style={{ 
                         cursor: 'pointer',
-                        background: (date.getDay() === 0 || isHoliday(date)) ? 'rgba(239, 68, 68, 0.05)' : (date.getDay() === 6 ? 'rgba(255, 255, 255, 0.02)' : 'transparent')
+                        background: (date.getDay() === 0 || date.getDay() === 6 || isHoliday(date)) ? 'rgba(239, 68, 68, 0.05)' : 'transparent'
                       }}
                     >
                       <div className="shift-pill" data-shift={shiftType} style={{ background: bgColor, color: 'white' }}>
@@ -639,7 +639,7 @@ const CalendarView = () => {
                         <span style={{ 
                           fontSize: '0.8rem', 
                           fontWeight: 'bold',
-                          color: holiday ? 'var(--accent-danger)' : (date.getDay() === 0 ? 'var(--accent-warning)' : 'white')
+                          color: (holiday || date.getDay() === 0 || date.getDay() === 6) ? 'var(--accent-warning)' : 'white'
                         }}>
                           {date.getDate()} {holiday ? '🎉' : ''}
                         </span>
