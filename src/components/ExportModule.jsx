@@ -115,7 +115,7 @@ export default function ExportModule({ onClose, currentViewDate }) {
                      lineColor: [200, 200, 200]
                    },
                    headStyles: { 
-                       fillColor: [99, 102, 241], 
+                       fillColor: [30, 41, 59], // Blu notte professionale
                        textColor: 255, 
                        fontStyle: 'bold',
                        halign: 'center'
@@ -138,13 +138,13 @@ export default function ExportModule({ onClose, currentViewDate }) {
                                        } catch(err) {
                                            data.cell.styles.textColor = [0, 0, 0];
                                        }
-                                   } else {
-                                       data.cell.styles.textColor = [0, 0, 0];
                                    }
                                    data.cell.styles.fontStyle = 'bold';
                                }
                            } else if (data.column.index > 0) {
                                const val = data.cell.raw;
+                               if (!val) return;
+
                                const shiftKey = Object.keys(config.shiftLabels || {}).find(k => config.shiftLabels[k] === val) || val;
                                const hexColor = config.shiftColors?.[shiftKey];
                                
@@ -154,12 +154,18 @@ export default function ExportModule({ onClose, currentViewDate }) {
                                        const r = parseInt(hex.substring(0,2), 16);
                                        const g = parseInt(hex.substring(2,4), 16);
                                        const b = parseInt(hex.substring(4,6), 16);
-                                       data.cell.styles.fillColor = [r, g, b];
-                                       data.cell.styles.textColor = 255;
+                                       
+                                       // Versione Pastello: Sfondo leggerissimo (10% del colore originale)
+                                       data.cell.styles.fillColor = [
+                                           255 - (255 - r) * 0.15,
+                                           255 - (255 - g) * 0.15,
+                                           255 - (255 - b) * 0.15
+                                       ];
+                                       data.cell.styles.textColor = [r, g, b]; // Testo con colore originale
                                        data.cell.styles.fontStyle = 'bold';
                                    } catch(e) {}
-                               } else if (shiftKey === 'R' || val === '') { 
-                                   data.cell.styles.textColor = 160; 
+                               } else if (shiftKey === 'R') { 
+                                   data.cell.styles.textColor = 200; 
                                }
                            }
                        }

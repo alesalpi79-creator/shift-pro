@@ -287,12 +287,14 @@ h1, h2, h3 {
   border-collapse: separate;
   border-spacing: 0;
   font-size: 0.75rem;
+  border-top: 1px solid var(--glass-border);
 }
 
 .shift-table th, .shift-table td {
   padding: 0.8rem 0.4rem;
   text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* very light horizontal border only */
+  border-bottom: 1px solid var(--glass-border);
+  border-right: 1px solid var(--glass-border);
   min-width: 45px;
 }
 
@@ -305,7 +307,8 @@ h1, h2, h3 {
   padding-left: 1rem;
   min-width: 170px;
   font-weight: 600;
-  border-right: 1px solid var(--glass-border);
+  border-right: 2px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
   box-shadow: 5px 0 15px rgba(0,0,0,0.2);
 }
 
@@ -355,10 +358,12 @@ h1, h2, h3 {
 .shift-table tbody tr:nth-child(9) { animation-delay: 0.45s; }
 .shift-table tbody tr:nth-child(n+10) { animation-delay: 0.50s; }
 
+.shift-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
 .shift-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.06);
-  transform: scale(1.01) translateX(5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  background: rgba(255, 255, 255, 0.12) !important;
   position: relative;
   z-index: 5;
 }
