@@ -311,18 +311,17 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
         {renderGroup('Turno C (Pomeriggio)', filteredShifts.filter(s => s.finalShift === 'C'), 'var(--shift-c)')}
         {renderGroup('Assenze Speciali', filteredShifts.filter(s => ['FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].includes(s.finalShift)), 'var(--text-muted)')}
         {renderGroup('A Riposo / Jolly / Giornaliero', filteredShifts.filter(s => ['R', 'G'].includes(s.finalShift)), null)}
-      </div>
-    </div>
-  );
-};
-
-const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
+ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
   const { userRole } = useApp();
+  
+  // Pre-filtriamo i giorni reali del mese per avere indici certi 0..30
+  const realDays = useMemo(() => days.filter(d => d), [days]);
+
   const gridData = useMemo(() => {
-    return days.filter(d => d).map(date => {
+    return realDays.map(date => {
       return calculateDailyShifts(date, employees, exceptions, config);
     });
-  }, [days, employees, exceptions, config]);
+  }, [realDays, employees, exceptions, config]);
 
   const visibleEmployees = useMemo(() => {
     return employees.filter(emp => {
@@ -344,9 +343,8 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
         <thead>
           <tr>
             <th>Dipendente</th>
-            {days.filter(d => d).map((d, i) => {
+            {realDays.map((d, i) => {
               const dayShifts = gridData[i];
-              
               let isUnderstaffed = false;
               let missingDesc = [];
 
@@ -356,7 +354,6 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                     const opCount = dayShifts.filter(s => s.finalShift === st && s.baseRole === 'OP').length;
                     const reqCT = config.constraints?.[st]?.CT || 1;
                     const reqOP = config.constraints?.[st]?.OP || 3;
-                    
                     if (ctCount !== reqCT) {
                        isUnderstaffed = true;
                        missingDesc.push(`${config.shiftLabels?.[st] || st}: ${ctCount}/${reqCT} CT`);
@@ -383,71 +380,52 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
           </tr>
         </thead>
         <tbody>
-          {visibleEmployees.map((emp, empIdx) => {
+          {visibleEmployees.map((emp) => {
             const roleColor = config.roles?.find(r => r.id === emp.role)?.color || (emp.role === 'CT' ? '#ef4444' : (emp.role === 'OP' ? '#64748b' : config.primaryColor));
             return (
-            <tr key={emp.name}>
-              <td>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div className="avatar" style={{ background: roleColor }}>
-                    {emp.name.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <div style={{ fontWeight: '600', fontSize: '0.85rem' }}>{emp.name}</div>
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginTop: '2px' }}>
-                      <span style={{ fontSize: '0.6rem', color: roleColor, fontWeight: 'bold' }}>{emp.role}</span>
-                      {userRole === 'admin' && <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>[Sq. {emp.team || 1}]</span>}
-                      {(() => {
-                        const firstWorkingDay = gridData.find(d => d && d.some(s => s.name === emp.name));
-                        if (!firstWorkingDay) return null;
-                        const empData = firstWorkingDay.find(s => s.name === emp.name);
-                        if (empData?.isJolly) return <span style={{ fontSize: '0.55rem', padding: '1px 4px', background: 'var(--accent-warning)', color: 'white', borderRadius: '4px' }}>Jolly</span>;
-                        if (empData?.isSJ) return <span style={{ fontSize: '0.55rem', padding: '1px 4px', background: 'var(--primary)', color: 'white', borderRadius: '4px' }}>SJ</span>;
-                        return null;
-                      })()}
+              <tr key={emp.name}>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div className="avatar" style={{ background: roleColor }}>
+                      {emp.name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <div style={{ fontWeight: '600', fontSize: '0.85rem' }}>{emp.name}</div>
+                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginTop: '2px' }}>
+                        <span style={{ fontSize: '0.6rem', color: roleColor, fontWeight: 'bold' }}>{emp.role}</span>
+                        {userRole === 'admin' && <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>[Sq. {emp.team || 1}]</span>}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </td>
-              {days.filter(d => d).map((date, i) => {
-                const dayShifts = gridData[i];
-                const empShift = dayShifts?.find(s => s.name === emp.name);
-                const shiftType = empShift?.finalShift || 'R';
-                
-                let bgColor = 'transparent';
-                let textColor = 'var(--text-muted)';
-                let border = 'none';
-                
+                </td>
+                {realDays.map((date, i) => {
+                  const dayShifts = gridData[i];
+                  const empShift = dayShifts?.find(s => s.name === emp.name);
+                  const shiftType = empShift?.finalShift || 'R';
+                  const bgColor = ['A', 'B', 'C', 'G', 'R', 'FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].includes(shiftType) 
+                    ? `var(--shift-${shiftType.toLowerCase()})` 
+                    : roleColor;
 
-                // Applica il colore in base al tipo di turno
-                if (['A', 'B', 'C', 'G', 'R', 'FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].includes(shiftType)) {
-                  bgColor = `var(--shift-${shiftType.toLowerCase()})`;
-                } else {
-                  bgColor = roleColor; // Fallback se fosse un turno speciale non standard
-                }
-                
-                if (shiftType === 'R') { 
-                  return <td key={date.toISOString()} onClick={() => onDayClick(date, emp.name)} style={{ cursor: 'pointer' }}></td>;
-                }
-                
-                textColor = 'white';
+                  if (shiftType === 'R') {
+                    return <td key={date.toISOString()} onClick={() => onDayClick(date, emp.name)} style={{ cursor: 'pointer' }}></td>;
+                  }
 
-                return (
-                  <td key={date.toISOString()} onClick={() => onDayClick(date, emp.name)} style={{ cursor: 'pointer' }}>
-                    <div className="shift-pill" data-shift={shiftType} style={{ background: bgColor, color: textColor, border: border }}>
-                      {config.shiftLabels?.[shiftType] || shiftType}
-                    </div>
-                  </td>
-                );
-              })}
-            </tr>
-          )})}
+                  return (
+                    <td key={date.toISOString()} onClick={() => onDayClick(date, emp.name)} style={{ cursor: 'pointer' }}>
+                      <div className="shift-pill" data-shift={shiftType} style={{ background: bgColor, color: 'white' }}>
+                        {config.shiftLabels?.[shiftType] || shiftType}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
 };
-
 const CalendarView = () => {
   const { employees, exceptions, config } = useApp();
   const [viewDate, setViewDate] = useState(new Date());
