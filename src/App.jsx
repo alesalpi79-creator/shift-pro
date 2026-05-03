@@ -360,7 +360,8 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
         let newExceptions = [...exceptions];
         
         selection.forEach(sel => {
-          const dateStr = sel.dateStr.split('T')[0]; // Formato YYYY-MM-DD
+          const d = new Date(sel.dateObj);
+          const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
           
           // Rimuoviamo eccezioni esistenti per questa data/dipendente
           newExceptions = newExceptions.filter(ex => !(ex.employee === sel.empName && ex.date === dateStr));
@@ -380,26 +381,27 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selection, exceptions, setExceptions, userRole]);
 
-  const handleMouseDown = (empName, dateStr) => {
+  const handleMouseDown = (empName, date) => {
     if (userRole !== 'admin') return;
     setIsSelecting(true);
-    setSelection([{ empName, dateStr }]);
+    setSelection([{ empName, dateObj: date.getTime() }]);
   };
 
-  const handleMouseEnter = (empName, dateStr) => {
+  const handleMouseEnter = (empName, date) => {
     if (!isSelecting) return;
     setSelection(prev => {
-      const exists = prev.find(s => s.empName === empName && s.dateStr === dateStr);
+      const exists = prev.find(s => s.empName === empName && s.dateObj === date.getTime());
       if (exists) return prev;
-      return [...prev, { empName, dateStr }];
+      return [...prev, { empName, dateObj: date.getTime() }];
     });
   };
 
-  const toggleSelection = (empName, dateStr) => {
+  const toggleSelection = (empName, date) => {
+    const time = date.getTime();
     setSelection(prev => {
-      const exists = prev.find(s => s.empName === empName && s.dateStr === dateStr);
-      if (exists) return prev.filter(s => !(s.empName === empName && s.dateStr === dateStr));
-      return [...prev, { empName, dateStr }];
+      const exists = prev.find(s => s.empName === empName && s.dateObj === time);
+      if (exists) return prev.filter(s => !(s.empName === empName && s.dateObj === time));
+      return [...prev, { empName, dateObj: time }];
     });
   };
 
@@ -546,36 +548,37 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                   const dayShifts = gridData[i];
                   const empShift = dayShifts?.find(s => s.name === emp.name);
                   const shiftType = empShift?.finalShift || 'R';
+                  const isSelected = selection.some(s => s.empName === emp.name && s.dateObj === date.getTime());
                   const bgColor = ['A', 'B', 'C', 'G', 'R', 'FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].includes(shiftType) 
                     ? `var(--shift-${shiftType.toLowerCase()})` 
                     : roleColor;
 
-                  const dateStr = date.toISOString();
-                  const isSelected = selection.some(s => s.empName === emp.name && s.dateStr === dateStr);
-
                   return (
                     <td 
-                      key={dateStr} 
-                      onMouseDown={() => handleMouseDown(emp.name, dateStr)}
-                      onMouseEnter={() => handleMouseEnter(emp.name, dateStr)}
-                      onClick={(e) => {
-                        if (e.shiftKey) toggleSelection(emp.name, dateStr);
-                        else onDayClick(date, emp.name);
-                      }} 
+                      key={date.toISOString()} 
+                      onMouseDown={() => handleMouseDown(emp.name, date)}
+                      onMouseEnter={() => handleMouseEnter(emp.name, date)}
+                      onClick={() => !isSelecting && onDayClick(date, emp.name)} 
                       style={{ 
                         cursor: 'pointer',
-                        background: isSelected ? 'rgba(99, 102, 241, 0.2)' : ((date.getDay() === 0 || date.getDay() === 6 || isHoliday(date)) ? 'rgba(239, 68, 68, 0.05)' : 'transparent'),
-                        border: isSelected ? '1px solid #6366f1' : 'none',
+                        background: isSelected ? 'rgba(99, 102, 241, 0.3)' : ((date.getDay() === 0 || date.getDay() === 6 || isHoliday(date)) ? 'rgba(239, 68, 68, 0.05)' : 'transparent'),
                         position: 'relative',
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+                        borderRight: '1px solid rgba(255, 255, 255, 0.15)',
                         transition: 'background 0.1s'
                       }}
                     >
                       {shiftType !== 'R' && (
-                        <div className="shift-pill" data-shift={shiftType} style={{ background: bgColor, color: 'white', transform: isSelected ? 'scale(0.95)' : 'none' }}>
+                        <div className="shift-pill" data-shift={shiftType} style={{ 
+                          background: bgColor, 
+                          color: 'white', 
+                          transform: isSelected ? 'scale(0.95)' : 'none',
+                          boxShadow: isSelected ? '0 0 10px var(--primary)' : 'none'
+                        }}>
                           {config.shiftLabels?.[shiftType] || shiftType}
                         </div>
                       )}
-                      {isSelected && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, border: '2px solid var(--primary)', borderRadius: '4px', pointerEvents: 'none', zIndex: 10 }}></div>}
+                      {isSelected && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, border: '2px dashed var(--primary)', borderRadius: '4px', pointerEvents: 'none', zIndex: 10 }}></div>}
                     </td>
                   );
                 })}
