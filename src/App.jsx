@@ -319,8 +319,7 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
 const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
   const { userRole } = useApp();
   const gridData = useMemo(() => {
-    return days.map(date => {
-      if (!date) return [];
+    return days.filter(d => d).map(date => {
       return calculateDailyShifts(date, employees, exceptions, config);
     });
   }, [days, employees, exceptions, config]);
