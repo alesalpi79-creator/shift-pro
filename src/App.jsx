@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from './context/AppContext';
 import { calculateDailyShifts } from './logic/ShiftEngine';
 import StaffManager from './components/StaffManager';
@@ -337,11 +337,15 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
 
 const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
   const { userRole, setExceptions } = useApp();
-  const [selection, setSelection] = useState([]); // Array di { empName, dateStr, time }
+  const [selection, setSelection] = useState([]); // Array di { empName, dateStr }
   const [isSelecting, setIsSelecting] = useState(false);
 
-  const selectionRef = React.useRef(selection);
+  const selectionRef = useRef(selection);
   useEffect(() => { selectionRef.current = selection; }, [selection]);
+
+  const getDateStr = (date) => {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  };
 
   // Gestione Scorciatoie da Tastiera
   useEffect(() => {
@@ -351,10 +355,12 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
 
       const keyMap = {
         'A': 'A', 'B': 'B', 'C': 'C', 'G': 'G', 'R': 'R',
-        'F': 'FE', 'M': 'MA', 'P': 'RT', '1': '104', 'D': 'DS', 'S': 'DS'
+        'F': 'FE', 'M': 'MA', 'P': 'RT', '1': '104', 'D': 'DS', 'S': 'DS',
+        'a': 'A', 'b': 'B', 'c': 'C', 'g': 'G', 'r': 'R',
+        'f': 'FE', 'm': 'MA', 'p': 'RT', 'd': 'DS', 's': 'DS'
       };
       
-      const key = e.key.toUpperCase();
+      const key = e.key;
       const isDelete = e.key === 'Delete' || e.key === 'Backspace';
       
       if (keyMap[key] || isDelete) {
@@ -362,20 +368,15 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
         const type = isDelete ? null : keyMap[key];
         
         setExceptions(prev => {
-          // Filtriamo via in un colpo solo tutte le caselle selezionate
           const filtered = prev.filter(ex => 
             !currentSelection.some(sel => sel.empName === ex.employee && sel.dateStr === ex.date)
           );
-          
           if (!type) return filtered;
-
-          // Aggiungiamo i nuovi turni
           const newEntries = currentSelection.map(sel => ({
             employee: sel.empName,
             date: sel.dateStr,
             type
           }));
-          
           return [...filtered, ...newEntries];
         });
         
@@ -389,27 +390,27 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
 
   const handleMouseDown = (empName, date) => {
     if (userRole !== 'admin') return;
-    const dStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const dStr = getDateStr(date);
     setIsSelecting(true);
-    setSelection([{ empName, dateStr: dStr, time: date.getTime() }]);
+    setSelection([{ empName, dateStr: dStr }]);
   };
 
   const handleMouseEnter = (empName, date) => {
     if (!isSelecting) return;
-    const dStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const dStr = getDateStr(date);
     setSelection(prev => {
       const exists = prev.find(s => s.empName === empName && s.dateStr === dStr);
       if (exists) return prev;
-      return [...prev, { empName, dateStr: dStr, time: date.getTime() }];
+      return [...prev, { empName, dateStr: dStr }];
     });
   };
 
   const toggleSelection = (empName, date) => {
-    const dStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const dStr = getDateStr(date);
     setSelection(prev => {
       const exists = prev.find(s => s.empName === empName && s.dateStr === dStr);
       if (exists) return prev.filter(s => !(s.empName === empName && s.dateStr === dStr));
-      return [...prev, { empName, dateStr: dStr, time: date.getTime() }];
+      return [...prev, { empName, dateStr: dStr }];
     });
   };
 
@@ -556,7 +557,8 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                   const dayShifts = gridData[i];
                   const empShift = dayShifts?.find(s => s.name === emp.name);
                   const shiftType = empShift?.finalShift || 'R';
-                  const isSelected = selection.some(s => s.empName === emp.name && s.time === date.getTime());
+                  const dStr = getDateStr(date);
+                  const isSelected = selection.some(s => s.empName === emp.name && s.dateStr === dStr);
                   const bgColor = ['A', 'B', 'C', 'G', 'R', 'FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].includes(shiftType) 
                     ? `var(--shift-${shiftType.toLowerCase()})` 
                     : roleColor;
