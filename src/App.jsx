@@ -346,8 +346,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
           <tr>
             <th>Dipendente</th>
             {days.filter(d => d).map((d, i) => {
-              const dayIdx = i + (days[0] === null ? days.filter(x => x === null).length : 0);
-              const dayShifts = gridData[dayIdx];
+              const dayShifts = gridData[i];
               
               let isUnderstaffed = false;
               let missingDesc = [];
@@ -411,8 +410,8 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                   </div>
                 </div>
               </td>
-              {days.filter(d => d).map((date, dayIdx) => {
-                const dayShifts = gridData[dayIdx + (days[0] === null ? days.filter(d => d === null).length : 0)];
+              {days.filter(d => d).map((date, i) => {
+                const dayShifts = gridData[i];
                 const empShift = dayShifts?.find(s => s.name === emp.name);
                 const shiftType = empShift?.finalShift || 'R';
                 
