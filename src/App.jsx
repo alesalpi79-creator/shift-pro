@@ -311,7 +311,12 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
         {renderGroup('Turno C (Pomeriggio)', filteredShifts.filter(s => s.finalShift === 'C'), 'var(--shift-c)')}
         {renderGroup('Assenze Speciali', filteredShifts.filter(s => ['FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].includes(s.finalShift)), 'var(--text-muted)')}
         {renderGroup('A Riposo / Jolly / Giornaliero', filteredShifts.filter(s => ['R', 'G'].includes(s.finalShift)), null)}
- const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
+      </div>
+    </div>
+  );
+};
+
+const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
   const { userRole } = useApp();
   
   // Pre-filtriamo i giorni reali del mese per avere indici certi 0..30
