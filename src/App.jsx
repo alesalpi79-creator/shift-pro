@@ -453,10 +453,9 @@ const CalendarView = () => {
     const startPadding = (firstDay.getDay() + 6) % 7;
     for(let i=0; i<startPadding; i++) days.push(null);
     for(let d=1; d<=lastDay.getDate(); d++) days.push(new Date(year, month, d));
-    return days;
-  }, [viewDate]);
-
-  const monthName = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(viewDate);
+  const monthInputRef = React.useRef(null);
+  const monthNameOnly = new Intl.DateTimeFormat('it-IT', { month: 'long' }).format(viewDate);
+  const yearNumber = viewDate.getFullYear();
 
   return (
     <div className="fade-in">
@@ -464,39 +463,24 @@ const CalendarView = () => {
       {showExport && <ExportModule onClose={() => setShowExport(false)} currentViewDate={viewDate} />}
       
       <header className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1.25rem 2rem', borderBottom: '1px solid var(--glass-border)', flexWrap: 'wrap', gap: '1.5rem' }}>
-        <div>
+        <div style={{ cursor: 'pointer' }} onClick={() => monthInputRef.current?.showPicker()}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <h1 style={{ fontSize: '1.8rem', fontWeight: 700, margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
-              {monthName.charAt(0).toUpperCase() + monthName.slice(1)}
+              {monthNameOnly.charAt(0).toUpperCase() + monthNameOnly.slice(1)} <span style={{ opacity: 0.5, fontWeight: 300 }}>{yearNumber}</span>
             </h1>
-            <div style={{ position: 'relative' }}>
-              <input 
-                type="month" 
-                value={`${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}`}
-                onChange={(e) => {
-                  const [y, m] = e.target.value.split('-');
-                  if (y && m) setViewDate(new Date(parseInt(y), parseInt(m) - 1, 1));
-                }}
-                style={{ 
-                  background: 'rgba(255,255,255,0.1)', 
-                  border: '1px solid var(--glass-border)',
-                  borderRadius: '50%',
-                  width: '42px',
-                  height: '42px',
-                  padding: '8px',
-                  color: 'white',
-                  cursor: 'pointer',
-                  fontSize: '1.2rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  appearance: 'none',
-                  WebkitAppearance: 'none'
-                }} 
-              />
-            </div>
+            <div style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', fontSize: '0.7rem', color: 'var(--primary)', border: '1px solid var(--glass-border)', fontWeight: 'bold' }}>CAMBIA ▾</div>
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>Pianificazione e bilanciamento turni giornalieri</p>
+          <input 
+            ref={monthInputRef}
+            type="month" 
+            value={`${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}`}
+            onChange={(e) => {
+              const [y, m] = e.target.value.split('-');
+              if (y && m) setViewDate(new Date(parseInt(y), parseInt(m) - 1, 1));
+            }}
+            style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }} 
+          />
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
