@@ -232,6 +232,7 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
                         key={st}
                         onClick={() => updateShift(s.name, st)}
                         disabled={userRole !== 'admin'}
+                        data-shift={st}
                         style={{ 
                           width: '28px', height: '28px', borderRadius: '6px', border: '1px solid var(--glass-border)',
                           background: bgColor,
@@ -404,7 +405,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
 
                 return (
                   <td key={date.toISOString()} onClick={() => onDayClick(date, emp.name)} style={{ cursor: 'pointer' }}>
-                    <div className="shift-pill" style={{ background: bgColor, color: textColor, border: border }}>
+                    <div className="shift-pill" data-shift={shiftType} style={{ background: bgColor, color: textColor, border: border }}>
                       {config.shiftLabels?.[shiftType] || shiftType}
                     </div>
                   </td>

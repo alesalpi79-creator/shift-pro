@@ -377,6 +377,24 @@ h1, h2, h3 {
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
+/* Ferie e Assenze a Cerchio */
+.shift-pill[data-shift="FE"],
+.shift-pill[data-shift="MA"],
+.shift-pill[data-shift="104"],
+.shift-pill[data-shift="RT"],
+.shift-pill[data-shift="DS"],
+.shift-pill[data-shift="CO"],
+.shift-pill[data-shift="CF"],
+button[data-shift="FE"],
+button[data-shift="MA"],
+button[data-shift="104"],
+button[data-shift="RT"],
+button[data-shift="DS"],
+button[data-shift="CO"],
+button[data-shift="CF"] {
+  border-radius: 50% !important;
+}
+
 .shift-pill:hover {
   filter: brightness(1.25);
   transform: scale(1.15) translateY(-2px);
