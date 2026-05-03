@@ -463,9 +463,27 @@ const CalendarView = () => {
       {selectedDay && <DayDetails date={selectedDay} onClose={() => setSelectedDay(null)} selectedEmployee={selectedEmployee} />}
       {showExport && <ExportModule onClose={() => setShowExport(false)} currentViewDate={viewDate} />}
       
-      <header className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1.25rem 2rem', borderBottom: '1px solid var(--glass-border)' }}>
+      <header className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1.25rem 2rem', borderBottom: '1px solid var(--glass-border)', flexWrap: 'wrap', gap: '1.5rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 700, margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>{monthName.charAt(0).toUpperCase() + monthName.slice(1)}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: 700, margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
+              {monthName.charAt(0).toUpperCase() + monthName.slice(1)}
+            </h1>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <input 
+                type="month" 
+                value={`${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}`}
+                onChange={(e) => {
+                  const [y, m] = e.target.value.split('-');
+                  if (y && m) setViewDate(new Date(parseInt(y), parseInt(m) - 1, 1));
+                }}
+                style={{ 
+                  position: 'absolute', opacity: 0, width: '40px', height: '40px', cursor: 'pointer', zIndex: 2
+                }} 
+              />
+              <button className="btn-primary" style={{ padding: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%', width: '36px', height: '36px', display: 'grid', placeItems: 'center' }}>📅</button>
+            </div>
+          </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>Pianificazione e bilanciamento turni giornalieri</p>
         </div>
         
@@ -483,10 +501,10 @@ const CalendarView = () => {
             <button className={`toggle-btn ${viewMode === 'grid' ? 'active' : ''}`} onClick={() => setViewMode('grid')}>Griglia</button>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button className="btn-primary" style={{ padding: '0.5rem 1rem' }} onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1))}>&lt;</button>
-            <button className="btn-primary" style={{ padding: '0.5rem 1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white' }} onClick={() => setViewDate(new Date())}>Oggi</button>
-            <button className="btn-primary" style={{ padding: '0.5rem 1rem' }} onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))}>&gt;</button>
+          <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)' }}>
+            <button className="btn-primary" style={{ padding: '0.5rem 0.8rem', background: 'transparent' }} onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1))}>&lt;</button>
+            <button className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }} onClick={() => setViewDate(new Date())}>Oggi</button>
+            <button className="btn-primary" style={{ padding: '0.5rem 0.8rem', background: 'transparent' }} onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))}>&gt;</button>
           </div>
         </div>
       </header>
