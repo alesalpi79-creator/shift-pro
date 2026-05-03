@@ -336,7 +336,78 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
 };
 
 const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
-  const { userRole } = useApp();
+  const { userRole, setExceptions } = useApp();
+  const [selection, setSelection] = useState([]); // Array di { empName, dateStr }
+  const [isSelecting, setIsSelecting] = useState(false);
+
+  // Gestione Scorciatoie da Tastiera
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (userRole !== 'admin' || selection.length === 0) return;
+
+      const keyMap = {
+        'A': 'A', 'B': 'B', 'C': 'C', 'G': 'G', 'R': 'R',
+        'F': 'FE', 'M': 'MA', 'P': 'RT', '1': '104', 'D': 'DS', 'S': 'DS'
+      };
+      
+      const key = e.key.toUpperCase();
+      const isDelete = e.key === 'Delete' || e.key === 'Backspace';
+      
+      if (keyMap[key] || isDelete) {
+        e.preventDefault();
+        const type = isDelete ? null : keyMap[key];
+        
+        let newExceptions = [...exceptions];
+        
+        selection.forEach(sel => {
+          const dateStr = sel.dateStr.split('T')[0]; // Formato YYYY-MM-DD
+          
+          // Rimuoviamo eccezioni esistenti per questa data/dipendente
+          newExceptions = newExceptions.filter(ex => !(ex.employee === sel.empName && ex.date === dateStr));
+          
+          // Aggiungiamo la nuova se non stiamo cancellando
+          if (type) {
+            newExceptions.push({ employee: sel.empName, date: dateStr, type });
+          }
+        });
+        
+        setExceptions(newExceptions);
+        setSelection([]); // Pulisci selezione
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selection, exceptions, setExceptions, userRole]);
+
+  const handleMouseDown = (empName, dateStr) => {
+    if (userRole !== 'admin') return;
+    setIsSelecting(true);
+    setSelection([{ empName, dateStr }]);
+  };
+
+  const handleMouseEnter = (empName, dateStr) => {
+    if (!isSelecting) return;
+    setSelection(prev => {
+      const exists = prev.find(s => s.empName === empName && s.dateStr === dateStr);
+      if (exists) return prev;
+      return [...prev, { empName, dateStr }];
+    });
+  };
+
+  const toggleSelection = (empName, dateStr) => {
+    setSelection(prev => {
+      const exists = prev.find(s => s.empName === empName && s.dateStr === dateStr);
+      if (exists) return prev.filter(s => !(s.empName === empName && s.dateStr === dateStr));
+      return [...prev, { empName, dateStr }];
+    });
+  };
+
+  useEffect(() => {
+    const handleMouseUp = () => setIsSelecting(false);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => window.removeEventListener('mouseup', handleMouseUp);
+  }, []);
   
   // Pre-filtriamo i giorni reali del mese per avere indici certi 0..30
   const realDays = useMemo(() => days.filter(d => d), [days]);
@@ -479,22 +550,32 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                     ? `var(--shift-${shiftType.toLowerCase()})` 
                     : roleColor;
 
-                  if (shiftType === 'R') {
-                    return <td key={date.toISOString()} onClick={() => onDayClick(date, emp.name)} style={{ cursor: 'pointer' }}></td>;
-                  }
+                  const dateStr = date.toISOString();
+                  const isSelected = selection.some(s => s.empName === emp.name && s.dateStr === dateStr);
 
                   return (
                     <td 
-                      key={date.toISOString()} 
-                      onClick={() => onDayClick(date, emp.name)} 
+                      key={dateStr} 
+                      onMouseDown={() => handleMouseDown(emp.name, dateStr)}
+                      onMouseEnter={() => handleMouseEnter(emp.name, dateStr)}
+                      onClick={(e) => {
+                        if (e.shiftKey) toggleSelection(emp.name, dateStr);
+                        else onDayClick(date, emp.name);
+                      }} 
                       style={{ 
                         cursor: 'pointer',
-                        background: (date.getDay() === 0 || date.getDay() === 6 || isHoliday(date)) ? 'rgba(239, 68, 68, 0.05)' : 'transparent'
+                        background: isSelected ? 'rgba(99, 102, 241, 0.2)' : ((date.getDay() === 0 || date.getDay() === 6 || isHoliday(date)) ? 'rgba(239, 68, 68, 0.05)' : 'transparent'),
+                        border: isSelected ? '1px solid #6366f1' : 'none',
+                        position: 'relative',
+                        transition: 'background 0.1s'
                       }}
                     >
-                      <div className="shift-pill" data-shift={shiftType} style={{ background: bgColor, color: 'white' }}>
-                        {config.shiftLabels?.[shiftType] || shiftType}
-                      </div>
+                      {shiftType !== 'R' && (
+                        <div className="shift-pill" data-shift={shiftType} style={{ background: bgColor, color: 'white', transform: isSelected ? 'scale(0.95)' : 'none' }}>
+                          {config.shiftLabels?.[shiftType] || shiftType}
+                        </div>
+                      )}
+                      {isSelected && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, border: '2px solid var(--primary)', borderRadius: '4px', pointerEvents: 'none', zIndex: 10 }}></div>}
                     </td>
                   );
                 })}
