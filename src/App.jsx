@@ -427,10 +427,17 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
               const dayShifts = gridData[i];
               const empShift = dayShifts?.find(s => s.name === emp.name);
               const shiftType = empShift?.finalShift || 'R';
+              
+              // Incrementiamo le colonne specifiche A, B, C
               if (['A', 'B', 'C'].includes(shiftType)) {
                 acc[shiftType] = (acc[shiftType] || 0) + 1;
+              }
+              
+              // Il TOTALE include tutto tranne il riposo (R)
+              if (shiftType !== 'R') {
                 acc.total += 1;
               }
+              
               return acc;
             }, { A: 0, B: 0, C: 0, total: 0 });
 
