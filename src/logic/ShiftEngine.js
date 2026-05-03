@@ -36,7 +36,10 @@ export function getNominalShift(employee, date, employees, config) {
   if (currentRole === 'J' || currentRole === 'SJ') return 'R';
 
   const ref = new Date(2026, 0, 1);
-  const diff = Math.floor((d.getTime() - ref.getTime()) / (1000 * 60 * 60 * 24));
+  // Usiamo mezzogiorno per evitare problemi con l'ora legale (DST)
+  const dCopy = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0);
+  const refCopy = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate(), 12, 0, 0);
+  const diff = Math.round((dCopy.getTime() - refCopy.getTime()) / (1000 * 60 * 60 * 24));
   const cycle = ['A', 'A', 'C', 'C', 'R', 'B', 'B', 'R', 'R'];
 
   let autoOffset = 0;
@@ -85,7 +88,7 @@ export function getNominalShift(employee, date, employees, config) {
 export function calculateDailyShifts(date, employees, exceptions, config) {
   if (!employees || employees.length === 0) return [];
   const d = new Date(date);
-  const dateStr = d.toISOString().split('T')[0];
+  const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
   let daily = employees.map(e => {
     const currentRole = getMonthlyRole(e, d, employees, config);
