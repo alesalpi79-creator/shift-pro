@@ -281,20 +281,23 @@ export default function RuleSettings() {
   const renderRules = () => (
     <div className="fade-in">
       <div style={{ 
-        background: 'rgba(0,0,0,0.4)',
-        backdropFilter: 'blur(25px)',
+        background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.3), rgba(124, 58, 237, 0.3))',
+        backdropFilter: 'blur(30px)',
         borderRadius: '50%', width: '280px', height: '280px', margin: '0 auto 2rem auto',
         display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-        border: '2px solid var(--glass-border)', boxShadow: '0 10px 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.05)'
+        border: '3px solid rgba(99, 102, 241, 0.6)', 
+        boxShadow: '0 0 50px rgba(99, 102, 241, 0.25), inset 0 0 30px rgba(0,0,0,0.2)',
+        position: 'relative'
       }}>
-        <h3 style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>Ciclo Turni</h3>
+        <div style={{ position: 'absolute', top: '15%', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', color: 'rgba(255,255,255,0.6)', fontWeight: 'bold' }}>Algoritmo</div>
+        <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'white', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>Ciclo Turni</h3>
         <input 
           className="input-main" 
-          style={{ width: '80%', textAlign: 'center' }} 
+          style={{ width: '80%', textAlign: 'center', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', fontSize: '1.1rem', letterSpacing: '2px', fontWeight: 'bold' }} 
           value={tempCycle} 
-          onChange={e => setTempCycle(e.target.value)} 
+          onChange={e => setTempCycle(e.target.value.toUpperCase())} 
         />
-        <button className="btn-primary" onClick={handleCycleSave} style={{ marginTop: '1rem', borderRadius: '2rem' }}>Salva Ciclo</button>
+        <button className="btn-primary" onClick={handleCycleSave} style={{ marginTop: '1.25rem', borderRadius: '2rem', padding: '10px 24px', background: 'var(--primary)', boxShadow: '0 5px 15px var(--primary)66' }}>Salva Ciclo</button>
       </div>
 
       <div className="glass-card">
