@@ -453,6 +453,9 @@ const CalendarView = () => {
     const startPadding = (firstDay.getDay() + 6) % 7;
     for(let i=0; i<startPadding; i++) days.push(null);
     for(let d=1; d<=lastDay.getDate(); d++) days.push(new Date(year, month, d));
+    return days;
+  }, [viewDate]);
+
   const monthInputRef = React.useRef(null);
   const monthNameOnly = new Intl.DateTimeFormat('it-IT', { month: 'long' }).format(viewDate);
   const yearNumber = viewDate.getFullYear();
