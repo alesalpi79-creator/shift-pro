@@ -442,17 +442,31 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
             }, { A: 0, B: 0, C: 0, total: 0 });
 
             return (
-              <tr key={emp.name}>
-                <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div className="avatar" style={{ background: roleColor }}>
-                      {emp.name.substring(0, 2).toUpperCase()}
+              <tr key={emp.id || emp.name}>
+                <td className="sticky-col">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '4px 0' }}>
+                    <div style={{ 
+                      width: '38px', height: '38px', borderRadius: '50%', 
+                      background: roleColor, 
+                      overflow: 'hidden', 
+                      display: 'flex', justifyContent: 'center', alignItems: 'center',
+                      border: '2px solid var(--glass-border)',
+                      flexShrink: 0,
+                      boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                    }}>
+                      {emp.avatar ? (
+                        <img src={emp.avatar} alt={emp.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'white' }}>
+                          {emp.initials || emp.name.substring(0, 2).toUpperCase()}
+                        </span>
+                      )}
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <div style={{ fontWeight: '600', fontSize: '0.85rem' }}>{emp.name}</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: '1.2' }}>
+                      <div style={{ fontWeight: '600', fontSize: '0.9rem', color: 'white' }}>{emp.name}</div>
                       <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginTop: '2px' }}>
-                        <span style={{ fontSize: '0.6rem', color: roleColor, fontWeight: 'bold' }}>{emp.role}</span>
-                        {userRole === 'admin' && <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>[Sq. {emp.team || 1}]</span>}
+                        <span style={{ fontSize: '0.65rem', color: roleColor, fontWeight: 'bold', textTransform: 'uppercase' }}>{emp.role}</span>
+                        {userRole === 'admin' && <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>[Sq. {emp.team || 1}]</span>}
                       </div>
                     </div>
                   </div>
