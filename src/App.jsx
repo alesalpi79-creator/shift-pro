@@ -382,9 +382,13 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                 </th>
               );
             })}
-            <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-a)', fontSize: '0.65rem' }}>A</th>
-            <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-b)', fontSize: '0.65rem' }}>B</th>
-            <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-c)', fontSize: '0.65rem' }}>C</th>
+            {userRole === 'admin' && (
+              <>
+                <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-a)', fontSize: '0.65rem' }}>A</th>
+                <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-b)', fontSize: '0.65rem' }}>B</th>
+                <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-c)', fontSize: '0.65rem' }}>C</th>
+              </>
+            )}
             <th style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.65rem' }}>Tot.</th>
           </tr>
         </thead>
@@ -440,9 +444,13 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                     </td>
                   );
                 })}
-                <td style={{ textAlign: 'center', fontSize: '0.7rem', opacity: 0.8, background: 'rgba(255,255,255,0.01)' }}>{counts.A}</td>
-                <td style={{ textAlign: 'center', fontSize: '0.7rem', opacity: 0.8, background: 'rgba(255,255,255,0.01)' }}>{counts.B}</td>
-                <td style={{ textAlign: 'center', fontSize: '0.7rem', opacity: 0.8, background: 'rgba(255,255,255,0.01)' }}>{counts.C}</td>
+                {userRole === 'admin' && (
+                  <>
+                    <td style={{ textAlign: 'center', fontSize: '0.7rem', opacity: 0.8, background: 'rgba(255,255,255,0.01)' }}>{counts.A}</td>
+                    <td style={{ textAlign: 'center', fontSize: '0.7rem', opacity: 0.8, background: 'rgba(255,255,255,0.01)' }}>{counts.B}</td>
+                    <td style={{ textAlign: 'center', fontSize: '0.7rem', opacity: 0.8, background: 'rgba(255,255,255,0.01)' }}>{counts.C}</td>
+                  </>
+                )}
                 <td style={{ textAlign: 'center', fontWeight: 'bold', background: 'rgba(255,255,255,0.03)', color: 'var(--primary)' }}>
                   <div style={{ padding: '2px 4px', fontSize: '0.75rem' }}>
                     {counts.total}
