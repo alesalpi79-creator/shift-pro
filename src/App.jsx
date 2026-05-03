@@ -15,6 +15,25 @@ const IconSettings = () => <span>⚙️</span>;
 const IconUser = () => <span>👤</span>;
 const IconStats = () => <span>📊</span>;
 
+const isHoliday = (date) => {
+  if (!date) return false;
+  const d = date.getDate();
+  const m = date.getMonth() + 1;
+  const y = date.getFullYear();
+
+  const holidays = [
+    {d: 1, m: 1}, {d: 6, m: 1}, {d: 25, m: 4}, {d: 1, m: 5},
+    {d: 2, m: 6}, {d: 15, m: 8}, {d: 1, m: 11}, {d: 8, m: 12},
+    {d: 25, m: 12}, {d: 26, m: 12}
+  ];
+
+  // Pasquetta 2026 (13 Aprile), 2027 (29 Marzo) - Semplificato per ora
+  if (y === 2026 && d === 6 && m === 4) return true; // Pasquetta 2026 è il 6 Aprile (Lunedì dell'Angelo)
+  // Nota: Pasquetta 2026 è in realtà il 6 Aprile.
+  
+  return holidays.some(h => h.d === d && h.m === m);
+};
+
 const Sidebar = ({ activeTab, setTab }) => {
   const { userRole, setUserRole, config, setConfig, employees, setEmployees, exceptions, setExceptions } = useApp();
 
@@ -371,10 +390,17 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
               }
 
               return (
-                <th key={d.toISOString()} title={isUnderstaffed ? missingDesc.join(' | ') : 'Copertura OK'}>
+                <th key={d.toISOString()} title={isUnderstaffed ? missingDesc.join(' | ') : 'Copertura OK'}
+                  style={{ 
+                    background: (d.getDay() === 0 || d.getDay() === 6 || isHoliday(d)) ? 'rgba(255,255,255,0.03)' : 'transparent',
+                    color: isHoliday(d) ? 'var(--accent-danger)' : (d.getDay() === 0 ? 'var(--accent-warning)' : 'inherit')
+                  }}
+                >
                   <div style={{ fontSize: '0.6rem', opacity: 0.7 }}>{d.toLocaleDateString('it-IT', { weekday: 'short' }).slice(0, 1)}</div>
                   <div style={{ position: 'relative', display: 'inline-block' }}>
-                    {d.getDate()}
+                    <span style={{ fontWeight: (d.getDay() === 0 || d.getDay() === 6 || isHoliday(d)) ? 'bold' : 'normal' }}>
+                      {d.getDate()}
+                    </span>
                     {isUnderstaffed && (
                       <span style={{ position: 'absolute', top: '-10px', right: '-12px', fontSize: '0.7rem' }}>⚠️</span>
                     )}
@@ -437,7 +463,14 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                   }
 
                   return (
-                    <td key={date.toISOString()} onClick={() => onDayClick(date, emp.name)} style={{ cursor: 'pointer' }}>
+                    <td 
+                      key={date.toISOString()} 
+                      onClick={() => onDayClick(date, emp.name)} 
+                      style={{ 
+                        cursor: 'pointer',
+                        background: (date.getDay() === 0 || isHoliday(date)) ? 'rgba(239, 68, 68, 0.05)' : (date.getDay() === 6 ? 'rgba(255, 255, 255, 0.02)' : 'transparent')
+                      }}
+                    >
                       <div className="shift-pill" data-shift={shiftType} style={{ background: bgColor, color: 'white' }}>
                         {config.shiftLabels?.[shiftType] || shiftType}
                       </div>
@@ -547,13 +580,15 @@ const CalendarView = () => {
             {['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].map(d => (
               <div key={d} style={{ padding: '1rem', textAlign: 'center', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)', borderBottom: '1px solid var(--glass-border)' }}>{d}</div>
             ))}
-            {daysInMonth.map((date, i) => {
+            {daysInMonth.map((date, index) => {
               const dailyShifts = (date && employees.length > 0) ? calculateDailyShifts(date, employees, exceptions, config) : [];
               const shiftCounts = dailyShifts.reduce((acc, p) => {
                 acc[p.finalShift] = (acc[p.finalShift] || 0) + 1;
                 return acc;
               }, {});
 
+              const isWeekend = date ? (date.getDay() === 0 || date.getDay() === 6) : false;
+              const holiday = date ? isHoliday(date) : false;
               const isToday = date && date.toDateString() === new Date().toDateString();
 
               let isUnderstaffed = false;
@@ -576,7 +611,17 @@ const CalendarView = () => {
               }
 
               return (
-                <div key={i} className={`calendar-day ${!date ? 'disabled' : ''} ${isToday ? 'today pulse-active' : ''}`} onClick={() => date && handleDayClick(date, null)} style={{ position: 'relative' }}>
+                <div 
+                  key={index} 
+                  className={`calendar-day ${!date ? 'disabled' : ''} ${isToday ? 'today pulse-active' : ''}`} 
+                  onClick={() => date && handleDayClick(date, null)} 
+                  style={{ 
+                    position: 'relative',
+                    background: isToday ? 'rgba(var(--primary-rgb), 0.15)' : (holiday ? 'rgba(239, 68, 68, 0.1)' : (isWeekend ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.01)')),
+                    border: isToday ? '1px solid var(--primary)' : '1px solid var(--glass-border)',
+                    minHeight: '100px'
+                  }}
+                >
                   {date && isUnderstaffed && (
                     <div style={{ position: 'absolute', top: '5px', right: '5px', fontSize: '0.8rem', zIndex: 5 }} title={missingDesc.join(' | ')}>
                       ⚠️
@@ -584,10 +629,25 @@ const CalendarView = () => {
                   )}
                   {date && (
                     <>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <span className="day-number">{date.getDate()}</span>
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        padding: '5px 8px',
+                        borderBottom: '1px solid rgba(255,255,255,0.05)',
+                        background: isToday ? 'var(--primary)' : 'transparent'
+                      }}>
+                        <span style={{ 
+                          fontSize: '0.8rem', 
+                          fontWeight: 'bold',
+                          color: holiday ? 'var(--accent-danger)' : (date.getDay() === 0 ? 'var(--accent-warning)' : 'white')
+                        }}>
+                          {date.getDate()} {holiday ? '🎉' : ''}
+                        </span>
+                        <span style={{ fontSize: '0.6rem', opacity: 0.6 }}>
+                          {date.toLocaleDateString('it-IT', { weekday: 'short' })}
+                        </span>
                       </div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', marginTop: '0.5rem' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', marginTop: '0.5rem', padding: '0 8px' }}>
                         {Object.keys(shiftCounts).map(st => {
                           let bgColor = 'transparent';
                           let textColor = 'var(--text-muted)';
