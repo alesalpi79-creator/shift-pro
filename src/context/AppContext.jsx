@@ -44,7 +44,8 @@ export const DEFAULT_CONFIG = {
     sjCt: 1,
     jollyOp: 3,
     sjOp: 3
-  }
+  },
+  serverUrl: ""
 };
 
 export const AppProvider = ({ children }) => {

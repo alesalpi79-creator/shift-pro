@@ -400,30 +400,90 @@ export default function RuleSettings() {
     </div>
   );
 
+  const renderIntegration = () => (
+    <div className="fade-in">
+      <div className="glass-card" style={{ border: '1px solid var(--primary)' }}>
+        <h3 style={{ color: 'var(--primary)', fontSize: '1rem', marginBottom: '1rem' }}>🌐 Integrazione Aziendale (On-Premise)</h3>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+          Configura l'indirizzo del server interno della tua azienda per abilitare la sincronizzazione dei dati in una rete privata.
+        </p>
+        
+        <div className="form-group">
+          <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>URL del Server Aziendale</label>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+            <input 
+              className="input-main" 
+              placeholder="https://server.azienda.it/api" 
+              value={config.serverUrl || ""} 
+              onChange={e => saveConfig('serverUrl', e.target.value)} 
+            />
+          </div>
+          <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+            Nota: I dati rimarranno comunque salvati localmente finché non verrà abilitata la sincronizzazione attiva.
+          </p>
+        </div>
+
+        <div style={{ marginTop: '1.5rem', padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '5px' }}>Stato Collegamento:</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.7rem', color: config.serverUrl ? 'var(--accent-warning)' : 'var(--text-muted)' }}>
+             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: config.serverUrl ? 'var(--accent-warning)' : '#ccc' }}></span>
+             {config.serverUrl ? "Configurato (Sincronizzazione Manuale)" : "Non Configurato"}
+          </div>
+        </div>
+      </div>
+
+      <div className="glass-card" style={{ marginTop: '1.5rem' }}>
+        <h3 style={{ fontSize: '1rem', marginBottom: '1rem' }}>📦 Backup & Ripristino</h3>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+          Usa questi tasti per spostare i dati tra PC e Telefono.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <button 
+            className="btn-primary" 
+            style={{ width: '100%', fontSize: '0.8rem' }}
+            onClick={handleExport}
+          >
+            📤 Esporta
+          </button>
+          <label className="btn-primary" style={{ width: '100%', fontSize: '0.8rem', textAlign: 'center', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }}>
+            📥 Importa
+            <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="settings-container" style={{ maxWidth: '600px', margin: '0 auto' }}>
-      <div className="glass-card" style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', padding: '8px', borderBottom: '1px solid var(--glass-border)', backdropFilter: 'blur(20px)' }}>
+      <div className="glass-card" style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', padding: '8px', borderBottom: '1px solid var(--glass-border)', backdropFilter: 'blur(20px)', overflowX: 'auto' }} className="no-scrollbar">
         <button 
           className={`toggle-btn ${activeSection === 'design' ? 'active' : ''}`} 
-          style={{ flex: 1, textShadow: activeSection === 'design' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'design' ? 'white' : 'rgba(255,255,255,0.7)' }} 
+          style={{ flex: '1 0 auto', textShadow: activeSection === 'design' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'design' ? 'white' : 'rgba(255,255,255,0.7)' }} 
           onClick={() => setActiveSection('design')}
         >🎨 Estetica</button>
         <button 
           className={`toggle-btn ${activeSection === 'rules' ? 'active' : ''}`} 
-          style={{ flex: 1, textShadow: activeSection === 'rules' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'rules' ? 'white' : 'rgba(255,255,255,0.7)' }} 
+          style={{ flex: '1 0 auto', textShadow: activeSection === 'rules' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'rules' ? 'white' : 'rgba(255,255,255,0.7)' }} 
           onClick={() => setActiveSection('rules')}
         >📊 Regole</button>
         <button 
           className={`toggle-btn ${activeSection === 'constraints' ? 'active' : ''}`} 
-          style={{ flex: 1, textShadow: activeSection === 'constraints' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'constraints' ? 'white' : 'rgba(255,255,255,0.7)' }} 
+          style={{ flex: '1 0 auto', textShadow: activeSection === 'constraints' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'constraints' ? 'white' : 'rgba(255,255,255,0.7)' }} 
           onClick={() => setActiveSection('constraints')}
         >⚠️ Sicurezza</button>
+        <button 
+          className={`toggle-btn ${activeSection === 'integration' ? 'active' : ''}`} 
+          style={{ flex: '1 0 auto', textShadow: activeSection === 'integration' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'integration' ? 'white' : 'rgba(255,255,255,0.7)' }} 
+          onClick={() => setActiveSection('integration')}
+        >🌐 Integrazione</button>
       </div>
 
       <div className="section-content">
         {activeSection === 'design' && renderDesign()}
         {activeSection === 'rules' && renderRules()}
         {activeSection === 'constraints' && renderConstraints()}
+        {activeSection === 'integration' && renderIntegration()}
       </div>
     </div>
   );
