@@ -29,13 +29,15 @@ export const DEFAULT_CONFIG = {
     RT: '#22c55e', // Verde
     DS: '#be123c', // Cremisi
     '104': '#7e22ce', // Viola
-    CO: '#1d4ed8'  // Blu scuro
+    CO: '#1d4ed8',  // Blu scuro
+    G: '#14b8a6'    // Teal/Verde petrolio per Giornaliero
   },
   shifts: {
     A: { label: 'Mattina', time: '06:00 - 14:00' },
     B: { label: 'Notte', time: '22:00 - 06:00' },
     C: { label: 'Pomeriggio', time: '14:00 - 22:00' },
-    R: { label: 'Riposo', time: '-' }
+    R: { label: 'Riposo', time: '-' },
+    G: { label: 'Giornaliero', time: '08:00 - 17:00' }
   },
   quotas: {
     jollyCt: 1,

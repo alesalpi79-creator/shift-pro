@@ -5,6 +5,7 @@ import StaffManager from './components/StaffManager';
 import RuleSettings from './components/RuleSettings';
 import Onboarding from './components/Onboarding';
 import ExportModule from './components/ExportModule';
+import StatsDashboard from './components/StatsDashboard';
 import './index.css';
 
 // Component Icons (Simulated)
@@ -12,9 +13,51 @@ const IconCalendar = () => <span>📅</span>;
 const IconUsers = () => <span>👥</span>;
 const IconSettings = () => <span>⚙️</span>;
 const IconUser = () => <span>👤</span>;
+const IconStats = () => <span>📊</span>;
 
 const Sidebar = ({ activeTab, setTab }) => {
-  const { userRole, setUserRole, config } = useApp();
+  const { userRole, setUserRole, config, setConfig, employees, setEmployees, exceptions, setExceptions } = useApp();
+
+  const handleExport = () => {
+    const data = {
+      config,
+      employees,
+      exceptions,
+      exportDate: new Date().toISOString(),
+      version: "21.1"
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `shift-pro-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+        if (!data.config || !data.employees) throw new Error("File non valido");
+        if (window.confirm("Attenzione: l'importazione sovrascriverà tutti i dati attuali. Continuare?")) {
+          setConfig(data.config);
+          setEmployees(data.employees);
+          setExceptions(data.exceptions || []);
+          alert("Dati importati con successo!");
+          window.location.reload();
+        }
+      } catch (err) {
+        alert("Errore nell'importazione: il file non sembra un backup valido.");
+      }
+    };
+    reader.readAsText(file);
+  };
   
   return (
     <div className="sidebar" style={{ backgroundColor: 'var(--bg-sidebar)' }}>
@@ -36,6 +79,9 @@ const Sidebar = ({ activeTab, setTab }) => {
           <>
             <div className={`nav-item ${activeTab === 'staff' ? 'active' : ''}`} onClick={() => setTab('staff')}>
               <IconUsers /> Personale
+            </div>
+            <div className={`nav-item ${activeTab === 'stats' ? 'active' : ''}`} onClick={() => setTab('stats')}>
+              <IconStats /> Statistiche
             </div>
             <div className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setTab('settings')}>
               <IconSettings /> Impostazioni
@@ -96,21 +142,59 @@ const Sidebar = ({ activeTab, setTab }) => {
         >
           {userRole === 'admin' ? 'Passa a Visualizzatore' : 'Passa a Amministratore'}
         </button>
+
+        {userRole === 'admin' && (
+          <div style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <button 
+              onClick={handleExport}
+              className="btn-primary"
+              style={{ padding: '0.4rem', fontSize: '0.65rem', background: 'var(--primary)', border: 'none' }}
+              title="Salva backup dati"
+            >
+              📤 Backup
+            </button>
+            <label 
+              className="btn-primary"
+              style={{ padding: '0.4rem', fontSize: '0.65rem', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', textAlign: 'center', cursor: 'pointer' }}
+              title="Ripristina dati da file"
+            >
+              📥 Ripristina
+              <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
+            </label>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-const DayDetails = ({ date, onClose }) => {
+const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
   const { employees, exceptions, setExceptions, config, userRole } = useApp();
   const shifts = useMemo(() => calculateDailyShifts(date, employees, exceptions, config), [employees, date, exceptions, config]);
+
+  // Se è stato selezionato un dipendente specifico, filtriamo la lista
+  const filteredShifts = useMemo(() => {
+    if (!selectedEmployee) return shifts;
+    return shifts.filter(s => s.name === selectedEmployee);
+  }, [shifts, selectedEmployee]);
 
   const dateStr = date.toISOString().split('T')[0];
 
   const updateShift = (employeeName, type) => {
     if (userRole !== 'admin') return;
+    
+    // Controlliamo se esiste già un'eccezione per questo dipendente in questa data
+    const existingException = exceptions.find(ex => ex.employee === employeeName && ex.date === dateStr);
+    
     const filtered = exceptions.filter(ex => !(ex.employee === employeeName && ex.date === dateStr));
-    setExceptions([...filtered, { employee: employeeName, date: dateStr, type }]);
+    
+    // Se clicchiamo sullo STESSO tipo che c'è già nell'eccezione, la rimuoviamo (toggle off)
+    if (existingException && existingException.type === type) {
+      setExceptions(filtered);
+    } else {
+      // Altrimenti aggiungiamo/aggiorniamo l'eccezione
+      setExceptions([...filtered, { employee: employeeName, date: dateStr, type }]);
+    }
   };
 
   const renderGroup = (title, shiftList, titleColor) => {
@@ -137,7 +221,7 @@ const DayDetails = ({ date, onClose }) => {
                 </div>
                 
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: '240px' }}>
-                  {['A', 'B', 'C', 'R', 'FE', 'MA', 'RT', 'DS', '104', 'CO'].map(st => {
+                  {['A', 'B', 'C', 'G', 'R', 'FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].map(st => {
                     let bgColor = 'transparent';
                     if (s.finalShift === st) {
                       if (st === 'R') bgColor = 'rgba(255,255,255,0.15)';
@@ -179,31 +263,53 @@ const DayDetails = ({ date, onClose }) => {
 
       {(() => {
          let warnings = [];
+         let info = [];
          ['A', 'B', 'C'].forEach(st => {
             const ctCount = shifts.filter(s => s.finalShift === st && s.baseRole === 'CT').length;
             const opCount = shifts.filter(s => s.finalShift === st && s.baseRole === 'OP').length;
             const reqCT = config.constraints?.[st]?.CT || 0;
             const reqOP = config.constraints?.[st]?.OP || 0;
-            if (ctCount < reqCT) warnings.push(`Turno ${config.shiftLabels?.[st] || st}: Manca ${reqCT - ctCount} CT`);
-            if (opCount < reqOP) warnings.push(`Turno ${config.shiftLabels?.[st] || st}: Mancano ${reqOP - opCount} OP`);
+            
+            const shiftName = config.shiftLabels?.[st] || st;
+            info.push({ shiftName, ctCount, opCount, reqCT, reqOP });
+
+            if (ctCount < reqCT) warnings.push(`Turno ${shiftName}: Manca ${reqCT - ctCount} CT`);
+            if (ctCount > reqCT) warnings.push(`Turno ${shiftName}: Esubero di ${ctCount - reqCT} CT`);
+            if (opCount < reqOP) warnings.push(`Turno ${shiftName}: Mancano ${reqOP - opCount} OP`);
+            if (opCount > reqOP) warnings.push(`Turno ${shiftName}: Esubero di ${opCount - reqOP} OP`);
          });
-         if (warnings.length === 0) return null;
+         
          return (
-           <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid var(--accent-warning)', padding: '1rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem' }}>
-              <h4 style={{ color: 'var(--accent-warning)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>⚠️ Avvisi di Copertura</h4>
-              <ul style={{ fontSize: '0.8rem', color: 'var(--text-main)', paddingLeft: '1.5rem', margin: 0 }}>
-                 {warnings.map((w, i) => <li key={i} style={{ marginBottom: '0.2rem' }}>{w}</li>)}
-              </ul>
+           <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+             {/* Riepilogo Copertura */}
+             <div className="glass-card" style={{ padding: '0.75rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)' }}>
+                {info.map((inf, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: i < 2 ? '4px' : 0 }}>
+                    <span style={{ fontWeight: 'bold' }}>{inf.shiftName}:</span>
+                    <span>{inf.ctCount} CT / {inf.opCount} OP</span>
+                  </div>
+                ))}
+             </div>
+
+             {/* Avvisi */}
+             {warnings.length > 0 && (
+               <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid var(--accent-warning)', padding: '1rem', borderRadius: 'var(--radius-md)' }}>
+                  <h4 style={{ color: 'var(--accent-warning)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>⚠️ Stato Copertura</h4>
+                  <ul style={{ fontSize: '0.75rem', color: 'var(--text-main)', paddingLeft: '1.2rem', margin: 0 }}>
+                     {warnings.map((w, i) => <li key={i} style={{ marginBottom: '0.2rem' }}>{w}</li>)}
+                  </ul>
+               </div>
+             )}
            </div>
          );
       })()}
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {renderGroup('Turno A (Mattina)', shifts.filter(s => s.finalShift === 'A'), 'var(--shift-a)')}
-        {renderGroup('Turno B (Notte)', shifts.filter(s => s.finalShift === 'B'), 'var(--shift-b)')}
-        {renderGroup('Turno C (Pomeriggio)', shifts.filter(s => s.finalShift === 'C'), 'var(--shift-c)')}
-        {renderGroup('Assenze Speciali', shifts.filter(s => ['FE', 'MA', 'RT', 'DS', '104', 'CO'].includes(s.finalShift)), 'var(--text-muted)')}
-        {renderGroup('A Riposo / Jolly', shifts.filter(s => s.finalShift === 'R'), null)}
+        {renderGroup('Turno A (Mattina)', filteredShifts.filter(s => s.finalShift === 'A'), 'var(--shift-a)')}
+        {renderGroup('Turno B (Notte)', filteredShifts.filter(s => s.finalShift === 'B'), 'var(--shift-b)')}
+        {renderGroup('Turno C (Pomeriggio)', filteredShifts.filter(s => s.finalShift === 'C'), 'var(--shift-c)')}
+        {renderGroup('Assenze Speciali', filteredShifts.filter(s => ['FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].includes(s.finalShift)), 'var(--text-muted)')}
+        {renderGroup('A Riposo / Jolly / Giornaliero', filteredShifts.filter(s => ['R', 'G'].includes(s.finalShift)), null)}
       </div>
     </div>
   );
@@ -282,21 +388,22 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                 let textColor = 'var(--text-muted)';
                 let border = 'none';
                 
-                if (shiftType === 'R') { 
-                  return <td key={date.toISOString()} onClick={() => onDayClick(date)} style={{ cursor: 'pointer' }}></td>;
-                }
 
                 // Applica il colore in base al tipo di turno
-                if (['A', 'B', 'C', 'FE', 'MA', 'RT', 'DS', '104', 'CO'].includes(shiftType)) {
+                if (['A', 'B', 'C', 'G', 'R', 'FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].includes(shiftType)) {
                   bgColor = `var(--shift-${shiftType.toLowerCase()})`;
                 } else {
                   bgColor = roleColor; // Fallback se fosse un turno speciale non standard
                 }
                 
+                if (shiftType === 'R') { 
+                  return <td key={date.toISOString()} onClick={() => onDayClick(date, emp.name)} style={{ cursor: 'pointer' }}></td>;
+                }
+                
                 textColor = 'white';
 
                 return (
-                  <td key={date.toISOString()} onClick={() => onDayClick(date)} style={{ cursor: 'pointer' }}>
+                  <td key={date.toISOString()} onClick={() => onDayClick(date, emp.name)} style={{ cursor: 'pointer' }}>
                     <div className="shift-pill" style={{ background: bgColor, color: textColor, border: border }}>
                       {config.shiftLabels?.[shiftType] || shiftType}
                     </div>
@@ -316,7 +423,13 @@ const CalendarView = () => {
   const [viewDate, setViewDate] = useState(new Date());
   const [viewMode, setViewMode] = useState('calendar'); // 'calendar' or 'grid'
   const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showExport, setShowExport] = useState(false);
+
+  const handleDayClick = (date, employeeName = null) => {
+    setSelectedDay(date);
+    setSelectedEmployee(employeeName);
+  };
 
   const daysInMonth = useMemo(() => {
     const year = viewDate.getFullYear();
@@ -334,7 +447,7 @@ const CalendarView = () => {
 
   return (
     <div className="fade-in">
-      {selectedDay && <DayDetails date={selectedDay} onClose={() => setSelectedDay(null)} />}
+      {selectedDay && <DayDetails date={selectedDay} onClose={() => setSelectedDay(null)} selectedEmployee={selectedEmployee} />}
       {showExport && <ExportModule onClose={() => setShowExport(false)} currentViewDate={viewDate} />}
       
       <header className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1.25rem 2rem', borderBottom: '1px solid var(--glass-border)' }}>
@@ -388,19 +501,19 @@ const CalendarView = () => {
                     const opCount = dailyShifts.filter(s => s.finalShift === st && s.baseRole === 'OP').length;
                     const reqCT = config.constraints?.[st]?.CT || 1;
                     const reqOP = config.constraints?.[st]?.OP || 3;
-                    if (ctCount < reqCT) {
+                    if (ctCount !== reqCT) {
                        isUnderstaffed = true;
-                       missingDesc.push(`Mancano CT nel turno ${st}`);
+                       missingDesc.push(`${config.shiftLabels?.[st] || st}: ${ctCount}/${reqCT} CT`);
                     }
-                    if (opCount < reqOP) {
+                    if (opCount !== reqOP) {
                        isUnderstaffed = true;
-                       missingDesc.push(`Mancano OP nel turno ${st}`);
+                       missingDesc.push(`${config.shiftLabels?.[st] || st}: ${opCount}/${reqOP} OP`);
                     }
                  });
               }
 
               return (
-                <div key={i} className={`calendar-day ${!date ? 'disabled' : ''} ${isToday ? 'today pulse-active' : ''}`} onClick={() => date && setSelectedDay(date)} style={{ position: 'relative' }}>
+                <div key={i} className={`calendar-day ${!date ? 'disabled' : ''} ${isToday ? 'today pulse-active' : ''}`} onClick={() => date && handleDayClick(date, null)} style={{ position: 'relative' }}>
                   {date && isUnderstaffed && (
                     <div style={{ position: 'absolute', top: '5px', right: '5px', fontSize: '0.8rem', zIndex: 5 }} title={missingDesc.join(' | ')}>
                       ⚠️
@@ -450,7 +563,7 @@ const CalendarView = () => {
           employees={employees} 
           exceptions={exceptions} 
           config={config} 
-          onDayClick={setSelectedDay}
+          onDayClick={handleDayClick}
         />
       )}
     </div>
@@ -515,6 +628,7 @@ function App() {
         <div style={{ position: 'relative', zIndex: 1 }}>
           {activeTab === 'calendar' && <CalendarView />}
           {activeTab === 'staff' && <StaffManager />}
+          {activeTab === 'stats' && <StatsDashboard />}
           {activeTab === 'settings' && <RuleSettings />}
         </div>
       </main>
