@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { getMonthlyRole } from '../logic/ShiftEngine';
 
 export default function RuleSettings() {
-  const { config, setConfig, employees } = useApp();
+  const { config, setConfig, employees, setEmployees, exceptions, setExceptions } = useApp();
   const [activeSection, setActiveSection] = useState('design');
   const [tempCycle, setTempCycle] = useState(() => {
     const cycle = config.cycle || [];
@@ -62,6 +62,49 @@ export default function RuleSettings() {
         shiftLabels: newLabels
       }));
     }
+  };
+
+  const handleExport = () => {
+    const data = {
+      config,
+      employees,
+      exceptions,
+      exportDate: new Date().toISOString(),
+      version: "21.0"
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `shift-pro-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+        if (!data.config || !data.employees) throw new Error("File non valido");
+
+        if (window.confirm("Attenzione: l'importazione sovrascriverà tutti i dati attuali. Continuare?")) {
+          setConfig(data.config);
+          setEmployees(data.employees);
+          setExceptions(data.exceptions || []);
+          alert("Dati importati con successo! L'app verrà ricaricata.");
+          window.location.reload();
+        }
+      } catch (err) {
+        alert("Errore nell'importazione: il file non sembra un backup valido di Shift-Pro.");
+      }
+    };
+    reader.readAsText(file);
   };
 
   const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
@@ -319,7 +362,27 @@ export default function RuleSettings() {
         ))}
       </div>
       
-      <div className="glass-card" style={{ marginTop: '2rem', border: '1px solid var(--accent-danger)' }}>
+      <div className="glass-card" style={{ marginTop: '2rem', border: '1px solid var(--primary)' }}>
+        <h3 style={{ color: 'var(--primary)', fontSize: '1rem', marginBottom: '1rem' }}>📦 Backup & Ripristino</h3>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+          Usa questi tasti per spostare i dati tra PC e Telefono.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <button 
+            className="btn-primary" 
+            style={{ width: '100%', fontSize: '0.8rem' }}
+            onClick={handleExport}
+          >
+            📤 Esporta
+          </button>
+          <label className="btn-primary" style={{ width: '100%', fontSize: '0.8rem', textAlign: 'center', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }}>
+            📥 Importa
+            <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
+          </label>
+        </div>
+      </div>
+
+      <div className="glass-card" style={{ marginTop: '1.5rem', border: '1px solid var(--accent-danger)' }}>
         <h3 style={{ color: 'var(--accent-danger)', fontSize: '1rem', marginBottom: '1rem' }}>Reset Totale</h3>
         <button 
           className="btn-primary" 
