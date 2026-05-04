@@ -187,7 +187,7 @@ const Sidebar = ({ activeTab, setTab }) => {
   );
 };
 
-const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
+const DayDetails = ({ date, onClose, selectedEmployee = null, selection = [], onBatchUpdate = null }) => {
   const { employees, exceptions, setExceptions, config, userRole } = useApp();
   const shifts = useMemo(() => calculateDailyShifts(date, employees, exceptions, config), [employees, date, exceptions, config]);
 
@@ -202,16 +202,36 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
   const updateShift = (employeeName, type) => {
     if (userRole !== 'admin') return;
     
-    // Controlliamo se esiste già un'eccezione per questo dipendente in questa data
+    // Se c'è una selezione attiva, usiamo quella per un aggiornamento massivo
+    if (selection && selection.length > 0) {
+      setExceptions(prev => {
+        let updated = [...prev];
+        const toRemoveSet = new Set(selection);
+        
+        // Rimuoviamo le vecchie
+        updated = updated.filter(ex => !toRemoveSet.has(`${ex.employee}|${ex.date}`));
+        
+        // Aggiungiamo le nuove
+        if (type) {
+          for (const key of selection) {
+            const [name, d] = key.split('|');
+            updated.push({ employee: name, date: d, type });
+          }
+        }
+        return updated;
+      });
+      
+      if (onBatchUpdate) onBatchUpdate(selection.length, type);
+      return;
+    }
+
+    // Altrimenti aggiornamento singolo classico
     const existingException = exceptions.find(ex => ex.employee === employeeName && ex.date === dateStr);
-    
     const filtered = exceptions.filter(ex => !(ex.employee === employeeName && ex.date === dateStr));
     
-    // Se clicchiamo sullo STESSO tipo che c'è già nell'eccezione, la rimuoviamo (toggle off)
     if (existingException && existingException.type === type) {
       setExceptions(filtered);
     } else {
-      // Altrimenti aggiungiamo/aggiorniamo l'eccezione
       setExceptions([...filtered, { employee: employeeName, date: dateStr, type }]);
     }
   };
@@ -335,9 +355,8 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
   );
 };
 
-const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
+const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, selection, setSelection }) => {
   const { userRole, setExceptions } = useApp();
-  const [selection, setSelection] = useState([]); // Array di "Nome|YYYY-MM-DD"
   const [isSelecting, setIsSelecting] = useState(false);
   const [toast, setToast] = useState(null);
 
@@ -373,29 +392,22 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
         e.preventDefault();
         const type = isDelete ? null : keyMap[key];
         
-        // Fermiamo tutto e copiamo la selezione
-        setIsSelecting(false);
+        // Usiamo la stessa logica di DayDetails ma centralizzata
         const toProcess = [...currentSelection];
-        setSelection([]); 
-
+        
         setExceptions(prev => {
-          // 1. Usiamo un Set per una ricerca istantanea
           const toRemoveSet = new Set(toProcess);
-          
-          // 2. Filtriamo via le vecchie eccezioni
           const filtered = prev.filter(ex => !toRemoveSet.has(`${ex.employee}|${ex.date}`));
-          
           if (!type) return filtered;
-
-          // 3. Aggiungiamo le nuove
           const newEntries = toProcess.map(sel => {
             const [name, date] = sel.split('|');
             return { employee: name, date, type };
           });
-          
           return [...filtered, ...newEntries];
         });
 
+        setIsSelecting(false);
+        setSelection([]); 
         showToast(type ? `Aggiornati ${toProcess.length} turni (${type})` : `Cancellati ${toProcess.length} turni`);
       }
     };
@@ -643,6 +655,7 @@ const CalendarView = () => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showExport, setShowExport] = useState(false);
+  const [selection, setSelection] = useState([]); // Stato di selezione condiviso (Tank Mode)
 
   const handleDayClick = (date, employeeName = null) => {
     setSelectedDay(date);
@@ -667,7 +680,15 @@ const CalendarView = () => {
 
   return (
     <div className="fade-in">
-      {selectedDay && <DayDetails date={selectedDay} onClose={() => setSelectedDay(null)} selectedEmployee={selectedEmployee} />}
+      {selectedDay && (
+        <DayDetails 
+          date={selectedDay} 
+          onClose={() => setSelectedDay(null)} 
+          selectedEmployee={selectedEmployee} 
+          selection={selection}
+          onBatchUpdate={() => setSelection([])}
+        />
+      )}
       {showExport && <ExportModule onClose={() => setShowExport(false)} currentViewDate={viewDate} />}
       
       <header className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1.25rem 2rem', borderBottom: '1px solid var(--glass-border)', flexWrap: 'wrap', gap: '1.5rem' }}>
@@ -826,6 +847,8 @@ const CalendarView = () => {
           exceptions={exceptions} 
           config={config} 
           onDayClick={handleDayClick}
+          selection={selection}
+          setSelection={setSelection}
         />
       )}
     </div>
