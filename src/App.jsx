@@ -872,6 +872,9 @@ function App() {
     // adjust sidebar background slightly based on main background
     document.documentElement.style.setProperty('--bg-sidebar', (config.backgroundColor + 'E6') || '#1e293b');
     
+    document.documentElement.style.setProperty('--text-main', config.textColor || '#ffffff');
+    document.documentElement.style.setProperty('--text-sidebar', config.sidebarTextColor || '#ffffff');
+    
     if (config.shiftColors) {
       Object.keys(config.shiftColors).forEach(k => {
         document.documentElement.style.setProperty(`--shift-${k.toLowerCase()}`, config.shiftColors[k]);

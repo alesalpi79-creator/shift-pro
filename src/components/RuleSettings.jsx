@@ -160,6 +160,14 @@ export default function RuleSettings() {
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Colore Sfondo</label>
             <input type="color" style={{ width: '100%', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }} value={config.backgroundColor || '#0f172a'} onChange={e => saveConfig('backgroundColor', e.target.value)} />
           </div>
+          <div className="form-group">
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Colore Testo App</label>
+            <input type="color" style={{ width: '100%', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }} value={config.textColor || '#ffffff'} onChange={e => saveConfig('textColor', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Colore Testo Sidebar</label>
+            <input type="color" style={{ width: '100%', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }} value={config.sidebarTextColor || '#ffffff'} onChange={e => saveConfig('sidebarTextColor', e.target.value)} />
+          </div>
           <div className="form-group" style={{ gridColumn: 'span 2' }}>
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sfondo (Carica Foto o incolla URL)</label>
             <div style={{ display: 'flex', gap: '10px' }}>
