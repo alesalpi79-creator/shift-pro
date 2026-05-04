@@ -337,14 +337,20 @@ const DayDetails = ({ date, onClose, selectedEmployee = null }) => {
 
 const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
   const { userRole, setExceptions } = useApp();
-  const [selection, setSelection] = useState([]); // Array di { empName, dateStr }
+  const [selection, setSelection] = useState([]); // Array di "Nome|YYYY-MM-DD"
   const [isSelecting, setIsSelecting] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const selectionRef = useRef(selection);
   useEffect(() => { selectionRef.current = selection; }, [selection]);
 
   const getDateStr = (date) => {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  };
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
   };
 
   // Gestione Scorciatoie da Tastiera
@@ -367,23 +373,32 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
         e.preventDefault();
         const type = isDelete ? null : keyMap[key];
         
-        // Fermiamo subito il trascinamento e puliamo la selezione
+        // Fermiamo tutto e copiamo la selezione
         setIsSelecting(false);
         const toProcess = [...currentSelection];
         setSelection([]); 
 
         setExceptions(prev => {
-          const filtered = prev.filter(ex => 
-            !toProcess.some(sel => sel.empName === ex.employee && sel.dateStr === ex.date)
-          );
-          if (!type) return filtered;
-          const newEntries = toProcess.map(sel => ({
-            employee: sel.empName,
-            date: sel.dateStr,
-            type
-          }));
-          return [...filtered, ...newEntries];
+          let updated = [...prev];
+          
+          // 1. Pulizia massiva
+          for (const sel of toProcess) {
+             const [name, date] = sel.split('|');
+             updated = updated.filter(ex => !(ex.employee === name && ex.date === date));
+          }
+          
+          // 2. Aggiunta massiva
+          if (type) {
+            for (const sel of toProcess) {
+               const [name, date] = sel.split('|');
+               updated.push({ employee: name, date, type });
+            }
+          }
+          
+          return updated;
         });
+
+        showToast(type ? `Aggiornati ${toProcess.length} turni (${type})` : `Cancellati ${toProcess.length} turni`);
       }
     };
 
@@ -395,26 +410,20 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
     if (userRole !== 'admin') return;
     const dStr = getDateStr(date);
     setIsSelecting(true);
-    setSelection([{ empName, dateStr: dStr }]);
+    setSelection([`${empName}|${dStr}`]);
   };
 
   const handleMouseEnter = (empName, date) => {
     if (!isSelecting) return;
     const dStr = getDateStr(date);
-    setSelection(prev => {
-      const exists = prev.find(s => s.empName === empName && s.dateStr === dStr);
-      if (exists) return prev;
-      return [...prev, { empName, dateStr: dStr }];
-    });
+    const key = `${empName}|${dStr}`;
+    setSelection(prev => prev.includes(key) ? prev : [...prev, key]);
   };
 
   const toggleSelection = (empName, date) => {
     const dStr = getDateStr(date);
-    setSelection(prev => {
-      const exists = prev.find(s => s.empName === empName && s.dateStr === dStr);
-      if (exists) return prev.filter(s => !(s.empName === empName && s.dateStr === dStr));
-      return [...prev, { empName, dateStr: dStr }];
-    });
+    const key = `${empName}|${dStr}`;
+    setSelection(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
   };
 
   useEffect(() => {
@@ -447,7 +456,12 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
   }, [employees, gridData]);
 
   return (
-    <div className="table-container fade-in">
+    <div className="table-container fade-in" style={{ position: 'relative' }}>
+      {toast && (
+        <div style={{ position: 'absolute', top: '-40px', left: '50%', transform: 'translateX(-50%)', background: 'var(--primary)', color: 'white', padding: '0.5rem 1.5rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 1000, boxShadow: '0 4px 15px rgba(0,0,0,0.3)', border: '1px solid white' }}>
+          {toast}
+        </div>
+      )}
       <table className="shift-table">
         <thead>
           <tr>
@@ -561,7 +575,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
                   const empShift = dayShifts?.find(s => s.name === emp.name);
                   const shiftType = empShift?.finalShift || 'R';
                   const dStr = getDateStr(date);
-                  const isSelected = selection.some(s => s.empName === emp.name && s.dateStr === dStr);
+                  const isSelected = selection.includes(`${emp.name}|${dStr}`);
                   const bgColor = ['A', 'B', 'C', 'G', 'R', 'FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].includes(shiftType) 
                     ? `var(--shift-${shiftType.toLowerCase()})` 
                     : roleColor;
