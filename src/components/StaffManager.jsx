@@ -166,8 +166,8 @@ export default function StaffManager() {
                   </div>
 
                   <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
-                    <button onClick={saveEdit} style={{ background: 'var(--primary)', border: 'none', color: 'white', padding: '0.6rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Salva Modifiche ✓</button>
-                    <button onClick={() => setEditingId(null)} style={{ background: 'transparent', border: '1px solid var(--glass-border)', color: 'white', padding: '0.6rem 1rem', borderRadius: '8px', cursor: 'pointer' }}>Annulla</button>
+                    <button onClick={saveEdit} style={{ background: 'var(--primary)', border: 'none', color: 'var(--text-main)', padding: '0.6rem 1.5rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Salva Modifiche ✓</button>
+                    <button onClick={() => setEditingId(null)} style={{ background: 'transparent', border: '1px solid var(--glass-border)', color: 'var(--text-main)', padding: '0.6rem 1rem', borderRadius: '8px', cursor: 'pointer' }}>Annulla</button>
                   </div>
                 </div>
               ) : (
@@ -192,8 +192,8 @@ export default function StaffManager() {
                         {e.name}
                         {(() => {
                           const mRole = getMonthlyRole(e, today, employees, config);
-                          if (mRole === 'SJ') return <span style={{ fontSize: '0.6rem', padding: '1px 4px', background: 'var(--primary)', color: 'white', borderRadius: '3px' }}>SJ</span>;
-                          if (mRole === 'J') return <span style={{ fontSize: '0.6rem', padding: '1px 4px', background: 'var(--accent-warning)', color: 'white', borderRadius: '3px' }}>JOLLY</span>;
+                          if (mRole === 'SJ') return <span style={{ fontSize: '0.6rem', padding: '1px 4px', background: 'var(--primary)', color: 'var(--text-main)', borderRadius: '3px' }}>SJ</span>;
+                          if (mRole === 'J') return <span style={{ fontSize: '0.6rem', padding: '1px 4px', background: 'var(--accent-warning)', color: 'var(--text-main)', borderRadius: '3px' }}>JOLLY</span>;
                           return null;
                         })()}
                       </div>
