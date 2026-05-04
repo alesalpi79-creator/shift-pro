@@ -880,7 +880,7 @@ function App() {
         document.documentElement.style.setProperty(`--shift-${k.toLowerCase()}`, config.shiftColors[k]);
       });
     }
-  }, [config.backgroundColor, config.shiftColors]);
+  }, [config]);
 
   if (showOnboarding) {
     return (
