@@ -379,23 +379,21 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
         setSelection([]); 
 
         setExceptions(prev => {
-          let updated = [...prev];
+          // 1. Usiamo un Set per una ricerca istantanea
+          const toRemoveSet = new Set(toProcess);
           
-          // 1. Pulizia massiva
-          for (const sel of toProcess) {
-             const [name, date] = sel.split('|');
-             updated = updated.filter(ex => !(ex.employee === name && ex.date === date));
-          }
+          // 2. Filtriamo via le vecchie eccezioni
+          const filtered = prev.filter(ex => !toRemoveSet.has(`${ex.employee}|${ex.date}`));
           
-          // 2. Aggiunta massiva
-          if (type) {
-            for (const sel of toProcess) {
-               const [name, date] = sel.split('|');
-               updated.push({ employee: name, date, type });
-            }
-          }
+          if (!type) return filtered;
+
+          // 3. Aggiungiamo le nuove
+          const newEntries = toProcess.map(sel => {
+            const [name, date] = sel.split('|');
+            return { employee: name, date, type };
+          });
           
-          return updated;
+          return [...filtered, ...newEntries];
         });
 
         showToast(type ? `Aggiornati ${toProcess.length} turni (${type})` : `Cancellati ${toProcess.length} turni`);
@@ -427,10 +425,19 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick }) => {
   };
 
   useEffect(() => {
-    const handleMouseUp = () => setIsSelecting(false);
+    const handleMouseUp = () => {
+      // Se abbiamo finito di selezionare, apriamo la finestra laterale
+      if (isSelecting && selectionRef.current.length > 0) {
+        const first = selectionRef.current[0];
+        const [name, dStr] = first.split('|');
+        const [y, m, d] = dStr.split('-').map(Number);
+        onDayClick(new Date(y, m - 1, d), name);
+      }
+      setIsSelecting(false);
+    };
     window.addEventListener('mouseup', handleMouseUp);
     return () => window.removeEventListener('mouseup', handleMouseUp);
-  }, []);
+  }, [isSelecting, onDayClick]);
   
   // Pre-filtriamo i giorni reali del mese per avere indici certi 0..30
   const realDays = useMemo(() => days.filter(d => d), [days]);
