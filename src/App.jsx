@@ -894,16 +894,22 @@ function App() {
     <div className="app-container" style={{ 
       '--primary': config.primaryColor,
       '--glass-bg': `rgba(15, 23, 42, ${config.glassOpacity || 0.4})`,
-      backgroundImage: config.backgroundImage ? `url(${config.backgroundImage})` : 'none',
-      backgroundSize: config.backgroundMode === 'repeat' ? 'auto' : config.backgroundMode || 'cover',
-      backgroundRepeat: config.backgroundMode === 'repeat' ? 'repeat' : 'no-repeat',
-      backgroundPosition: 'center',
-      backgroundAttachment: config.backgroundMode === 'repeat' ? 'scroll' : 'fixed',
-      backgroundColor: config.backgroundColor || 'var(--bg-main)',
       position: 'relative'
     }}>
+      <div style={{
+        position: 'fixed',
+        top: 0, left: 0, 
+        width: '100vw', height: '100vh',
+        backgroundColor: config.backgroundColor || 'var(--bg-main)',
+        backgroundImage: config.backgroundImage ? `url(${config.backgroundImage})` : 'none',
+        backgroundSize: config.backgroundMode === 'repeat' ? 'auto' : config.backgroundMode || 'cover',
+        backgroundRepeat: config.backgroundMode === 'repeat' ? 'repeat' : 'no-repeat',
+        backgroundPosition: 'center',
+        zIndex: -1,
+        pointerEvents: 'none'
+      }}></div>
       {config.backgroundImage && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 0 }}></div>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 0 }}></div>
       )}
       <Sidebar activeTab={activeTab} setTab={setTab} />
       <main style={{ 
