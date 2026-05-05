@@ -510,7 +510,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
               return (
                 <th key={d.toISOString()} title={isUnderstaffed ? missingDesc.join(' | ') : 'Copertura OK'}
                   style={{ 
-                    background: (d.getDay() === 0 || d.getDay() === 6 || isHoliday(d)) ? 'rgba(255,255,255,0.03)' : 'transparent',
+                    background: (d.getDay() === 0 || d.getDay() === 6 || isHoliday(d)) ? '#263449' : 'var(--bg-sidebar)',
                     color: (isHoliday(d) || d.getDay() === 0 || d.getDay() === 6) ? 'var(--accent-warning)' : 'inherit'
                   }}
                 >
@@ -528,12 +528,12 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
             })}
             {userRole === 'admin' && (
               <>
-                <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-a)', fontSize: '0.65rem' }}>A</th>
-                <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-b)', fontSize: '0.65rem' }}>B</th>
-                <th style={{ background: 'rgba(255,255,255,0.02)', color: 'var(--shift-c)', fontSize: '0.65rem' }}>C</th>
+                <th style={{ background: 'var(--bg-sidebar)', color: 'var(--shift-a)', fontSize: '0.65rem' }}>A</th>
+                <th style={{ background: 'var(--bg-sidebar)', color: 'var(--shift-b)', fontSize: '0.65rem' }}>B</th>
+                <th style={{ background: 'var(--bg-sidebar)', color: 'var(--shift-c)', fontSize: '0.65rem' }}>C</th>
               </>
             )}
-            <th style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.65rem' }}>Tot.</th>
+            <th style={{ background: 'var(--bg-sidebar)', color: 'var(--primary)', fontWeight: 'bold', fontSize: '0.65rem' }}>Tot.</th>
           </tr>
         </thead>
         <tbody>

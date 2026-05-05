@@ -284,8 +284,6 @@ label, p {
 /* Shift Table (Excel Style) */
 .table-container {
   overflow-x: auto;
-  overflow-y: auto;
-  max-height: 70vh;
   border-radius: var(--radius-md);
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
@@ -340,14 +338,15 @@ label, p {
 }
 
 .shift-table th {
-  background: rgba(0,0,0,0.2);
-  color: var(--text-muted);
-  font-weight: 600;
+  background: var(--bg-sidebar);
+  color: var(--text-main);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   position: sticky;
   top: 0;
   z-index: 11;
+  border-bottom: 2px solid var(--glass-border);
 }
 
 .shift-table th:first-child {
