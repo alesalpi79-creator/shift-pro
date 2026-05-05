@@ -338,7 +338,9 @@ label, p {
 }
 
 .shift-table th {
-  background: var(--bg-sidebar);
+  background: rgba(30, 41, 59, 0.95); /* Leggermente trasparente ma molto scuro per il blur */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: var(--text-main);
   font-weight: 700;
   text-transform: uppercase;
@@ -346,7 +348,9 @@ label, p {
   position: sticky;
   top: 0;
   z-index: 11;
-  border-bottom: 2px solid var(--glass-border);
+  border-bottom: 2px solid var(--primary); /* Una linea primaria sottile per separare */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  padding: 1rem 0.5rem !important;
 }
 
 .shift-table th:first-child {

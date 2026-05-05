@@ -484,7 +484,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
       <table className="shift-table">
         <thead>
           <tr>
-            <th>Dipendente</th>
+            <th style={{ fontSize: '0.9rem', letterSpacing: '0.05em' }}>DIPENDENTE</th>
             {realDays.map((d, i) => {
               const dayShifts = gridData[i];
               let isUnderstaffed = false;
@@ -510,17 +510,19 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
               return (
                 <th key={d.toISOString()} title={isUnderstaffed ? missingDesc.join(' | ') : 'Copertura OK'}
                   style={{ 
-                    background: (d.getDay() === 0 || d.getDay() === 6 || isHoliday(d)) ? '#263449' : 'var(--bg-sidebar)',
-                    color: (isHoliday(d) || d.getDay() === 0 || d.getDay() === 6) ? 'var(--accent-warning)' : 'inherit'
+                    color: (isHoliday(d) || d.getDay() === 0 || d.getDay() === 6) ? 'var(--accent-warning)' : 'white',
+                    borderTop: (d.getDay() === 0 || d.getDay() === 6 || isHoliday(d)) ? '3px solid var(--accent-warning)' : 'none'
                   }}
                 >
-                  <div style={{ fontSize: '0.6rem', opacity: 0.7 }}>{d.toLocaleDateString('it-IT', { weekday: 'short' }).slice(0, 1)}</div>
+                  <div style={{ fontSize: '0.75rem', opacity: 0.9, marginBottom: '2px', fontWeight: '500' }}>
+                    {d.toLocaleDateString('it-IT', { weekday: 'short' }).slice(0, 1).toUpperCase()}
+                  </div>
                   <div style={{ position: 'relative', display: 'inline-block' }}>
-                    <span style={{ fontWeight: (d.getDay() === 0 || d.getDay() === 6 || isHoliday(d)) ? 'bold' : 'normal' }}>
+                    <span style={{ fontSize: '1.1rem', fontWeight: '800' }}>
                       {d.getDate()}
                     </span>
                     {isUnderstaffed && (
-                      <span style={{ position: 'absolute', top: '-10px', right: '-12px', fontSize: '0.7rem' }}>⚠️</span>
+                      <span style={{ position: 'absolute', top: '-12px', right: '-15px', fontSize: '0.8rem' }}>⚠️</span>
                     )}
                   </div>
                 </th>
