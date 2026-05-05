@@ -522,4 +522,25 @@ button[data-shift="CF"] {
     min-width: 100px;
     padding-left: 0.5rem;
   }
+  /* Fix for missing numbers/glitches on mobile scroll */
+  .table-container {
+    max-height: none !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .shift-table th {
+    position: sticky !important;
+    top: 0;
+    z-index: 100 !important;
+    background: #1e293b !important; /* Solid background for mobile performance */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-bottom: 2px solid var(--primary);
+  }
+  .glass-card {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
