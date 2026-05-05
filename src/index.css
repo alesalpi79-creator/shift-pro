@@ -283,7 +283,8 @@ label, p {
 
 /* Shift Table (Excel Style) */
 .table-container {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: calc(100vh - 220px);
   border-radius: var(--radius-md);
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
@@ -292,6 +293,7 @@ label, p {
   box-shadow: var(--shadow);
   /* Smooth scrolling */
   -webkit-overflow-scrolling: touch;
+  position: relative;
 }
 
 .shift-table {
