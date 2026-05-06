@@ -334,6 +334,20 @@ export default function RuleSettings() {
 
   const renderConstraints = () => (
     <div className="fade-in">
+      <div className="glass-card" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: config.showUnderstaffedAlert ? '1px solid var(--accent-warning)' : '1px solid var(--glass-border)' }}>
+        <div>
+          <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Avvisi di Copertura</div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Mostra il triangolino ⚠️ se manca personale</div>
+        </div>
+        <button 
+          onClick={() => saveConfig('showUnderstaffedAlert', !config.showUnderstaffedAlert)}
+          className={`toggle-btn ${config.showUnderstaffedAlert ? 'active' : ''}`}
+          style={{ background: config.showUnderstaffedAlert ? 'var(--accent-warning)' : 'rgba(255,255,255,0.1)', color: 'white', minWidth: '80px' }}
+        >
+          {config.showUnderstaffedAlert ? 'ATTIVI' : 'OFF'}
+        </button>
+      </div>
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <h3 style={{ fontSize: '1rem', margin: 0 }}>Vincoli Personale per Turno</h3>
         <button 

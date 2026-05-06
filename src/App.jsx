@@ -378,7 +378,7 @@ const DayDetails = ({ date, onClose, selectedEmployee = null, selection = [], on
              </div>
 
              {/* Avvisi */}
-             {warnings.length > 0 && (
+             {config.showUnderstaffedAlert && warnings.length > 0 && (
                <div style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid var(--accent-warning)', padding: '1rem', borderRadius: 'var(--radius-md)' }}>
                   <h4 style={{ color: 'var(--accent-warning)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>⚠️ Stato Copertura</h4>
                   <ul style={{ fontSize: '0.75rem', color: 'var(--text-main)', paddingLeft: '1.2rem', margin: 0 }}>
@@ -571,7 +571,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
                     <span style={{ fontSize: '1.1rem', fontWeight: '800' }}>
                       {d.getDate()}
                     </span>
-                    {isUnderstaffed && (
+                    {config.showUnderstaffedAlert && isUnderstaffed && (
                       <span style={{ position: 'absolute', top: '-12px', right: '-15px', fontSize: '0.8rem' }}>⚠️</span>
                     )}
                   </div>
@@ -834,7 +834,7 @@ const CalendarView = () => {
                     minHeight: '100px'
                   }}
                 >
-                  {date && isUnderstaffed && (
+                  {date && config.showUnderstaffedAlert && isUnderstaffed && (
                     <div style={{ position: 'absolute', top: '5px', right: '5px', fontSize: '0.8rem', zIndex: 5 }} title={missingDesc.join(' | ')}>
                       ⚠️
                     </div>

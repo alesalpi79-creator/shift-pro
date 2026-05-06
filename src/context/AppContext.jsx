@@ -47,7 +47,8 @@ export const DEFAULT_CONFIG = {
   },
   textColor: "#ffffff",
   sidebarTextColor: "#ffffff",
-  serverUrl: ""
+  serverUrl: "",
+  showUnderstaffedAlert: true
 };
 
 export const AppProvider = ({ children }) => {
