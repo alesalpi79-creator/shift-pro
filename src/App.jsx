@@ -508,6 +508,10 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
 
   const visibleEmployees = useMemo(() => {
     return employees.filter(emp => {
+      // Se ci sono 5 o meno dipendenti in totale, li mostriamo tutti sempre (uso personale)
+      if (employees.length <= 5) return true;
+
+      // Altrimenti mostriamo solo chi ha turni attivi nel periodo (uso aziendale)
       return gridData.some(dayShifts => {
         if (!dayShifts) return false;
         const s = dayShifts.find(x => x.name === emp.name);

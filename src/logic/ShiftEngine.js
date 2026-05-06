@@ -16,9 +16,12 @@ export function getMonthlyRole(employee, date, employees, config) {
     .filter(e => myRole === 'CT' || (parseInt(e.team) || 1) === myTeam)
     .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
-  if (group.length === 0) return myRole;
   const N = group.length;
   const myIdx = group.findIndex(e => e.name === employee.name);
+  
+  // Se ci sono 4 o meno persone nel gruppo, non facciamo rotazione Jolly/SJ
+  // (il sistema è pensato per 6 persone: 4 fisse + 2 in rotazione)
+  if (N <= 4) return myRole;
   
   const currentSJIdx = rotationIndex % N;
   const currentJollyIdx = (rotationIndex - 1 + N * 10) % N;
@@ -35,12 +38,18 @@ export function getNominalShift(employee, date, employees, config) {
   // Jolly e SJ stanno a riposo di default (coprono solo buchi)
   if (currentRole === 'J' || currentRole === 'SJ') return 'R';
 
-  const ref = new Date(2026, 0, 1);
+  const refStr = config.baseDate || '2026-01-01';
+  const [ry, rm, rd] = refStr.split('-').map(Number);
+  const ref = new Date(ry, rm - 1, rd);
+
   // Usiamo mezzogiorno per evitare problemi con l'ora legale (DST)
   const dCopy = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0);
   const refCopy = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate(), 12, 0, 0);
   const diff = Math.round((dCopy.getTime() - refCopy.getTime()) / (1000 * 60 * 60 * 24));
-  const cycle = ['A', 'A', 'C', 'C', 'R', 'B', 'B', 'R', 'R'];
+  
+  // Usiamo il ciclo configurato nelle impostazioni, oppure quello di default
+  const cycle = config.cycle || ['A', 'A', 'C', 'C', 'R', 'B', 'B', 'R', 'R'];
+  const cycleLength = cycle.length;
 
   let autoOffset = 0;
   const role = (employee.role || '').toUpperCase();
@@ -81,7 +90,7 @@ export function getNominalShift(employee, date, employees, config) {
     }
   }
 
-  const dayInCycle = (diff + autoOffset + 9000) % 9;
+  const dayInCycle = (diff + autoOffset + (cycleLength * 1000)) % cycleLength;
   return cycle[dayInCycle] || 'R';
 }
 
