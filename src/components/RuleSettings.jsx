@@ -90,8 +90,26 @@ const PremiumColorPicker = ({ value, onChange, label, isOpen, onToggle, selected
 export default function RuleSettings() {
   const { config, setConfig, employees, setEmployees, exceptions, setExceptions } = useApp();
   const [activeSection, setActiveSection] = useState('design');
-  const [openPickerId, setOpenPickerId] = useState(null);
-  const [selectedHue, setSelectedHue] = useState(null);
+  
+  // Stato persistente per il color picker per evitare chiusure dovute a re-render
+  const [openPickerId, setOpenPickerId] = useState(() => localStorage.getItem('sp_open_picker') || null);
+  const [selectedHue, setSelectedHue] = useState(() => {
+    const saved = localStorage.getItem('sp_selected_hue');
+    try { return saved ? JSON.parse(saved) : null; } catch(e) { return null; }
+  });
+
+  const togglePicker = (id) => {
+    const newId = openPickerId === id ? null : id;
+    setOpenPickerId(newId);
+    if (newId) localStorage.setItem('sp_open_picker', newId);
+    else localStorage.removeItem('sp_open_picker');
+  };
+
+  const handleHueSelect = (hue) => {
+    setSelectedHue(hue);
+    localStorage.setItem('sp_selected_hue', JSON.stringify(hue));
+  };
+
   const [tempCycle, setTempCycle] = useState(() => {
     const cycle = config.cycle || [];
     return Array.isArray(cycle) ? cycle.join(', ') : (typeof cycle === 'string' ? cycle : '');
@@ -239,10 +257,10 @@ export default function RuleSettings() {
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Nome App</label>
             <input className="input-main" value={config.appName} onChange={e => saveConfig('appName', e.target.value)} />
           </div>
-          <PremiumColorPicker label="Colore Primario" value={config.primaryColor} onChange={val => saveConfig('primaryColor', val)} isOpen={openPickerId === 'primary'} onToggle={() => setOpenPickerId(openPickerId === 'primary' ? null : 'primary')} selectedHue={selectedHue} setSelectedHue={setSelectedHue} />
-          <PremiumColorPicker label="Colore Sfondo" value={config.backgroundColor || '#0f172a'} onChange={val => saveConfig('backgroundColor', val)} isOpen={openPickerId === 'bg'} onToggle={() => setOpenPickerId(openPickerId === 'bg' ? null : 'bg')} selectedHue={selectedHue} setSelectedHue={setSelectedHue} />
-          <PremiumColorPicker label="Colore Testo App" value={config.textColor || '#ffffff'} onChange={val => saveConfig('textColor', val)} isOpen={openPickerId === 'text'} onToggle={() => setOpenPickerId(openPickerId === 'text' ? null : 'text')} selectedHue={selectedHue} setSelectedHue={setSelectedHue} />
-          <PremiumColorPicker label="Colore Testo Sidebar" value={config.sidebarTextColor || '#ffffff'} onChange={val => saveConfig('sidebarTextColor', val)} isOpen={openPickerId === 'sideText'} onToggle={() => setOpenPickerId(openPickerId === 'sideText' ? null : 'sideText')} selectedHue={selectedHue} setSelectedHue={setSelectedHue} />
+          <PremiumColorPicker label="Colore Primario" value={config.primaryColor} onChange={val => saveConfig('primaryColor', val)} isOpen={openPickerId === 'primary'} onToggle={() => togglePicker('primary')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
+          <PremiumColorPicker label="Colore Sfondo" value={config.backgroundColor || '#0f172a'} onChange={val => saveConfig('backgroundColor', val)} isOpen={openPickerId === 'bg'} onToggle={() => togglePicker('bg')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
+          <PremiumColorPicker label="Colore Testo App" value={config.textColor || '#ffffff'} onChange={val => saveConfig('textColor', val)} isOpen={openPickerId === 'text'} onToggle={() => togglePicker('text')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
+          <PremiumColorPicker label="Colore Testo Sidebar" value={config.sidebarTextColor || '#ffffff'} onChange={val => saveConfig('sidebarTextColor', val)} isOpen={openPickerId === 'sideText'} onToggle={() => togglePicker('sideText')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
           <div className="form-group" style={{ gridColumn: 'span 2' }}>
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sfondo (Carica Foto o incolla URL)</label>
             <div style={{ display: 'flex', gap: '10px' }}>
@@ -337,7 +355,7 @@ export default function RuleSettings() {
                 >✕</button>
               )}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <PremiumColorPicker value={safeShiftColors[id] || '#6366f1'} onChange={val => saveConfig('shiftColors', { ...safeShiftColors, [id]: val })} isOpen={openPickerId === `shift-${id}`} onToggle={() => setOpenPickerId(openPickerId === `shift-${id}` ? null : `shift-${id}`)} selectedHue={selectedHue} setSelectedHue={setSelectedHue} />
+                <PremiumColorPicker value={safeShiftColors[id] || '#6366f1'} onChange={val => saveConfig('shiftColors', { ...safeShiftColors, [id]: val })} isOpen={openPickerId === `shift-${id}`} onToggle={() => togglePicker(`shift-${id}`)} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
                 <input 
                   className="input-main"
                   style={{ width: '70px', textAlign: 'center', fontSize: '0.75rem', padding: '5px', fontWeight: 'bold', marginTop: '-10px' }}
