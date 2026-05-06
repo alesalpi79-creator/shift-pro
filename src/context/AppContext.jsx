@@ -51,43 +51,106 @@ export const DEFAULT_CONFIG = {
 };
 
 export const AppProvider = ({ children }) => {
-  const [userRole, setUserRole] = useState('viewer'); // Always start as viewer for security
-  const [config, setConfig] = useState(() => {
-    const saved = localStorage.getItem('shift_pro_config');
-    const parsed = saved ? JSON.parse(saved) : {};
-    return { 
-      ...DEFAULT_CONFIG, 
-      ...parsed, 
-      quotas: { ...DEFAULT_CONFIG.quotas, ...(parsed.quotas || {}) },
-      shiftColors: { ...DEFAULT_CONFIG.shiftColors, ...(parsed.shiftColors || {}) }
+  const [userRole, setUserRole] = useState('viewer');
+  
+  // Gestione Multi-Schema
+  const [schedules, setSchedules] = useState(() => {
+    const savedSchedules = localStorage.getItem('shift_pro_schedules');
+    if (savedSchedules) return JSON.parse(savedSchedules);
+
+    // Migrazione dai vecchi tasti se presenti
+    const oldConfig = localStorage.getItem('shift_pro_config');
+    const oldEmployees = localStorage.getItem('shift_pro_employees');
+    const oldExceptions = localStorage.getItem('shift_pro_exceptions');
+
+    const baseConfig = oldConfig ? { ...DEFAULT_CONFIG, ...JSON.parse(oldConfig) } : DEFAULT_CONFIG;
+    
+    const initialSchedule = {
+      id: 'sch-' + Date.now(),
+      name: 'Schema 1',
+      config: baseConfig,
+      employees: oldEmployees ? JSON.parse(oldEmployees) : [],
+      exceptions: oldExceptions ? JSON.parse(oldExceptions) : []
     };
+    return [initialSchedule];
   });
 
-  const [employees, setEmployees] = useState(() => {
-    const saved = localStorage.getItem('shift_pro_employees');
-    return saved ? JSON.parse(saved) : [];
+  const [activeScheduleId, setActiveScheduleId] = useState(() => {
+    const savedId = localStorage.getItem('shift_pro_active_id');
+    if (savedId && schedules.some(s => s.id === savedId)) return savedId;
+    return schedules[0].id;
   });
 
-  const [exceptions, setExceptions] = useState(() => {
-    const saved = localStorage.getItem('shift_pro_exceptions');
-    return saved ? JSON.parse(saved) : [];
-  });
+  // Troviamo lo schema attivo
+  const activeSchedule = schedules.find(s => s.id === activeScheduleId) || schedules[0];
 
-  // Persistence
-  useEffect(() => {
-    localStorage.setItem('shift_pro_config', JSON.stringify(config));
-  }, [config]);
+  // Helper per aggiornare lo schema attivo
+  const updateActiveSchedule = (updates) => {
+    setSchedules(prev => prev.map(s => s.id === activeScheduleId ? { ...s, ...updates } : s));
+  };
 
-  useEffect(() => {
-    localStorage.setItem('shift_pro_employees', JSON.stringify(employees));
-  }, [employees]);
+  // Funzioni per gestire gli schemi
+  const addSchedule = (name = "Nuovo Schema") => {
+    const newId = 'sch-' + Date.now();
+    const newSchedule = {
+      id: newId,
+      name: name,
+      config: DEFAULT_CONFIG,
+      employees: [],
+      exceptions: []
+    };
+    setSchedules(prev => [...prev, newSchedule]);
+    setActiveScheduleId(newId);
+    return newId;
+  };
 
+  const deleteSchedule = (id) => {
+    if (schedules.length <= 1) {
+      alert("Non puoi eliminare l'ultimo schema rimasto.");
+      return;
+    }
+    if (window.confirm("Sei sicuro di voler eliminare definitivamente questo schema e tutti i suoi dati?")) {
+      const newSchedules = schedules.filter(s => s.id !== id);
+      setSchedules(newSchedules);
+      if (activeScheduleId === id) {
+        setActiveScheduleId(newSchedules[0].id);
+      }
+    }
+  };
+
+  const renameSchedule = (id, newName) => {
+    setSchedules(prev => prev.map(s => s.id === id ? { ...s, name: newName } : s));
+  };
+
+  // Esposizione dati e setter compatibili con i componenti esistenti
+  const config = activeSchedule.config;
+  const setConfig = (updater) => {
+    const newConfig = typeof updater === 'function' ? updater(activeSchedule.config) : updater;
+    updateActiveSchedule({ config: newConfig });
+  };
+
+  const employees = activeSchedule.employees;
+  const setEmployees = (updater) => {
+    const newEmployees = typeof updater === 'function' ? updater(activeSchedule.employees) : updater;
+    updateActiveSchedule({ employees: newEmployees });
+  };
+
+  const exceptions = activeSchedule.exceptions;
+  const setExceptions = (updater) => {
+    const newExceptions = typeof updater === 'function' ? updater(activeSchedule.exceptions) : updater;
+    updateActiveSchedule({ exceptions: newExceptions });
+  };
+
+  // Persistenza
   useEffect(() => {
-    localStorage.setItem('shift_pro_exceptions', JSON.stringify(exceptions));
-  }, [exceptions]);
+    localStorage.setItem('shift_pro_schedules', JSON.stringify(schedules));
+    localStorage.setItem('shift_pro_active_id', activeScheduleId);
+  }, [schedules, activeScheduleId]);
 
   const value = {
     userRole, setUserRole,
+    schedules, activeScheduleId, setActiveScheduleId,
+    addSchedule, deleteSchedule, renameSchedule,
     config, setConfig,
     employees, setEmployees,
     exceptions, setExceptions

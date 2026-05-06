@@ -35,7 +35,12 @@ const isHoliday = (date) => {
 };
 
 const Sidebar = ({ activeTab, setTab }) => {
-  const { userRole, setUserRole, config, setConfig, employees, setEmployees, exceptions, setExceptions } = useApp();
+  const { 
+    userRole, setUserRole, 
+    schedules, activeScheduleId, setActiveScheduleId, 
+    addSchedule, deleteSchedule, renameSchedule,
+    config, setConfig, employees, setEmployees, exceptions, setExceptions 
+  } = useApp();
 
   const handleExport = () => {
     const data = {
@@ -49,7 +54,7 @@ const Sidebar = ({ activeTab, setTab }) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `shift-pro-backup-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `${config.appName.replace(/\s+/g, '-').toLowerCase()}-backup-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -64,7 +69,7 @@ const Sidebar = ({ activeTab, setTab }) => {
       try {
         const data = JSON.parse(event.target.result);
         if (!data.config || !data.employees) throw new Error("File non valido");
-        if (window.confirm("Attenzione: l'importazione sovrascriverà tutti i dati attuali. Continuare?")) {
+        if (window.confirm("Attenzione: l'importazione sovrascriverà tutti i dati dello schema attuale. Continuare?")) {
           setConfig(data.config);
           setEmployees(data.employees);
           setExceptions(data.exceptions || []);
@@ -80,7 +85,7 @@ const Sidebar = ({ activeTab, setTab }) => {
   
   return (
     <div className="sidebar" style={{ backgroundColor: 'var(--bg-sidebar)' }}>
-      <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
         <div style={{ 
           width: '32px', height: '32px', 
           background: config.primaryColor, 
@@ -88,6 +93,46 @@ const Sidebar = ({ activeTab, setTab }) => {
           borderRadius: '8px', display: 'grid', placeItems: 'center', fontWeight: 'bold' 
         }}>{config.appName.charAt(0)}</div>
         <h2 style={{ fontSize: '1.2rem', letterSpacing: '-0.02em' }}>{config.appName}</h2>
+      </div>
+
+      {/* Switcher Schemi */}
+      <div style={{ marginBottom: '2rem', padding: '0.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.25rem 0.5rem', marginBottom: '0.5rem' }}>
+          <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em' }}>I Miei Schemi</span>
+          {userRole === 'admin' && (
+            <button 
+              onClick={() => {
+                const name = window.prompt("Nome del nuovo schema:");
+                if (name) addSchedule(name);
+              }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}
+              title="Aggiungi nuovo schema"
+            >+</button>
+          )}
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '200px', overflowY: 'auto' }}>
+          {schedules.map(sch => (
+            <div 
+              key={sch.id}
+              className={`nav-item ${activeScheduleId === sch.id ? 'active' : ''}`}
+              style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem', marginBottom: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}
+              onClick={() => setActiveScheduleId(sch.id)}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                <span style={{ fontSize: '0.8rem' }}>{activeScheduleId === sch.id ? '📍' : '📄'}</span>
+                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sch.name}</span>
+              </div>
+              
+              {userRole === 'admin' && activeScheduleId === sch.id && (
+                <div style={{ display: 'flex', gap: '6px', opacity: 0.7 }}>
+                   <span onClick={(e) => { e.stopPropagation(); const n = window.prompt("Rinomina schema:", sch.name); if(n) renameSchedule(sch.id, n); }} style={{ cursor: 'pointer' }} title="Rinomina">✏️</span>
+                   {schedules.length > 1 && <span onClick={(e) => { e.stopPropagation(); deleteSchedule(sch.id); }} style={{ cursor: 'pointer' }} title="Elimina">🗑️</span>}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       <nav style={{ flex: 1 }}>
@@ -107,6 +152,7 @@ const Sidebar = ({ activeTab, setTab }) => {
             </div>
           </>
         )}
+
 
         {config.appLogo && (
           <div style={{ marginTop: '3rem', padding: '1rem', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '15px', border: '1px solid var(--glass-border)' }}>
