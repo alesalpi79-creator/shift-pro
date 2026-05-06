@@ -17,17 +17,17 @@ const PremiumColorPicker = ({ value, onChange, label, isOpen, onToggle, selected
   ];
 
   return (
-    <div className="form-group" style={{ marginBottom: '1rem' }} onClick={e => e.stopPropagation()}>
-      {label && <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>{label}</label>}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+    <div className="form-group" style={{ marginBottom: '1rem', minWidth: '140px' }} onClick={e => e.stopPropagation()}>
+      {label && <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block', whiteSpace: 'nowrap' }}>{label}</label>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           <div 
             onClick={onToggle}
             style={{ 
               width: '100%', height: '38px', borderRadius: '10px', background: value, 
               border: '2px solid var(--glass-border)', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
-              display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.7rem', fontWeight: 'bold',
-              color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.5)'
+              display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.65rem', fontWeight: 'bold',
+              color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.5)', textAlign: 'center', padding: '0 5px'
             }} 
           >
             {isOpen ? 'CHIUDI TAVOLOZZA' : 'CAMBIA COLORE'}
@@ -35,8 +35,8 @@ const PremiumColorPicker = ({ value, onChange, label, isOpen, onToggle, selected
         </div>
 
         {isOpen && (
-          <div className="glass-card" style={{ padding: '0.85rem', background: 'rgba(0,0,0,0.7)', marginTop: '5px', animation: 'fadeUpIn 0.3s ease', border: '1px solid var(--primary)' }}>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase', fontWeight: 'bold' }}>1. Tonalità</div>
+          <div className="glass-card" style={{ padding: '0.85rem', background: 'rgba(0,0,0,0.85)', marginTop: '5px', animation: 'fadeUpIn 0.3s ease', border: '1px solid var(--primary)', zIndex: 10, width: '100%', minWidth: '220px' }}>
+            <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.6)', marginBottom: '10px', textTransform: 'uppercase', fontWeight: 'bold' }}>1. Tonalità</div>
             <div style={{ display: 'flex', overflowX: 'auto', gap: '10px', paddingBottom: '10px' }} className="no-scrollbar">
               {hues.map(h => (
                 <div 
@@ -218,8 +218,8 @@ export default function RuleSettings() {
     <div className="fade-in">
       <div className="glass-card" style={{ marginBottom: '1.5rem' }}>
         <h3 style={{ marginBottom: '1.25rem', fontSize: '1rem' }}>Identità App</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div className="form-group" style={{ gridColumn: 'span 2' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
+          <div className="form-group" style={{ gridColumn: '1 / -1' }}>
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Logo Aziendale (Sostituisce l'iniziale)</label>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               {config.appLogo ? (
@@ -261,7 +261,7 @@ export default function RuleSettings() {
           <PremiumColorPicker label="Colore Sfondo" value={config.backgroundColor || '#0f172a'} onChange={val => saveConfig('backgroundColor', val)} isOpen={openPickerId === 'bg'} onToggle={() => togglePicker('bg')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
           <PremiumColorPicker label="Colore Testo App" value={config.textColor || '#ffffff'} onChange={val => saveConfig('textColor', val)} isOpen={openPickerId === 'text'} onToggle={() => togglePicker('text')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
           <PremiumColorPicker label="Colore Testo Sidebar" value={config.sidebarTextColor || '#ffffff'} onChange={val => saveConfig('sidebarTextColor', val)} isOpen={openPickerId === 'sideText'} onToggle={() => togglePicker('sideText')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
-          <div className="form-group" style={{ gridColumn: 'span 2' }}>
+          <div className="form-group" style={{ gridColumn: '1 / -1' }}>
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sfondo (Carica Foto o incolla URL)</label>
             <div style={{ display: 'flex', gap: '10px' }}>
               <input 
@@ -319,7 +319,7 @@ export default function RuleSettings() {
             )}
           </div>
 
-          <div className="form-group" style={{ gridColumn: 'span 2' }}>
+          <div className="form-group" style={{ gridColumn: '1 / -1' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
               <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Opacità Finestre (Vetro)</label>
               <span style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{Math.round((config.glassOpacity || 0.4) * 100)}%</span>
