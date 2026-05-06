@@ -2,6 +2,95 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getMonthlyRole } from '../logic/ShiftEngine';
 
+const PremiumColorPicker = ({ value, onChange, label }) => {
+  const hues = [
+    { name: 'Rosso', color: '#ef4444', shades: ['#fee2e2', '#fca5a5', '#f87171', '#ef4444', '#b91c1c'] },
+    { name: 'Arancio', color: '#f97316', shades: ['#ffedd5', '#fdba74', '#fb923c', '#f97316', '#c2410c'] },
+    { name: 'Giallo', color: '#eab308', shades: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#a16207'] },
+    { name: 'Verde', color: '#22c55e', shades: ['#dcfce7', '#86efac', '#4ade80', '#22c55e', '#15803d'] },
+    { name: 'Ciano', color: '#06b6d4', shades: ['#cffafe', '#67e8f9', '#22d3ee', '#06b6d4', '#0e7490'] },
+    { name: 'Blu', color: '#3b82f6', shades: ['#dbeafe', '#93c5fd', '#60a5fa', '#3b82f6', '#1d4ed8'] },
+    { name: 'Indaco', color: '#6366f1', shades: ['#e0e7ff', '#a5b4fc', '#818cf8', '#6366f1', '#4338ca'] },
+    { name: 'Viola', color: '#a855f7', shades: ['#ede9fe', '#ddd6fe', '#c084fc', '#a855f7', '#7e22ce'] },
+    { name: 'Rosa', color: '#ec4899', shades: ['#fce7f3', '#f9a8d4', '#f472b6', '#ec4899', '#be185d'] },
+    { name: 'Grigio', color: '#64748b', shades: ['#f1f5f9', '#cbd5e1', '#94a3b8', '#64748b', '#334155'] },
+  ];
+
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [selectedHue, setSelectedHue] = React.useState(null);
+
+  return (
+    <div className="form-group" style={{ marginBottom: '1rem' }}>
+      {label && <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'block' }}>{label}</label>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div 
+            onClick={() => setIsOpen(!isOpen)}
+            style={{ 
+              width: '42px', height: '42px', borderRadius: '12px', background: value, 
+              border: '2px solid var(--glass-border)', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+              flexShrink: 0
+            }} 
+          />
+          <input 
+            className="input-main" 
+            style={{ fontSize: '0.75rem', textTransform: 'uppercase' }}
+            value={value} 
+            onChange={e => onChange(e.target.value)} 
+          />
+        </div>
+
+        {isOpen && (
+          <div className="glass-card" style={{ padding: '0.75rem', background: 'rgba(0,0,0,0.4)', marginTop: '5px', animation: 'fadeUpIn 0.3s ease' }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', fontWeight: 'bold' }}>1. Scegli Colore</div>
+            <div style={{ display: 'flex', overflowX: 'auto', gap: '8px', paddingBottom: '8px' }} className="no-scrollbar">
+              {hues.map(h => (
+                <div 
+                  key={h.name}
+                  onClick={() => setSelectedHue(h)}
+                  style={{ 
+                    width: '28px', height: '28px', borderRadius: '50%', background: h.color, 
+                    border: selectedHue?.name === h.name ? '2px solid white' : '1px solid rgba(255,255,255,0.1)',
+                    cursor: 'pointer', flexShrink: 0
+                  }}
+                />
+              ))}
+              <div style={{ position: 'relative', width: '28px', height: '28px', flexShrink: 0 }}>
+                <input 
+                  type="color" 
+                  value={value} 
+                  onChange={e => onChange(e.target.value)}
+                  style={{ position: 'absolute', opacity: 0, width: '100%', height: '100%', cursor: 'pointer' }} 
+                />
+                <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'conic-gradient(red, yellow, green, cyan, blue, magenta, red)', border: '1px solid white' }}></div>
+              </div>
+            </div>
+
+            {selectedHue && (
+              <div style={{ marginTop: '10px' }}>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', fontWeight: 'bold' }}>2. Scegli Gradazione ({selectedHue.name})</div>
+                <div style={{ display: 'flex', gap: '5px' }}>
+                  {selectedHue.shades.map(s => (
+                    <div 
+                      key={s}
+                      onClick={() => { onChange(s); setIsOpen(false); }}
+                      style={{ 
+                        flex: 1, height: '24px', borderRadius: '6px', background: s, 
+                        border: value === s ? '2px solid white' : '1px solid rgba(255,255,255,0.1)',
+                        cursor: 'pointer'
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function RuleSettings() {
   const { config, setConfig, employees, setEmployees, exceptions, setExceptions } = useApp();
   const [activeSection, setActiveSection] = useState('design');
@@ -152,22 +241,10 @@ export default function RuleSettings() {
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Nome App</label>
             <input className="input-main" value={config.appName} onChange={e => saveConfig('appName', e.target.value)} />
           </div>
-          <div className="form-group">
-            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Colore Primario</label>
-            <input type="color" style={{ width: '100%', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }} value={config.primaryColor} onChange={e => saveConfig('primaryColor', e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Colore Sfondo</label>
-            <input type="color" style={{ width: '100%', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }} value={config.backgroundColor || '#0f172a'} onChange={e => saveConfig('backgroundColor', e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Colore Testo App</label>
-            <input type="color" style={{ width: '100%', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }} value={config.textColor || '#ffffff'} onChange={e => saveConfig('textColor', e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Colore Testo Sidebar</label>
-            <input type="color" style={{ width: '100%', height: '42px', border: 'none', background: 'transparent', cursor: 'pointer' }} value={config.sidebarTextColor || '#ffffff'} onChange={e => saveConfig('sidebarTextColor', e.target.value)} />
-          </div>
+          <PremiumColorPicker label="Colore Primario" value={config.primaryColor} onChange={val => saveConfig('primaryColor', val)} />
+          <PremiumColorPicker label="Colore Sfondo" value={config.backgroundColor || '#0f172a'} onChange={val => saveConfig('backgroundColor', val)} />
+          <PremiumColorPicker label="Colore Testo App" value={config.textColor || '#ffffff'} onChange={val => saveConfig('textColor', val)} />
+          <PremiumColorPicker label="Colore Testo Sidebar" value={config.sidebarTextColor || '#ffffff'} onChange={val => saveConfig('sidebarTextColor', val)} />
           <div className="form-group" style={{ gridColumn: 'span 2' }}>
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sfondo (Carica Foto o incolla URL)</label>
             <div style={{ display: 'flex', gap: '10px' }}>
@@ -262,15 +339,10 @@ export default function RuleSettings() {
                 >✕</button>
               )}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <input 
-                  type="color" 
-                  style={{ width: '45px', height: '45px', borderRadius: '12px', border: '2px solid var(--glass-border)', background: 'transparent', cursor: 'pointer' }}
-                  value={safeShiftColors[id] || '#6366f1'}
-                  onChange={e => saveConfig('shiftColors', { ...safeShiftColors, [id]: e.target.value })}
-                />
+                <PremiumColorPicker value={safeShiftColors[id] || '#6366f1'} onChange={val => saveConfig('shiftColors', { ...safeShiftColors, [id]: val })} />
                 <input 
                   className="input-main"
-                  style={{ width: '70px', textAlign: 'center', fontSize: '0.75rem', padding: '5px', fontWeight: 'bold' }}
+                  style={{ width: '70px', textAlign: 'center', fontSize: '0.75rem', padding: '5px', fontWeight: 'bold', marginTop: '-10px' }}
                   value={safeShiftLabels[id] || id}
                   onChange={e => {
                     const newLabels = { ...safeShiftLabels };
