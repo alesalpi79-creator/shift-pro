@@ -27,35 +27,33 @@ const PremiumColorPicker = ({ value, onChange, label }) => {
           <div 
             onClick={() => setIsOpen(!isOpen)}
             style={{ 
-              width: '42px', height: '42px', borderRadius: '12px', background: value, 
+              width: '100%', height: '38px', borderRadius: '10px', background: value, 
               border: '2px solid var(--glass-border)', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
-              flexShrink: 0
+              display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.7rem', fontWeight: 'bold',
+              color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.5)'
             }} 
-          />
-          <input 
-            className="input-main" 
-            style={{ fontSize: '0.75rem', textTransform: 'uppercase' }}
-            value={value} 
-            onChange={e => onChange(e.target.value)} 
-          />
+          >
+            {isOpen ? 'CHIUDI TAVOLOZZA' : 'CAMBIA COLORE'}
+          </div>
         </div>
 
         {isOpen && (
-          <div className="glass-card" style={{ padding: '0.75rem', background: 'rgba(0,0,0,0.4)', marginTop: '5px', animation: 'fadeUpIn 0.3s ease' }}>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', fontWeight: 'bold' }}>1. Scegli Colore</div>
-            <div style={{ display: 'flex', overflowX: 'auto', gap: '8px', paddingBottom: '8px' }} className="no-scrollbar">
+          <div className="glass-card" style={{ padding: '0.85rem', background: 'rgba(0,0,0,0.6)', marginTop: '5px', animation: 'fadeUpIn 0.3s ease', border: '1px solid var(--primary)' }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase', fontWeight: 'bold' }}>1. Tonalità</div>
+            <div style={{ display: 'flex', overflowX: 'auto', gap: '10px', paddingBottom: '10px' }} className="no-scrollbar">
               {hues.map(h => (
                 <div 
                   key={h.name}
                   onClick={() => setSelectedHue(h)}
                   style={{ 
-                    width: '28px', height: '28px', borderRadius: '50%', background: h.color, 
-                    border: selectedHue?.name === h.name ? '2px solid white' : '1px solid rgba(255,255,255,0.1)',
-                    cursor: 'pointer', flexShrink: 0
+                    width: '32px', height: '32px', borderRadius: '50%', background: h.color, 
+                    border: selectedHue?.name === h.name ? '3px solid white' : '1px solid rgba(255,255,255,0.2)',
+                    cursor: 'pointer', flexShrink: 0, transform: selectedHue?.name === h.name ? 'scale(1.1)' : 'none',
+                    transition: 'all 0.2s'
                   }}
                 />
               ))}
-              <div style={{ position: 'relative', width: '28px', height: '28px', flexShrink: 0 }}>
+              <div style={{ position: 'relative', width: '32px', height: '32px', flexShrink: 0 }}>
                 <input 
                   type="color" 
                   value={value} 
@@ -67,17 +65,18 @@ const PremiumColorPicker = ({ value, onChange, label }) => {
             </div>
 
             {selectedHue && (
-              <div style={{ marginTop: '10px' }}>
-                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', fontWeight: 'bold' }}>2. Scegli Gradazione ({selectedHue.name})</div>
-                <div style={{ display: 'flex', gap: '5px' }}>
+              <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase', fontWeight: 'bold' }}>2. Gradazione ({selectedHue.name})</div>
+                <div style={{ display: 'flex', gap: '6px' }}>
                   {selectedHue.shades.map(s => (
                     <div 
                       key={s}
-                      onClick={() => { onChange(s); setIsOpen(false); }}
+                      onClick={() => onChange(s)}
                       style={{ 
-                        flex: 1, height: '24px', borderRadius: '6px', background: s, 
-                        border: value === s ? '2px solid white' : '1px solid rgba(255,255,255,0.1)',
-                        cursor: 'pointer'
+                        flex: 1, height: '30px', borderRadius: '8px', background: s, 
+                        border: value === s ? '3px solid white' : '1px solid rgba(255,255,255,0.1)',
+                        cursor: 'pointer', transition: 'all 0.2s',
+                        transform: value === s ? 'scale(1.05)' : 'none'
                       }}
                     />
                   ))}
