@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getMonthlyRole } from '../logic/ShiftEngine';
 
-const PremiumColorPicker = ({ value, onChange, label }) => {
+const PremiumColorPicker = ({ value, onChange, label, isOpen, onToggle }) => {
   const hues = [
     { name: 'Rosso', color: '#ef4444', shades: ['#fee2e2', '#fca5a5', '#f87171', '#ef4444', '#b91c1c'] },
     { name: 'Arancio', color: '#f97316', shades: ['#ffedd5', '#fdba74', '#fb923c', '#f97316', '#c2410c'] },
@@ -16,7 +16,6 @@ const PremiumColorPicker = ({ value, onChange, label }) => {
     { name: 'Grigio', color: '#64748b', shades: ['#f1f5f9', '#cbd5e1', '#94a3b8', '#64748b', '#334155'] },
   ];
 
-  const [isOpen, setIsOpen] = React.useState(false);
   const [selectedHue, setSelectedHue] = React.useState(null);
 
   return (
@@ -25,7 +24,7 @@ const PremiumColorPicker = ({ value, onChange, label }) => {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div 
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={onToggle}
             style={{ 
               width: '100%', height: '38px', borderRadius: '10px', background: value, 
               border: '2px solid var(--glass-border)', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
@@ -93,6 +92,7 @@ const PremiumColorPicker = ({ value, onChange, label }) => {
 export default function RuleSettings() {
   const { config, setConfig, employees, setEmployees, exceptions, setExceptions } = useApp();
   const [activeSection, setActiveSection] = useState('design');
+  const [openPickerId, setOpenPickerId] = useState(null);
   const [tempCycle, setTempCycle] = useState(() => {
     const cycle = config.cycle || [];
     return Array.isArray(cycle) ? cycle.join(', ') : (typeof cycle === 'string' ? cycle : '');
@@ -240,10 +240,10 @@ export default function RuleSettings() {
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Nome App</label>
             <input className="input-main" value={config.appName} onChange={e => saveConfig('appName', e.target.value)} />
           </div>
-          <PremiumColorPicker label="Colore Primario" value={config.primaryColor} onChange={val => saveConfig('primaryColor', val)} />
-          <PremiumColorPicker label="Colore Sfondo" value={config.backgroundColor || '#0f172a'} onChange={val => saveConfig('backgroundColor', val)} />
-          <PremiumColorPicker label="Colore Testo App" value={config.textColor || '#ffffff'} onChange={val => saveConfig('textColor', val)} />
-          <PremiumColorPicker label="Colore Testo Sidebar" value={config.sidebarTextColor || '#ffffff'} onChange={val => saveConfig('sidebarTextColor', val)} />
+          <PremiumColorPicker label="Colore Primario" value={config.primaryColor} onChange={val => saveConfig('primaryColor', val)} isOpen={openPickerId === 'primary'} onToggle={() => setOpenPickerId(openPickerId === 'primary' ? null : 'primary')} />
+          <PremiumColorPicker label="Colore Sfondo" value={config.backgroundColor || '#0f172a'} onChange={val => saveConfig('backgroundColor', val)} isOpen={openPickerId === 'bg'} onToggle={() => setOpenPickerId(openPickerId === 'bg' ? null : 'bg')} />
+          <PremiumColorPicker label="Colore Testo App" value={config.textColor || '#ffffff'} onChange={val => saveConfig('textColor', val)} isOpen={openPickerId === 'text'} onToggle={() => setOpenPickerId(openPickerId === 'text' ? null : 'text')} />
+          <PremiumColorPicker label="Colore Testo Sidebar" value={config.sidebarTextColor || '#ffffff'} onChange={val => saveConfig('sidebarTextColor', val)} isOpen={openPickerId === 'sideText'} onToggle={() => setOpenPickerId(openPickerId === 'sideText' ? null : 'sideText')} />
           <div className="form-group" style={{ gridColumn: 'span 2' }}>
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sfondo (Carica Foto o incolla URL)</label>
             <div style={{ display: 'flex', gap: '10px' }}>
@@ -338,7 +338,7 @@ export default function RuleSettings() {
                 >✕</button>
               )}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <PremiumColorPicker value={safeShiftColors[id] || '#6366f1'} onChange={val => saveConfig('shiftColors', { ...safeShiftColors, [id]: val })} />
+                <PremiumColorPicker value={safeShiftColors[id] || '#6366f1'} onChange={val => saveConfig('shiftColors', { ...safeShiftColors, [id]: val })} isOpen={openPickerId === `shift-${id}`} onToggle={() => setOpenPickerId(openPickerId === `shift-${id}` ? null : `shift-${id}`)} />
                 <input 
                   className="input-main"
                   style={{ width: '70px', textAlign: 'center', fontSize: '0.75rem', padding: '5px', fontWeight: 'bold', marginTop: '-10px' }}
