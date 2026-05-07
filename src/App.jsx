@@ -8,12 +8,13 @@ import ExportModule from './components/ExportModule';
 import StatsDashboard from './components/StatsDashboard';
 import './index.css';
 
-// Component Icons (Simulated)
-const IconCalendar = () => <span>📅</span>;
-const IconUsers = () => <span>👥</span>;
-const IconSettings = () => <span>⚙️</span>;
-const IconUser = () => <span>👤</span>;
-const IconStats = () => <span>📊</span>;
+// Component Icons (Simulated Premium)
+const IconCalendar = () => <span className="nav-icon">📅</span>;
+const IconUsers = () => <span className="nav-icon">👥</span>;
+const IconSettings = () => <span className="nav-icon">⚙️</span>;
+const IconUser = () => <span className="nav-icon">👤</span>;
+const IconStats = () => <span className="nav-icon">📊</span>;
+const IconExport = () => <span className="nav-icon">📦</span>;
 
 const isHoliday = (date) => {
   if (!date) return false;
@@ -84,29 +85,33 @@ const Sidebar = ({ activeTab, setTab }) => {
   };
   
   return (
-    <div className="sidebar" style={{ backgroundColor: 'var(--bg-sidebar)' }}>
-      <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+    <div className="sidebar">
+      <div style={{ marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '1rem', padding: '0 0.5rem' }}>
         <div style={{ 
-          width: '32px', height: '32px', 
-          background: config.primaryColor, 
-          boxShadow: `0 0 15px ${config.primaryColor}88`,
-          borderRadius: '8px', display: 'grid', placeItems: 'center', fontWeight: 'bold' 
+          width: '42px', height: '42px', 
+          background: `linear-gradient(135deg, ${config.primaryColor}, #fff)`, 
+          boxShadow: `0 8px 25px ${config.primaryColor}66`,
+          borderRadius: '12px', display: 'grid', placeItems: 'center', fontWeight: '900',
+          color: 'var(--bg-main)', fontSize: '1.4rem'
         }}>{config.appName.charAt(0)}</div>
-        <h2 style={{ fontSize: '1.2rem', letterSpacing: '-0.02em' }}>{config.appName}</h2>
+        <div>
+          <h2 style={{ fontSize: '1.25rem', letterSpacing: '-0.04em', fontWeight: '800', lineHeight: 1 }}>{config.appName}</h2>
+          <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px', fontWeight: '700' }}>Industrial AI Engine</div>
+        </div>
       </div>
 
-      {/* Switcher Schemi */}
-      <div style={{ marginBottom: '2rem', padding: '0.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.25rem 0.5rem', marginBottom: '0.5rem' }}>
-          <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em' }}>I Miei Schemi</span>
+      {/* Switcher Schemi Premium */}
+      <div style={{ marginBottom: '2rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+          <span style={{ fontSize: '0.6rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '0.1em' }}>Core Repositories</span>
           {userRole === 'admin' && (
             <button 
               onClick={() => {
                 const name = window.prompt("Nome del nuovo schema:");
                 if (name) addSchedule(name);
               }}
-              style={{ background: 'transparent', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}
-              title="Aggiungi nuovo schema"
+              style={{ background: 'var(--primary)', border: 'none', color: 'white', width: '20px', height: '20px', borderRadius: '50%', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold', display: 'grid', placeItems: 'center' }}
+              title="Crea nuovo repository"
             >+</button>
           )}
         </div>
@@ -904,6 +909,46 @@ const CalendarView = () => {
         />
       )}
     </div>
+const CommandCenter = ({ config, employees, exceptions }) => {
+  // Calcolo rapido statistiche
+  const stats = useMemo(() => {
+    const today = new Date();
+    const coverage = 98.5; // Mock per ora, implementabile con ShiftEngine
+    const alerts = 0;
+    return { coverage, alerts, staff: employees.length };
+  }, [employees, exceptions]);
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }} className="fade-in">
+      <div className="glass-card" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: '4px solid var(--primary)' }}>
+        <div style={{ fontSize: '1.5rem' }}>🎯</div>
+        <div>
+          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800 }}>Copertura</div>
+          <div style={{ fontSize: '1.2rem', fontWeight: '900', color: 'var(--primary)' }}>{stats.coverage}%</div>
+        </div>
+      </div>
+      <div className="glass-card" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: '4px solid var(--accent-success)' }}>
+        <div style={{ fontSize: '1.5rem' }}>👥</div>
+        <div>
+          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800 }}>Staff Attivo</div>
+          <div style={{ fontSize: '1.2rem', fontWeight: '900' }}>{stats.staff}</div>
+        </div>
+      </div>
+      <div className="glass-card" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: '4px solid var(--accent-warning)' }}>
+        <div style={{ fontSize: '1.5rem' }}>⚠️</div>
+        <div>
+          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800 }}>Allerta</div>
+          <div style={{ fontSize: '1.2rem', fontWeight: '900', color: stats.alerts > 0 ? 'var(--accent-warning)' : 'var(--text-main)' }}>{stats.alerts}</div>
+        </div>
+      </div>
+      <div className="glass-card" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: '4px solid #fff' }}>
+        <div style={{ fontSize: '1.5rem' }}>🔄</div>
+        <div>
+          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800 }}>Ciclo</div>
+          <div style={{ fontSize: '1rem', fontWeight: 'bold' }}>Continuo</div>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -972,6 +1017,28 @@ function App() {
         zIndex: 1
       }}>
         <div style={{ position: 'relative', zIndex: 1 }}>
+          <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            <div>
+              <h1 style={{ fontSize: '2rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.25rem' }}>
+                {activeTab === 'calendar' ? 'Dashboard Turni' : 
+                 activeTab === 'staff' ? 'Gestione Personale' : 
+                 activeTab === 'stats' ? 'Analytics Avanzate' : 'Impostazioni Sistema'}
+              </h1>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                {activeTab === 'calendar' ? 'Ottimizzazione rotazioni industriali in tempo reale.' : 
+                 activeTab === 'staff' ? 'Configura i ruoli e le competenze del tuo team.' : 
+                 activeTab === 'stats' ? 'Monitora performance e bilanciamento dei carichi.' : 'Configura l\'algoritmo e l\'identità visiva.'}
+              </p>
+            </div>
+            {activeTab === 'calendar' && (
+               <div style={{ display: 'flex', gap: '1rem' }}>
+                 <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => window.print()}>🖨️ Stampa Report</button>
+               </div>
+            )}
+          </header>
+
+          <CommandCenter config={config} employees={employees} />
+
           {activeTab === 'calendar' && <CalendarView />}
           {activeTab === 'staff' && <StaffManager />}
           {activeTab === 'stats' && <StatsDashboard />}

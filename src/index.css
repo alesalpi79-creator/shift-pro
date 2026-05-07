@@ -22,100 +22,76 @@
   --shift-r: #334155;
   
   /* Shared Tokens */
-  --radius-lg: 1rem;
-  --radius-md: 0.75rem;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+  --radius-lg: 1.25rem;
+  --radius-md: 0.85rem;
+  --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px var(--primary-glow);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--bg-main);
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
+  line-height: 1.5;
 }
 
-@keyframes meshGradient {
-  0% { background-position: 0% 0%; }
-  25% { background-position: 100% 0%; }
-  50% { background-position: 100% 100%; }
-  75% { background-position: 0% 100%; }
-  100% { background-position: 0% 0%; }
+/* Premium Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  top: -50%; left: -50%; width: 200vw; height: 200vh;
-  background: 
-    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.2), transparent 40%),
-    radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.15), transparent 40%),
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1), transparent 50%);
-  background-size: 150% 150%;
-  animation: meshGradient 20s ease-in-out infinite alternate;
-  z-index: 0;
-  pointer-events: none;
-  mix-blend-mode: overlay;
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 5px var(--primary-glow); }
+  50% { box-shadow: 0 0 20px var(--primary-glow); }
+  100% { box-shadow: 0 0 5px var(--primary-glow); }
 }
 
-.app-container {
-  display: flex;
-  min-height: 100vh;
-  position: relative;
-  z-index: 1;
+@keyframes slideIn {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
-/* Sidebar */
-.sidebar {
-  width: 260px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid var(--glass-border);
-  padding: 2rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  color: var(--text-sidebar);
+.fade-in { animation: fadeInUp 0.5s ease-out forwards; }
+.slide-in { animation: slideIn 0.4s ease-out forwards; }
+
+/* Dashboard Glassmorphism */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
 }
 
-/* Navigation */
-.nav-item {
-  padding: 0.8rem 1.2rem;
-  border-radius: var(--radius-md);
-  color: var(--text-sidebar);
-  opacity: 0.85;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-bottom: 0.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-weight: 500;
-  position: relative;
-  overflow: hidden;
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.nav-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-main);
-  opacity: 1;
-  transform: translateX(4px);
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.nav-item.active {
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
-  color: var(--text-main);
-  opacity: 1;
-  box-shadow: 0 4px 15px var(--primary-glow);
-  font-weight: 600;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -126,23 +102,17 @@ body::before {
   scrollbar-width: none;
 }
 
-/* Glass Card */
-@keyframes cardPopIn {
-  0% { opacity: 0; transform: scale(0.9) translateY(20px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
+/* Glass Card Enhanced */
 .glass-card {
-  background: var(--glass-bg);
+  background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   box-shadow: var(--shadow);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: cardPopIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  opacity: 0;
+  transition: var(--transition);
+  opacity: 1; /* Managed by JS or simple classes */
 }
 
 /* Stagger settings cards */
@@ -455,11 +425,69 @@ button[data-shift="CF"] {
   .app-container {
     flex-direction: column;
   }
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    padding: 1rem;
+  .app-container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* Sidebar Premium */
+.sidebar {
+  width: 280px;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  color: var(--text-main);
+  transition: var(--transition);
+  z-index: 100;
+}
+
+.nav-item {
+  padding: 0.9rem 1.25rem;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  transform: translateX(5px);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-item.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: var(--shadow-glow);
+  font-weight: 600;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-icon {
+  font-size: 1.2rem;
+  transition: var(--transition);
+}
+
+.nav-item.active .nav-icon {
+  transform: scale(1.1);
+}
+rem;
     border-right: none;
     border-bottom: 1px solid var(--glass-border);
   }
