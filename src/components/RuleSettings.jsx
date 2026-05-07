@@ -344,42 +344,40 @@ export default function RuleSettings() {
             <input type="range" min="0.1" max="0.9" step="0.05" style={{ width: '100%', accentColor: 'var(--primary)' }} value={config.glassOpacity || 0.4} onChange={e => saveConfig('glassOpacity', parseFloat(e.target.value))} />
           </div>
         </div>
-      </div>
-    </div>
-  );
-
-      <div className="glass-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-          <h3 style={{ fontSize: '1rem', margin: 0 }}>Colori e Sigle Turni</h3>
-          <button 
-            onClick={addNewShift}
-            style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 'bold', display: 'grid', placeItems: 'center', boxShadow: '0 4px 10px var(--primary)44' }}
-          >+</button>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '1.5rem 1rem' }}>
-          {Object.keys(config.shiftColors).map(id => (
-            <div key={id} style={{ textAlign: 'center', position: 'relative' }}>
-              { !['A', 'B', 'C', 'R'].includes(id) && (
-                <button 
-                  onClick={() => removeShift(id)}
-                  style={{ position: 'absolute', top: '-5px', right: '15px', width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '0.6rem', cursor: 'pointer' }}
-                >✕</button>
-              )}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <PremiumColorPicker value={safeShiftColors[id] || '#6366f1'} onChange={val => saveConfig('shiftColors', { ...safeShiftColors, [id]: val })} isOpen={openPickerId === `shift-${id}`} onToggle={() => togglePicker(`shift-${id}`)} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
-                <input 
-                  className="input-main"
-                  style={{ width: '70px', textAlign: 'center', fontSize: '0.75rem', padding: '5px', fontWeight: 'bold', marginTop: '-10px' }}
-                  value={safeShiftLabels[id] || id}
-                  onChange={e => {
-                    const newLabels = { ...safeShiftLabels };
-                    newLabels[id] = e.target.value.toUpperCase();
-                    saveConfig('shiftLabels', newLabels);
-                  }}
-                />
+        {/* SCHEDA 4: COLORI E SIGLE TURNI */}
+        <div className="glass-card" style={{ minWidth: '400px', flex: '0 0 400px', scrollSnapAlign: 'start' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>
+            <h3 style={{ fontSize: '1.1rem', margin: 0 }}>🎨 Sigle Turni</h3>
+            <button 
+              onClick={addNewShift}
+              style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary)', color: 'white', border: 'none', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 'bold', display: 'grid', placeItems: 'center', boxShadow: '0 4px 10px var(--primary)44' }}
+            >+</button>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '1rem' }}>
+            {Object.keys(config.shiftColors).map(id => (
+              <div key={id} style={{ textAlign: 'center', position: 'relative' }}>
+                { !['A', 'B', 'C', 'R'].includes(id) && (
+                  <button 
+                    onClick={() => removeShift(id)}
+                    style={{ position: 'absolute', top: '-5px', right: '5px', width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: '0.6rem', cursor: 'pointer', zIndex: 1 }}
+                  >✕</button>
+                )}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <PremiumColorPicker value={safeShiftColors[id] || '#6366f1'} onChange={val => saveConfig('shiftColors', { ...safeShiftColors, [id]: val })} isOpen={openPickerId === `shift-${id}`} onToggle={() => togglePicker(`shift-${id}`)} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
+                  <input 
+                    className="input-main"
+                    style={{ width: '60px', textAlign: 'center', fontSize: '0.7rem', padding: '5px', fontWeight: 'bold', marginTop: '-10px' }}
+                    value={safeShiftLabels[id] || id}
+                    onChange={e => {
+                      const newLabels = { ...safeShiftLabels };
+                      newLabels[id] = e.target.value.toUpperCase();
+                      saveConfig('shiftLabels', newLabels);
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -757,7 +757,7 @@ const LandingPage = ({ onEnter, config }) => {
 
       <div style={{ marginTop: '5rem', width: '100%', position: 'relative' }}>
         <div className="glass-panel" style={{ padding: '1rem', borderRadius: '2rem', overflow: 'hidden', boxShadow: '0 50px 100px -20px rgba(0,0,0,0.5)' }}>
-          <div style={{ aspectHeight: '16/9', background: 'rgba(0,0,0,0.5)', borderRadius: '1.5rem', display: 'grid', placeItems: 'center', height: '400px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
+          <div style={{ aspectRatio: '16/9', background: 'rgba(0,0,0,0.5)', borderRadius: '1.5rem', display: 'grid', placeItems: 'center', height: '400px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
              {/* Qui andrà il tag <video> una volta registrata la demo */}
              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: '2rem', cursor: 'pointer', boxShadow: '0 0 30px var(--primary-glow)', zIndex: 2 }}>▶️</div>
              <div style={{ position: 'absolute', bottom: '20px', left: '20px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)' }}>Demo di Anteprima del Sistema</div>
