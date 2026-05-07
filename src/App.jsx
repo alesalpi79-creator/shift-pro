@@ -35,7 +35,7 @@ const isHoliday = (date) => {
   return holidays.some(h => h.d === d && h.m === m);
 };
 
-const Sidebar = ({ activeTab, setTab }) => {
+const Sidebar = ({ activeTab, setTab, setView }) => {
   const { 
     userRole, setUserRole, 
     schedules, activeScheduleId, setActiveScheduleId, 
@@ -757,8 +757,10 @@ const LandingPage = ({ onEnter, config }) => {
 
       <div style={{ marginTop: '5rem', width: '100%', position: 'relative' }}>
         <div className="glass-panel" style={{ padding: '1rem', borderRadius: '2rem', overflow: 'hidden', boxShadow: '0 50px 100px -20px rgba(0,0,0,0.5)' }}>
-          <div style={{ aspectHeight: '16/9', background: 'rgba(0,0,0,0.5)', borderRadius: '1.5rem', display: 'grid', placeItems: 'center', height: '400px', border: '1px solid rgba(255,255,255,0.05)' }}>
-             <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: '2rem', cursor: 'pointer', boxShadow: '0 0 30px var(--primary-glow)' }}>▶️</div>
+          <div style={{ aspectHeight: '16/9', background: 'rgba(0,0,0,0.5)', borderRadius: '1.5rem', display: 'grid', placeItems: 'center', height: '400px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
+             {/* Qui andrà il tag <video> una volta registrata la demo */}
+             <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: '2rem', cursor: 'pointer', boxShadow: '0 0 30px var(--primary-glow)', zIndex: 2 }}>▶️</div>
+             <div style={{ position: 'absolute', bottom: '20px', left: '20px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)' }}>Demo di Anteprima del Sistema</div>
           </div>
         </div>
         {/* Floating cards decoration */}
@@ -1076,7 +1078,7 @@ function App() {
       {config.backgroundImage && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 0 }}></div>
       )}
-      <Sidebar activeTab={activeTab} setTab={setTab} />
+      <Sidebar activeTab={activeTab} setTab={setTab} setView={setView} />
       <main style={{ 
         flex: 1, 
         minWidth: 0, 
