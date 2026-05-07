@@ -220,19 +220,32 @@ export default function RuleSettings() {
 
   const renderDesign = () => (
     <div className="fade-in">
-      <div className="glass-card" style={{ marginBottom: '1.5rem' }}>
-        <h3 style={{ marginBottom: '1.5rem', fontSize: '1.1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>Identità App</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div 
+        style={{ 
+          display: 'flex', 
+          gap: '1.5rem', 
+          overflowX: 'auto', 
+          paddingBottom: '2rem', 
+          scrollSnapType: 'x mandatory',
+          WebkitOverflowScrolling: 'touch',
+          padding: '0.5rem'
+        }} 
+        className="no-scrollbar settings-horizontal-flow"
+      >
+        {/* SCHEDA 1: IDENTITÀ APP */}
+        <div className="glass-card" style={{ minWidth: '320px', flex: '0 0 320px', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+          <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>🏷️ Identità</h3>
+          
           <div className="form-group">
-            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Logo Aziendale (Sostituisce l'iniziale)</label>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>Logo Aziendale</label>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               {config.appLogo ? (
                 <img src={config.appLogo} alt="Logo Preview" style={{ width: '42px', height: '42px', borderRadius: '8px', objectFit: 'contain', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)' }} />
               ) : (
                 <div style={{ width: '42px', height: '42px', borderRadius: '8px', background: config.primaryColor, display: 'grid', placeItems: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>{config.appName.charAt(0)}</div>
               )}
-              <label className="btn-primary" style={{ flex: 1, textAlign: 'center', cursor: 'pointer', fontSize: '0.75rem' }}>
-                {config.appLogo ? '🔄 Cambia Logo' : '🖼️ Carica Logo'}
+              <label className="btn-primary" style={{ flex: 1, textAlign: 'center', cursor: 'pointer', fontSize: '0.75rem', padding: '10px' }}>
+                {config.appLogo ? '🔄 Cambia' : '🖼️ Carica'}
                 <input 
                   type="file" 
                   accept="image/*" 
@@ -250,7 +263,7 @@ export default function RuleSettings() {
               {config.appLogo && (
                 <button 
                   className="btn-primary" 
-                  style={{ background: 'var(--accent-danger)', padding: '0 10px' }}
+                  style={{ background: 'var(--accent-danger)', padding: '0 12px' }}
                   onClick={() => saveConfig('appLogo', '')}
                 >✕</button>
               )}
@@ -258,115 +271,82 @@ export default function RuleSettings() {
           </div>
 
           <div className="form-group">
-            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.6rem', display: 'block' }}>Nome App</label>
-            <input className="input-main" value={config.appName} onChange={e => saveConfig('appName', e.target.value)} style={{ fontSize: '1rem', padding: '12px' }} />
+            <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.5rem', display: 'block' }}>Nome App</label>
+            <input className="input-main" value={config.appName} onChange={e => saveConfig('appName', e.target.value)} style={{ fontSize: '0.9rem', padding: '10px' }} />
           </div>
 
           <div className="form-group">
-            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.6rem', display: 'block' }}>Sottotitolo / Tipo Azienda</label>
-            <input className="input-main" value={config.appTagline || ''} placeholder="Es: Motore AI Industriale" onChange={e => saveConfig('appTagline', e.target.value)} style={{ fontSize: '0.9rem', padding: '10px' }} />
+            <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.5rem', display: 'block' }}>Sottotitolo</label>
+            <input className="input-main" value={config.appTagline || ''} placeholder="Es: Motore AI Industriale" onChange={e => saveConfig('appTagline', e.target.value)} style={{ fontSize: '0.85rem', padding: '10px' }} />
           </div>
+        </div>
 
-          <PremiumColorPicker label="Colore Primario" value={config.primaryColor} onChange={val => saveConfig('primaryColor', val)} isOpen={openPickerId === 'primary'} onToggle={() => togglePicker('primary')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
+        {/* SCHEDA 2: TAVOLOZZA COLORI */}
+        <div className="glass-card" style={{ minWidth: '320px', flex: '0 0 320px', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+          <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>🎨 Tavolozza</h3>
           
-          <PremiumColorPicker label="Colore Sfondo" value={config.backgroundColor || '#0f172a'} onChange={val => saveConfig('backgroundColor', val)} isOpen={openPickerId === 'bg'} onToggle={() => togglePicker('bg')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
+          <PremiumColorPicker label="Primario" value={config.primaryColor} onChange={val => saveConfig('primaryColor', val)} isOpen={openPickerId === 'primary'} onToggle={() => togglePicker('primary')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
           
-          <PremiumColorPicker label="Colore Testo App" value={config.textColor || '#ffffff'} onChange={val => saveConfig('textColor', val)} isOpen={openPickerId === 'text'} onToggle={() => togglePicker('text')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
+          <PremiumColorPicker label="Sfondo" value={config.backgroundColor || '#0f172a'} onChange={val => saveConfig('backgroundColor', val)} isOpen={openPickerId === 'bg'} onToggle={() => togglePicker('bg')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
           
-          <PremiumColorPicker label="Colore Testo Sidebar" value={config.sidebarTextColor || '#ffffff'} onChange={val => saveConfig('sidebarTextColor', val)} isOpen={openPickerId === 'sideText'} onToggle={() => togglePicker('sideText')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
+          <PremiumColorPicker label="Testo App" value={config.textColor || '#ffffff'} onChange={val => saveConfig('textColor', val)} isOpen={openPickerId === 'text'} onToggle={() => togglePicker('text')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
+          
+          <PremiumColorPicker label="Testo Sidebar" value={config.sidebarTextColor || '#ffffff'} onChange={val => saveConfig('sidebarTextColor', val)} isOpen={openPickerId === 'sideText'} onToggle={() => togglePicker('sideText')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
+        </div>
 
-          <div className="form-group" style={{ marginTop: '0.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.8rem', display: 'block' }}>Sfondo Personalizzato</label>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+        {/* SCHEDA 3: SFONDO & EFFETTI */}
+        <div className="glass-card" style={{ minWidth: '320px', flex: '0 0 320px', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+          <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>🖼️ Effetti</h3>
+          
+          <div className="form-group">
+            <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.8rem', display: 'block' }}>Sfondo Personalizzato</label>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
               <input 
                 className="input-main" 
-                style={{ flex: 1, fontSize: '0.9rem' }}
-                placeholder="Incolla URL immagine..." 
+                style={{ flex: 1, fontSize: '0.8rem' }}
+                placeholder="URL immagine..." 
                 value={config.backgroundImage && !config.backgroundImage.startsWith('data:') ? config.backgroundImage : ''} 
                 onChange={e => saveConfig('backgroundImage', e.target.value)} 
               />
-              <label className="btn-primary" style={{ padding: '0 20px', display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.75rem', background: 'var(--primary)' }}>
-                📁 Carica
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  style={{ display: 'none' }} 
-                  onChange={e => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      if (file.size > 1.5 * 1024 * 1024) {
-                        alert("L'immagine è troppo grande! Usa una foto sotto 1.5MB per garantire il salvataggio.");
-                        return;
-                      }
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        saveConfig('backgroundImage', reader.result);
-                        if (!config.backgroundMode) saveConfig('backgroundMode', 'cover');
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  }} 
-                />
+              <label className="btn-primary" style={{ padding: '0 12px', display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.7rem', background: 'var(--primary)' }}>
+                📁
+                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={e => {
+                  const file = e.target.files[0];
+                  if (file && file.size <= 1.5 * 1024 * 1024) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      saveConfig('backgroundImage', reader.result);
+                      if (!config.backgroundMode) saveConfig('backgroundMode', 'cover');
+                    };
+                    reader.readAsDataURL(file);
+                  } else if (file) alert("Immagine troppo grande (>1.5MB)");
+                }} />
               </label>
-              {config.backgroundImage && (
-                <button 
-                  className="btn-primary" 
-                  style={{ background: 'var(--accent-danger)', padding: '0 12px' }}
-                  onClick={() => {
-                    saveConfig('backgroundImage', '');
-                    saveConfig('backgroundMode', 'cover');
-                  }}
-                >✕</button>
-              )}
             </div>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>Modalità Visualizzazione:</div>
-              <div style={{ display: 'flex', gap: '8px', opacity: config.backgroundImage ? 1 : 0.5, pointerEvents: config.backgroundImage ? 'auto' : 'none', transition: 'all 0.3s' }}>
-                {[
-                  { id: 'cover', label: '🖼️ Adatta' },
-                  { id: 'repeat', label: '🔁 Ripeti' },
-                  { id: 'contain', label: '🎯 Centra' }
-                ].map(mode => (
-                  <button 
-                    key={mode.id}
-                    className={`toggle-btn ${config.backgroundMode === mode.id ? 'active' : ''}`}
-                    style={{ 
-                      flex: 1, fontSize: '0.75rem', padding: '8px',
-                      background: config.backgroundMode === mode.id ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.1)'
-                    }}
-                    onClick={() => saveConfig('backgroundMode', mode.id)}
-                  >
-                    {mode.label}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Visualizzazione:</div>
+              <div style={{ display: 'flex', gap: '4px', opacity: config.backgroundImage ? 1 : 0.5 }}>
+                {['cover', 'repeat', 'contain'].map(m => (
+                  <button key={m} className={`toggle-btn ${config.backgroundMode === m ? 'active' : ''}`} style={{ flex: 1, fontSize: '0.65rem', padding: '6px' }} onClick={() => saveConfig('backgroundMode', m)}>
+                    {m === 'cover' ? 'Adatta' : m === 'repeat' ? 'Ripeti' : 'Centra'}
                   </button>
                 ))}
               </div>
-              {!config.backgroundImage && (
-                <div style={{ fontSize: '0.65rem', color: 'var(--accent-warning)', fontStyle: 'italic' }}>
-                  💡 Carica una foto per attivare queste opzioni
-                </div>
-              )}
             </div>
           </div>
 
           <div className="form-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
-              <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)' }}>Opacità Finestre (Vetro)</label>
-              <span style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--primary)' }}>{Math.round((config.glassOpacity || 0.4) * 100)}%</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: '600' }}>Opacità Vetro</label>
+              <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--primary)' }}>{Math.round((config.glassOpacity || 0.4) * 100)}%</span>
             </div>
-            <input 
-              type="range" 
-              min="0.1" 
-              max="0.9" 
-              step="0.05" 
-              style={{ width: '100%', accentColor: 'var(--primary)' }}
-              value={config.glassOpacity || 0.4} 
-              onChange={e => saveConfig('glassOpacity', parseFloat(e.target.value))} 
-            />
+            <input type="range" min="0.1" max="0.9" step="0.05" style={{ width: '100%', accentColor: 'var(--primary)' }} value={config.glassOpacity || 0.4} onChange={e => saveConfig('glassOpacity', parseFloat(e.target.value))} />
           </div>
         </div>
       </div>
+    </div>
+  );
 
       <div className="glass-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
