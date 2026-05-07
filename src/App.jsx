@@ -909,6 +909,9 @@ const CalendarView = () => {
         />
       )}
     </div>
+  );
+};
+
 const CommandCenter = ({ config, employees, exceptions }) => {
   // Calcolo rapido statistiche
   const stats = useMemo(() => {
