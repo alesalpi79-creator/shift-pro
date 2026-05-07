@@ -96,7 +96,11 @@ const Sidebar = ({ activeTab, setTab }) => {
         }}>{config.appName.charAt(0)}</div>
         <div>
           <h2 style={{ fontSize: '1.25rem', letterSpacing: '-0.04em', fontWeight: '800', lineHeight: 1 }}>{config.appName}</h2>
-          <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px', fontWeight: '700' }}>Motore AI Industriale</div>
+          {config.appTagline && (
+            <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px', fontWeight: '700' }}>
+              {config.appTagline}
+            </div>
+          )}
         </div>
       </div>
 

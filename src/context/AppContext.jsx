@@ -4,6 +4,7 @@ const AppContext = createContext();
 
 export const DEFAULT_CONFIG = {
   appName: "Turni Pro",
+  appTagline: "Motore AI Industriale",
   primaryColor: "#6366f1",
   backgroundColor: "#0f172a",
   cycle: ['A', 'A', 'C', 'C', 'B', 'B', 'R', 'R'], // Default 8-day cycle as per Excel

@@ -262,6 +262,11 @@ export default function RuleSettings() {
             <input className="input-main" value={config.appName} onChange={e => saveConfig('appName', e.target.value)} style={{ fontSize: '1rem', padding: '12px' }} />
           </div>
 
+          <div className="form-group">
+            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.6rem', display: 'block' }}>Sottotitolo / Tipo Azienda</label>
+            <input className="input-main" value={config.appTagline || ''} placeholder="Es: Motore AI Industriale" onChange={e => saveConfig('appTagline', e.target.value)} style={{ fontSize: '0.9rem', padding: '10px' }} />
+          </div>
+
           <PremiumColorPicker label="Colore Primario" value={config.primaryColor} onChange={val => saveConfig('primaryColor', val)} isOpen={openPickerId === 'primary'} onToggle={() => togglePicker('primary')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
           
           <PremiumColorPicker label="Colore Sfondo" value={config.backgroundColor || '#0f172a'} onChange={val => saveConfig('backgroundColor', val)} isOpen={openPickerId === 'bg'} onToggle={() => togglePicker('bg')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
