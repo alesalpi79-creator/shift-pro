@@ -145,7 +145,10 @@ const Sidebar = ({ activeTab, setTab }) => {
       </div>
 
       <nav style={{ flex: 1 }}>
-        <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => setTab('calendar')}>
+        <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => { setTab('home'); setView('landing'); }}>
+          <span className="nav-icon">🏠</span> Home
+        </div>
+        <div className={`nav-item ${activeTab === 'calendar' ? 'active' : ''}`} onClick={() => { setTab('calendar'); setView('app'); }}>
           <IconCalendar /> Calendario
         </div>
         {userRole === 'admin' && (
@@ -709,6 +712,63 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
     </div>
   );
 };
+const LandingPage = ({ onEnter, config }) => {
+  return (
+    <div className="fade-in" style={{ 
+      minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', 
+      justifyContent: 'center', textAlign: 'center', padding: '2rem', maxWidth: '1200px', margin: '0 auto' 
+    }}>
+      <div className="floating-badge" style={{ marginBottom: '1.5rem' }}>
+        🚀 Engine v2.5 Online
+      </div>
+      <h1 className="hero-title gradient-text">
+        L'Algoritmo che Libera <br/>il Tuo Tempo.
+      </h1>
+      <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', maxWidth: '700px', marginBottom: '3rem', lineHeight: 1.6 }}>
+        Shift-Pro AI ottimizza rotazioni industriali complesse in millisecondi. Precisione matematica, estetica premium, efficienza totale.
+      </p>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', width: '100%', marginBottom: '4rem' }}>
+        <div className="glass-card" style={{ textAlign: 'left' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚡</div>
+          <h3 style={{ marginBottom: '0.5rem', fontWeight: '800' }}>Velocità AI</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Genera turni annuali bilanciati in meno di un secondo senza errori umani.</p>
+        </div>
+        <div className="glass-card" style={{ textAlign: 'left' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🛡️</div>
+          <h3 style={{ marginBottom: '0.5rem', fontWeight: '800' }}>Precisione Industriale</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Rispetto ferreo dei vincoli di sicurezza e delle quote legali 104 e riposi.</p>
+        </div>
+        <div className="glass-card" style={{ textAlign: 'left' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📱</div>
+          <h3 style={{ marginBottom: '0.5rem', fontWeight: '800' }}>Cloud Native</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Accedi ai tuoi schemi da qualsiasi dispositivo, ovunque nel mondo.</p>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <button className="btn-primary" style={{ padding: '1.2rem 2.5rem', fontSize: '1rem', fontWeight: 'bold' }} onClick={onEnter}>
+          Accedi alla Dashboard
+        </button>
+        <button className="btn-primary" style={{ padding: '1.2rem 2.5rem', fontSize: '1rem', fontWeight: 'bold', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          🎬 Guarda la Demo
+        </button>
+      </div>
+
+      <div style={{ marginTop: '5rem', width: '100%', position: 'relative' }}>
+        <div className="glass-panel" style={{ padding: '1rem', borderRadius: '2rem', overflow: 'hidden', boxShadow: '0 50px 100px -20px rgba(0,0,0,0.5)' }}>
+          <div style={{ aspectHeight: '16/9', background: 'rgba(0,0,0,0.5)', borderRadius: '1.5rem', display: 'grid', placeItems: 'center', height: '400px', border: '1px solid rgba(255,255,255,0.05)' }}>
+             <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--primary)', display: 'grid', placeItems: 'center', fontSize: '2rem', cursor: 'pointer', boxShadow: '0 0 30px var(--primary-glow)' }}>▶️</div>
+          </div>
+        </div>
+        {/* Floating cards decoration */}
+        <div className="glass-card floating-badge" style={{ position: 'absolute', top: '10%', right: '-5%', animationDelay: '0.5s' }}>📊 Copertura OK</div>
+        <div className="glass-card floating-badge" style={{ position: 'absolute', bottom: '20%', left: '-5%', animationDelay: '1s', background: 'var(--accent-success)' }}>✅ 100% Sicurezza</div>
+      </div>
+    </div>
+  );
+};
+
 const CalendarView = () => {
   const { employees, exceptions, config } = useApp();
   const [viewDate, setViewDate] = useState(new Date());
@@ -961,6 +1021,7 @@ const CommandCenter = ({ config, employees, exceptions }) => {
 
 function App() {
   const [activeTab, setTab] = useState('calendar');
+  const [view, setView] = useState('landing'); // 'landing' or 'app'
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return !localStorage.getItem('onboarding_complete') && !localStorage.getItem('shift_pro_employees');
   });
@@ -1019,37 +1080,44 @@ function App() {
       <main style={{ 
         flex: 1, 
         minWidth: 0, 
-        padding: '2.5rem', 
+        padding: view === 'landing' ? '0' : '2.5rem', 
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        overflowY: 'auto'
       }}>
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-            <div>
-              <h1 style={{ fontSize: '2rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.25rem' }}>
-                {activeTab === 'calendar' ? 'Dashboard Turni' : 
-                 activeTab === 'staff' ? 'Gestione Personale' : 
-                 activeTab === 'stats' ? 'Analytics Avanzate' : 'Impostazioni Sistema'}
-              </h1>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                {activeTab === 'calendar' ? 'Ottimizzazione rotazioni industriali in tempo reale.' : 
-                 activeTab === 'staff' ? 'Configura i ruoli e le competenze del tuo team.' : 
-                 activeTab === 'stats' ? 'Monitora performance e bilanciamento dei carichi.' : 'Configura l\'algoritmo e l\'identità visiva.'}
-              </p>
-            </div>
-            {activeTab === 'calendar' && (
-               <div style={{ display: 'flex', gap: '1rem' }}>
-                 <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => window.print()}>🖨️ Stampa Report</button>
-               </div>
-            )}
-          </header>
+          {view === 'landing' ? (
+            <LandingPage config={config} onEnter={() => { setView('app'); setTab('calendar'); }} />
+          ) : (
+            <>
+              <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <div>
+                  <h1 style={{ fontSize: '2rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.25rem' }}>
+                    {activeTab === 'calendar' ? 'Dashboard Turni' : 
+                     activeTab === 'staff' ? 'Gestione Personale' : 
+                     activeTab === 'stats' ? 'Analytics Avanzate' : 'Impostazioni Sistema'}
+                  </h1>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    {activeTab === 'calendar' ? 'Ottimizzazione rotazioni industriali in tempo reale.' : 
+                     activeTab === 'staff' ? 'Configura i ruoli e le competenze del tuo team.' : 
+                     activeTab === 'stats' ? 'Monitora performance e bilanciamento dei carichi.' : 'Configura l\'algoritmo e l\'identità visiva.'}
+                  </p>
+                </div>
+                {activeTab === 'calendar' && (
+                   <div style={{ display: 'flex', gap: '1rem' }}>
+                     <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => window.print()}>🖨️ Stampa Report</button>
+                   </div>
+                )}
+              </header>
 
-          <CommandCenter config={config} employees={employees} />
+              <CommandCenter config={config} employees={employees} />
 
-          {activeTab === 'calendar' && <CalendarView />}
-          {activeTab === 'staff' && <StaffManager />}
-          {activeTab === 'stats' && <StatsDashboard />}
-          {activeTab === 'settings' && <RuleSettings />}
+              {activeTab === 'calendar' && <CalendarView />}
+              {activeTab === 'staff' && <StaffManager />}
+              {activeTab === 'stats' && <StatsDashboard />}
+              {activeTab === 'settings' && <RuleSettings />}
+            </>
+          )}
         </div>
       </main>
     </div>
