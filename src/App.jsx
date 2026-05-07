@@ -96,14 +96,14 @@ const Sidebar = ({ activeTab, setTab }) => {
         }}>{config.appName.charAt(0)}</div>
         <div>
           <h2 style={{ fontSize: '1.25rem', letterSpacing: '-0.04em', fontWeight: '800', lineHeight: 1 }}>{config.appName}</h2>
-          <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px', fontWeight: '700' }}>Industrial AI Engine</div>
+          <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px', fontWeight: '700' }}>Motore AI Industriale</div>
         </div>
       </div>
 
       {/* Switcher Schemi Premium */}
       <div style={{ marginBottom: '2rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-          <span style={{ fontSize: '0.6rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '0.1em' }}>Core Repositories</span>
+          <span style={{ fontSize: '0.6rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '0.1em' }}>Database Schemi</span>
           {userRole === 'admin' && (
             <button 
               onClick={() => {
@@ -111,7 +111,7 @@ const Sidebar = ({ activeTab, setTab }) => {
                 if (name) addSchedule(name);
               }}
               style={{ background: 'var(--primary)', border: 'none', color: 'white', width: '20px', height: '20px', borderRadius: '50%', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold', display: 'grid', placeItems: 'center' }}
-              title="Crea nuovo repository"
+              title="Crea nuovo archivio"
             >+</button>
           )}
         </div>

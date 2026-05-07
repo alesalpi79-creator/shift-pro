@@ -26,13 +26,13 @@ export default function Onboarding({ onComplete }) {
                 style={{ marginTop: '0.75rem', fontSize: '1.1rem', padding: '15px' }}
               />
             </div>
-            <button className="btn-primary" style={{ width: '100%', padding: '18px' }} onClick={() => { setConfig({...config, appName}); nextStep(); }}>Configura Repository</button>
+            <button className="btn-primary" style={{ width: '100%', padding: '18px' }} onClick={() => { setConfig({...config, appName}); nextStep(); }}>Configura Archivio</button>
           </div>
         )}
 
         {step === 2 && (
           <div className="fade-in">
-            <h2 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '0.5rem' }}>Visual Identity</h2>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '0.5rem' }}>Identità Visiva</h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem' }}>Personalizza l'interfaccia con il colore del tuo brand.</p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1.25rem', marginBottom: '2.5rem' }}>
               {['#6366f1', '#10b981', '#ec4899', '#f59e0b', '#06b6d4'].map(color => (
