@@ -270,17 +270,17 @@ export default function RuleSettings() {
           
           <PremiumColorPicker label="Colore Testo Sidebar" value={config.sidebarTextColor || '#ffffff'} onChange={val => saveConfig('sidebarTextColor', val)} isOpen={openPickerId === 'sideText'} onToggle={() => togglePicker('sideText')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
 
-          <div className="form-group">
-            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.6rem', display: 'block' }}>Sfondo (Foto o URL)</label>
-            <div style={{ display: 'flex', gap: '10px' }}>
+          <div className="form-group" style={{ marginTop: '0.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.8rem', display: 'block' }}>Sfondo Personalizzato</label>
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
               <input 
                 className="input-main" 
                 style={{ flex: 1, fontSize: '0.9rem' }}
-                placeholder="Incolla URL..." 
+                placeholder="Incolla URL immagine..." 
                 value={config.backgroundImage && !config.backgroundImage.startsWith('data:') ? config.backgroundImage : ''} 
                 onChange={e => saveConfig('backgroundImage', e.target.value)} 
               />
-              <label className="btn-primary" style={{ padding: '0 15px', display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.7rem' }}>
+              <label className="btn-primary" style={{ padding: '0 20px', display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.75rem', background: 'var(--primary)' }}>
                 📁 Carica
                 <input 
                   type="file" 
@@ -289,14 +289,14 @@ export default function RuleSettings() {
                   onChange={e => {
                     const file = e.target.files[0];
                     if (file) {
-                      if (file.size > 2 * 1024 * 1024) {
-                        alert("L'immagine è troppo grande! Usa una foto sotto i 2MB.");
+                      if (file.size > 1.5 * 1024 * 1024) {
+                        alert("L'immagine è troppo grande! Usa una foto sotto 1.5MB per garantire il salvataggio.");
                         return;
                       }
                       const reader = new FileReader();
                       reader.onloadend = () => {
                         saveConfig('backgroundImage', reader.result);
-                        saveConfig('backgroundMode', 'cover');
+                        if (!config.backgroundMode) saveConfig('backgroundMode', 'cover');
                       };
                       reader.readAsDataURL(file);
                     }
@@ -306,26 +306,43 @@ export default function RuleSettings() {
               {config.backgroundImage && (
                 <button 
                   className="btn-primary" 
-                  style={{ background: 'var(--accent-danger)', padding: '0 10px' }}
-                  onClick={() => saveConfig('backgroundImage', '')}
+                  style={{ background: 'var(--accent-danger)', padding: '0 12px' }}
+                  onClick={() => {
+                    saveConfig('backgroundImage', '');
+                    saveConfig('backgroundMode', 'cover');
+                  }}
                 >✕</button>
               )}
             </div>
             
-            {config.backgroundImage && (
-              <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-                {['cover', 'repeat', 'contain'].map(mode => (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>Modalità Visualizzazione:</div>
+              <div style={{ display: 'flex', gap: '8px', opacity: config.backgroundImage ? 1 : 0.5, pointerEvents: config.backgroundImage ? 'auto' : 'none', transition: 'all 0.3s' }}>
+                {[
+                  { id: 'cover', label: '🖼️ Adatta' },
+                  { id: 'repeat', label: '🔁 Ripeti' },
+                  { id: 'contain', label: '🎯 Centra' }
+                ].map(mode => (
                   <button 
-                    key={mode}
-                    className={`toggle-btn ${config.backgroundMode === mode ? 'active' : ''}`}
-                    style={{ flex: 1, fontSize: '0.7rem', padding: '6px' }}
-                    onClick={() => saveConfig('backgroundMode', mode)}
+                    key={mode.id}
+                    className={`toggle-btn ${config.backgroundMode === mode.id ? 'active' : ''}`}
+                    style={{ 
+                      flex: 1, fontSize: '0.75rem', padding: '8px',
+                      background: config.backgroundMode === mode.id ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.1)'
+                    }}
+                    onClick={() => saveConfig('backgroundMode', mode.id)}
                   >
-                    {mode === 'cover' ? '🖼️ Copri' : mode === 'repeat' ? '🔁 Ripeti' : '🎯 Centro'}
+                    {mode.label}
                   </button>
                 ))}
               </div>
-            )}
+              {!config.backgroundImage && (
+                <div style={{ fontSize: '0.65rem', color: 'var(--accent-warning)', fontStyle: 'italic' }}>
+                  💡 Carica una foto per attivare queste opzioni
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="form-group">
