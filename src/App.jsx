@@ -747,12 +747,9 @@ const LandingPage = ({ onEnter, config }) => {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-        <button className="btn-primary" style={{ padding: '1.2rem 2.5rem', fontSize: '1rem', fontWeight: 'bold' }} onClick={onEnter}>
-          Accedi alla Dashboard
-        </button>
-        <button className="btn-primary" style={{ padding: '1.2rem 2.5rem', fontSize: '1rem', fontWeight: 'bold', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-          🎬 Guarda la Demo
+      <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+        <button className="btn-primary" style={{ padding: '1.2rem 3rem', fontSize: '1.1rem', fontWeight: 'bold', boxShadow: '0 10px 40px var(--primary-glow)' }} onClick={onEnter}>
+          🚀 Accedi alla Dashboard
         </button>
       </div>
 
