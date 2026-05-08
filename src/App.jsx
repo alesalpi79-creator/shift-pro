@@ -758,17 +758,17 @@ const LandingPage = ({ onEnter, config }) => {
       <div style={{ marginTop: '5rem', width: '100%', position: 'relative' }}>
         <div className="glass-panel" style={{ padding: '1rem', borderRadius: '2rem', overflow: 'hidden', boxShadow: '0 50px 100px -20px rgba(0,0,0,0.5)' }}>
           <div style={{ aspectRatio: '16/9', background: '#0f172a', borderRadius: '1.5rem', overflow: 'hidden', height: '400px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
+             {/* IMPORTANTE: Questo video richiede il push del file /public/demo.mp4 su GitHub */}
              <video 
+               src="/demo.mp4"
                autoPlay 
                loop 
                muted 
                playsInline 
                preload="auto"
-               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-             >
-               <source src="/demo.mp4" type="video/mp4" />
-               Il tuo browser non supporta il tag video.
-             </video>
+               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+               onCanPlay={(e) => e.target.play()}
+             />
              <div style={{ position: 'absolute', bottom: '20px', left: '20px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', background: 'rgba(0,0,0,0.5)', padding: '4px 12px', borderRadius: '1rem', backdropFilter: 'blur(10px)' }}>
                ✨ Demo Anteprima Sistema
              </div>
