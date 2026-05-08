@@ -221,15 +221,15 @@ export default function RuleSettings() {
 
   const handleDesignScroll = (e) => {
     const scrollLeft = e.target.scrollLeft;
-    const cardWidth = e.target.offsetWidth * 0.8; // Approssimazione larghezza card + gap
-    const index = Math.round(scrollLeft / 344); // 320 + 24 gap
+    const width = e.target.offsetWidth;
+    const index = Math.round(scrollLeft / width);
     if (index !== activeDesignCard) setActiveDesignCard(index);
   };
 
   const scrollToCard = (index) => {
     if (designCardsRef.current) {
-      const scrollPos = index * 344;
-      designCardsRef.current.scrollTo({ left: scrollPos, behavior: 'smooth' });
+      const width = designCardsRef.current.offsetWidth;
+      designCardsRef.current.scrollTo({ left: index * width, behavior: 'smooth' });
       setActiveDesignCard(index);
     }
   };
@@ -243,18 +243,18 @@ export default function RuleSettings() {
         onScroll={handleDesignScroll}
         style={{ 
           display: 'flex', 
-          gap: '1.5rem', 
           overflowX: 'auto', 
           paddingBottom: '1rem', 
           scrollSnapType: 'x mandatory',
           WebkitOverflowScrolling: 'touch',
-          padding: '1rem',
-          paddingRight: '5rem' // Spazio extra alla fine
+          padding: '10px',
+          width: '100%',
+          boxSizing: 'border-box'
         }} 
         className="no-scrollbar settings-horizontal-flow"
       >
         {/* SCHEDA 1: IDENTITÀ APP */}
-        <div className="glass-card" style={{ minWidth: '320px', flex: '0 0 320px', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+        <div className="glass-card" style={{ width: '100%', minWidth: '100%', flex: '0 0 100%', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '1.2rem', boxSizing: 'border-box' }}>
           <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>🏷️ Identità</h3>
           
           <div className="form-group">
@@ -303,7 +303,7 @@ export default function RuleSettings() {
         </div>
 
         {/* SCHEDA 2: TAVOLOZZA COLORI */}
-        <div className="glass-card" style={{ minWidth: '320px', flex: '0 0 320px', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+        <div className="glass-card" style={{ width: '100%', minWidth: '100%', flex: '0 0 100%', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '0.8rem', boxSizing: 'border-box' }}>
           <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>🎨 Tavolozza</h3>
           
           <PremiumColorPicker label="Primario" value={config.primaryColor} onChange={val => saveConfig('primaryColor', val)} isOpen={openPickerId === 'primary'} onToggle={() => togglePicker('primary')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
@@ -316,7 +316,7 @@ export default function RuleSettings() {
         </div>
 
         {/* SCHEDA 3: SFONDO & EFFETTI */}
-        <div className="glass-card" style={{ minWidth: '320px', flex: '0 0 320px', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+        <div className="glass-card" style={{ width: '100%', minWidth: '100%', flex: '0 0 100%', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '1.2rem', boxSizing: 'border-box' }}>
           <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>🖼️ Effetti</h3>
           
           <div className="form-group">
@@ -366,7 +366,7 @@ export default function RuleSettings() {
           </div>
         </div>
         {/* SCHEDA 4: COLORI E SIGLE TURNI */}
-        <div className="glass-card" style={{ minWidth: '400px', flex: '0 0 400px', scrollSnapAlign: 'start' }}>
+        <div className="glass-card" style={{ width: '100%', minWidth: '100%', flex: '0 0 100%', scrollSnapAlign: 'start', boxSizing: 'border-box' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>
             <h3 style={{ fontSize: '1.1rem', margin: 0 }}>🎨 Sigle Turni</h3>
             <button 
