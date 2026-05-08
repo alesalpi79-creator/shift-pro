@@ -1035,19 +1035,31 @@ function App() {
   };
 
   React.useEffect(() => {
-    document.documentElement.style.setProperty('--bg-main', config.backgroundColor || '#0f172a');
-    // adjust sidebar background slightly based on main background
-    document.documentElement.style.setProperty('--bg-sidebar', (config.backgroundColor + 'E6') || '#1e293b');
+    const isLanding = view === 'landing';
     
-    document.documentElement.style.setProperty('--text-main', config.textColor || '#ffffff');
-    document.documentElement.style.setProperty('--text-sidebar', config.sidebarTextColor || '#ffffff');
+    // Default values for Landing Page
+    const primary = isLanding ? '#6366f1' : config.primaryColor;
+    const bg = isLanding ? '#0f172a' : (config.backgroundColor || '#0f172a');
+    const text = isLanding ? '#ffffff' : (config.textColor || '#ffffff');
+    const sideText = isLanding ? '#ffffff' : (config.sidebarTextColor || '#ffffff');
+    const glass = isLanding ? 0.4 : (config.glassOpacity || 0.4);
+
+    document.documentElement.style.setProperty('--primary', primary);
+    document.documentElement.style.setProperty('--bg-main', bg);
+    document.documentElement.style.setProperty('--bg-sidebar', (bg + 'E6'));
+    document.documentElement.style.setProperty('--text-main', text);
+    document.documentElement.style.setProperty('--text-sidebar', sideText);
+    document.documentElement.style.setProperty('--glass-bg', `rgba(15, 23, 42, ${glass})`);
     
-    if (config.shiftColors) {
+    if (config.shiftColors && !isLanding) {
       Object.keys(config.shiftColors).forEach(k => {
         document.documentElement.style.setProperty(`--shift-${k.toLowerCase()}`, config.shiftColors[k]);
       });
+    } else {
+      // Default shift colors for landing/previews if needed
+      ['a', 'b', 'c', 'r'].forEach(k => document.documentElement.style.setProperty(`--shift-${k}`, k === 'r' ? 'rgba(255,255,255,0.1)' : '#6366f1'));
     }
-  }, [config]);
+  }, [config, view]);
 
   if (showOnboarding) {
     return (
@@ -1057,25 +1069,25 @@ function App() {
     );
   }
 
+  const isLanding = view === 'landing';
+
   return (
-    <div className="app-container" style={{ 
-      '--primary': config.primaryColor,
-      '--glass-bg': `rgba(15, 23, 42, ${config.glassOpacity || 0.4})`,
-      position: 'relative'
-    }}>
+    <div className="app-container" style={{ position: 'relative' }}>
+      {/* Background Layer: Only active in App view, neutral in Landing */}
       <div style={{
         position: 'fixed',
         top: 0, left: 0, 
         width: '100vw', height: '100vh',
-        backgroundColor: config.backgroundColor || 'var(--bg-main)',
-        backgroundImage: config.backgroundImage ? `url(${config.backgroundImage})` : 'none',
+        backgroundColor: isLanding ? '#0f172a' : (config.backgroundColor || 'var(--bg-main)'),
+        backgroundImage: (!isLanding && config.backgroundImage) ? `url(${config.backgroundImage})` : 'none',
         backgroundSize: config.backgroundMode === 'repeat' ? 'auto' : config.backgroundMode || 'cover',
         backgroundRepeat: config.backgroundMode === 'repeat' ? 'repeat' : 'no-repeat',
         backgroundPosition: 'center',
         zIndex: -1,
         pointerEvents: 'none'
       }}></div>
-      {config.backgroundImage && (
+
+      {!isLanding && config.backgroundImage && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 0 }}></div>
       )}
       {view !== 'landing' && (
