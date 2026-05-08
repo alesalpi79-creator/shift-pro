@@ -1078,7 +1078,9 @@ function App() {
       {config.backgroundImage && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 0 }}></div>
       )}
-      <Sidebar activeTab={activeTab} setTab={setTab} setView={setView} />
+      {view !== 'landing' && (
+        <Sidebar activeTab={activeTab} setTab={setTab} setView={setView} />
+      )}
       <main style={{ 
         flex: 1, 
         minWidth: 0, 
