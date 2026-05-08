@@ -1037,12 +1037,12 @@ function App() {
   React.useEffect(() => {
     const isLanding = view === 'landing';
     
-    // Default values for Landing Page
-    const primary = isLanding ? '#6366f1' : config.primaryColor;
-    const bg = isLanding ? '#0f172a' : (config.backgroundColor || '#0f172a');
+    // Default values for Landing Page (more vibrant and less dark)
+    const primary = isLanding ? '#4f46e5' : config.primaryColor; // Indigo più brillante
+    const bg = isLanding ? '#111827' : (config.backgroundColor || '#0f172a');
     const text = isLanding ? '#ffffff' : (config.textColor || '#ffffff');
     const sideText = isLanding ? '#ffffff' : (config.sidebarTextColor || '#ffffff');
-    const glass = isLanding ? 0.4 : (config.glassOpacity || 0.4);
+    const glass = isLanding ? 0.3 : (config.glassOpacity || 0.4);
 
     document.documentElement.style.setProperty('--primary', primary);
     document.documentElement.style.setProperty('--bg-main', bg);
@@ -1078,7 +1078,9 @@ function App() {
         position: 'fixed',
         top: 0, left: 0, 
         width: '100vw', height: '100vh',
-        backgroundColor: isLanding ? '#0f172a' : (config.backgroundColor || 'var(--bg-main)'),
+        background: isLanding 
+          ? 'radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%)' 
+          : (config.backgroundColor || 'var(--bg-main)'),
         backgroundImage: (!isLanding && config.backgroundImage) ? `url(${config.backgroundImage})` : 'none',
         backgroundSize: config.backgroundMode === 'repeat' ? 'auto' : config.backgroundMode || 'cover',
         backgroundRepeat: config.backgroundMode === 'repeat' ? 'repeat' : 'no-repeat',
