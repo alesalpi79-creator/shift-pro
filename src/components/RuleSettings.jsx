@@ -216,21 +216,43 @@ export default function RuleSettings() {
     reader.readAsText(file);
   };
 
+  const [activeDesignCard, setActiveDesignCard] = useState(0);
+  const designCardsRef = useRef(null);
+
+  const handleDesignScroll = (e) => {
+    const scrollLeft = e.target.scrollLeft;
+    const cardWidth = 320 + 24; // minWidth + gap
+    const index = Math.round(scrollLeft / cardWidth);
+    if (index !== activeDesignCard) setActiveDesignCard(index);
+  };
+
+  const scrollToCard = (index) => {
+    if (designCardsRef.current) {
+      const cardWidth = 320 + 24;
+      designCardsRef.current.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
+      setActiveDesignCard(index);
+    }
+  };
+
   const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 
   const renderDesign = () => (
     <div className="fade-in">
       <div 
+        ref={designCardsRef}
+        onScroll={handleDesignScroll}
         style={{ 
           display: 'flex', 
           gap: '1.5rem', 
           overflowX: 'auto', 
-          paddingBottom: '2rem', 
+          paddingBottom: '1rem', 
           scrollSnapType: 'x mandatory',
           WebkitOverflowScrolling: 'touch',
-          padding: '0.5rem'
+          padding: '0.5rem',
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'var(--primary) rgba(255,255,255,0.05)'
         }} 
-        className="no-scrollbar settings-horizontal-flow"
+        className="settings-horizontal-flow"
       >
         {/* SCHEDA 1: IDENTITÀ APP */}
         <div className="glass-card" style={{ minWidth: '320px', flex: '0 0 320px', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
@@ -379,6 +401,25 @@ export default function RuleSettings() {
             ))}
           </div>
         </div>
+      </div>
+      
+      {/* INDICATORI DI PAGINA (PUNTINI) */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '1rem', marginBottom: '2rem' }}>
+        {[0, 1, 2, 3].map(i => (
+          <div 
+            key={i} 
+            onClick={() => scrollToCard(i)}
+            style={{ 
+              width: activeDesignCard === i ? '24px' : '10px', 
+              height: '10px', 
+              borderRadius: '10px', 
+              background: activeDesignCard === i ? 'var(--primary)' : 'rgba(255,255,255,0.2)',
+              cursor: 'pointer',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: activeDesignCard === i ? '0 0 10px var(--primary-glow)' : 'none'
+            }}
+          />
+        ))}
       </div>
     </div>
   );
