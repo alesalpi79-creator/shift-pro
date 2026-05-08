@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from './context/AppContext';
+import demoVideo from './assets/demo.mp4';
 import { calculateDailyShifts } from './logic/ShiftEngine';
 import StaffManager from './components/StaffManager';
 import RuleSettings from './components/RuleSettings';
@@ -760,7 +761,7 @@ const LandingPage = ({ onEnter, config }) => {
           <div style={{ aspectRatio: '16/9', background: '#0f172a', borderRadius: '1.5rem', overflow: 'hidden', height: '400px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
              {/* IMPORTANTE: Questo video richiede il push del file /public/demo.mp4 su GitHub */}
              <video 
-               src="/demo.mp4"
+               src={demoVideo}
                autoPlay 
                loop 
                muted 
