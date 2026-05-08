@@ -221,15 +221,15 @@ export default function RuleSettings() {
 
   const handleDesignScroll = (e) => {
     const scrollLeft = e.target.scrollLeft;
-    const cardWidth = 320 + 24; // minWidth + gap
-    const index = Math.round(scrollLeft / cardWidth);
+    const cardWidth = e.target.offsetWidth * 0.8; // Approssimazione larghezza card + gap
+    const index = Math.round(scrollLeft / 344); // 320 + 24 gap
     if (index !== activeDesignCard) setActiveDesignCard(index);
   };
 
   const scrollToCard = (index) => {
     if (designCardsRef.current) {
-      const cardWidth = 320 + 24;
-      designCardsRef.current.scrollTo({ left: index * cardWidth, behavior: 'smooth' });
+      const scrollPos = index * 344;
+      designCardsRef.current.scrollTo({ left: scrollPos, behavior: 'smooth' });
       setActiveDesignCard(index);
     }
   };
@@ -248,11 +248,10 @@ export default function RuleSettings() {
           paddingBottom: '1rem', 
           scrollSnapType: 'x mandatory',
           WebkitOverflowScrolling: 'touch',
-          padding: '0.5rem',
-          scrollbarWidth: 'thin',
-          scrollbarColor: 'var(--primary) rgba(255,255,255,0.05)'
+          padding: '1rem',
+          paddingRight: '5rem' // Spazio extra alla fine
         }} 
-        className="settings-horizontal-flow"
+        className="no-scrollbar settings-horizontal-flow"
       >
         {/* SCHEDA 1: IDENTITÀ APP */}
         <div className="glass-card" style={{ minWidth: '320px', flex: '0 0 320px', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
