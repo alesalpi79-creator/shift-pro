@@ -754,7 +754,7 @@ const LandingPage = ({ onEnter, config }) => {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-        <button className="btn-primary" style={{ padding: '1.2rem 3rem', fontSize: '1.1rem', fontWeight: 'bold', boxShadow: '0 10px 40px var(--primary-glow)' }} onClick={onEnter}>
+        <button className="btn-hero" onClick={onEnter}>
           🚀 Accedi alla Dashboard
         </button>
       </div>

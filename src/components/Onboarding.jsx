@@ -67,7 +67,7 @@ export default function Onboarding({ onComplete }) {
                 <li style={{ marginBottom: '0' }}>✅ Dashboard Analitica Pronta</li>
               </ul>
             </div>
-            <button className="btn-primary" style={{ width: '100%', padding: '18px' }} onClick={onComplete}>Accedi alla Dashboard</button>
+            <button className="btn-hero" style={{ width: '100%', justifyContent: 'center' }} onClick={onComplete}>Accedi alla Dashboard</button>
           </div>
         )}
       </div>
