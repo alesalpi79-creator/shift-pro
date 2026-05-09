@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;600;800;900&display=swap');
 
 html {
-  font-size: 13px !important; /* Riduzione più aggressiva per visibilità immediata */
+  font-size: 15px; /* Un buon compromesso tra compattezza e leggibilità */
 }
 
 :root {
@@ -53,14 +53,14 @@ html {
 body {
   background: var(--bg-main);
   color: var(--text-main);
-  line-height: 1.4;
+  line-height: 1.6;
   overflow-x: hidden;
   transition: background-color 0.5s ease;
 }
 
 @media (min-width: 1200px) {
   body {
-    zoom: 0.8; /* Riduzione globale del 20% su desktop per far stare tutto nello schermo */
+    zoom: 0.9; /* Riduzione del 10% invece del 20% per non affaticare la vista */
   }
 }
 

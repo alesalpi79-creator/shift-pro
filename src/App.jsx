@@ -755,6 +755,43 @@ const ProjectPreviewTable = () => {
   );
 };
 
+const ProjectCalendarPreview = () => {
+  const days = [
+    { d: 1, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
+    { d: 2, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
+    { d: 3, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
+    { d: 4, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
+    { d: 5, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
+    { d: 6, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
+    { d: 7, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
+  ];
+
+  return (
+    <div style={{ background: '#0f172a', padding: '1.5rem', borderRadius: '2rem', marginTop: '2.5rem', boxShadow: '0 30px 60px -10px rgba(0,0,0,0.3)' }}>
+       <h4 style={{ color: 'white', marginBottom: '1.5rem', fontSize: '0.9rem', opacity: 0.7, fontWeight: 500, letterSpacing: '0.05em' }}>VISTA CALENDARIO MENSILE</h4>
+       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '10px' }}>
+          {['LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB', 'DOM'].map(d => (
+            <div key={d} style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.6rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '5px' }}>{d}</div>
+          ))}
+          {days.map(day => (
+            <div key={day.d} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '10px', minHeight: '80px', border: '1px solid rgba(255,255,255,0.05)' }}>
+               <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>{day.d}</div>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {day.s.map((shift, idx) => (
+                    <div key={idx} style={{ 
+                      fontSize: '0.6rem', padding: '2px 6px', borderRadius: '4px', 
+                      background: shift.startsWith('A') ? 'var(--shift-a)' : shift.startsWith('B') ? 'var(--shift-b)' : shift.startsWith('C') ? 'var(--shift-c)' : 'rgba(255,255,255,0.1)',
+                      color: 'white', fontWeight: 'bold'
+                    }}>{shift}</div>
+                  ))}
+               </div>
+            </div>
+          ))}
+       </div>
+    </div>
+  );
+};
+
 const CaseStudy = ({ id, onBack }) => {
   const data = id === 1 ? {
     title: "Logistica Nord S.p.A.",
@@ -800,7 +837,7 @@ const CaseStudy = ({ id, onBack }) => {
           <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Il Risultato</h3>
           <p style={{ fontSize: '1.3rem', fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '1rem' }}>{data.result}</p>
           
-          <ProjectPreviewTable />
+          {id === 1 ? <ProjectPreviewTable /> : <ProjectCalendarPreview />}
         </div>
       </div>
 
