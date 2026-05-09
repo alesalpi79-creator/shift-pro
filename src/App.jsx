@@ -728,28 +728,34 @@ const LandingPage = ({ onEnter, config }) => {
       <div className="floating-badge" style={{ marginBottom: '1.5rem' }}>
         🚀 Engine v2.5 Online
       </div>
-      <h1 className="hero-title gradient-text">
+      <h1 className="hero-title gradient-text" style={{ fontSize: '3.5rem', marginBottom: '1.5rem' }}>
         L'Algoritmo che Libera <br/>il Tuo Tempo.
       </h1>
-      <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', maxWidth: '700px', marginBottom: '3rem', lineHeight: 1.6 }}>
+      <p style={{ fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: '600', maxWidth: '800px', marginBottom: '1rem', lineHeight: 1.4 }}>
+        Genera turni ottimizzati in 30 secondi, riducendo straordinari e conflitti del 40%.
+      </p>
+      <p style={{ fontSize: '1rem', color: 'var(--text-muted)', maxWidth: '600px', marginBottom: '3rem', lineHeight: 1.6 }}>
         Shift-Pro AI ottimizza rotazioni industriali complesse in millisecondi. Precisione matematica, estetica premium, efficienza totale.
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2.5rem', width: '100%', marginBottom: '6rem' }}>
-        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '3rem 1rem 3rem 1rem', padding: '2.5rem' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>⚡</div>
-          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>Velocità AI</h3>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Genera turni annuali bilanciati in meno di un secondo senza errori umani.</p>
+        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '3rem 1rem 3rem 1rem', padding: '2.5rem', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, right: 0, padding: '8px 15px', background: 'var(--primary)', color: 'white', fontSize: '0.6rem', fontWeight: '900', borderRadius: '0 0 0 15px' }}>STEP 1</div>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>⚙️</div>
+          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>Inserisci i Vincoli</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Configura ruoli, disponibilità e leggi (es. 104) in pochi click.</p>
         </div>
-        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '1rem 3rem 1rem 3rem', padding: '2.5rem', borderTop: '4px solid var(--primary)' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>🛡️</div>
-          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>Precisione Industriale</h3>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Rispetto ferreo dei vincoli di sicurezza e delle quote legali 104 e riposi.</p>
+        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '1rem 3rem 1rem 3rem', padding: '2.5rem', borderTop: '4px solid var(--primary)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, right: 0, padding: '8px 15px', background: 'var(--primary)', color: 'white', fontSize: '0.6rem', fontWeight: '900', borderRadius: '0 0 0 15px' }}>STEP 2</div>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>🧠</div>
+          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>L'AI Genera i Turni</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>L'algoritmo bilancia i carichi e risolve i conflitti automaticamente.</p>
         </div>
-        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '2rem 2rem 4rem 2rem', padding: '2.5rem' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>📱</div>
-          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>Cloud Native</h3>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Accedi ai tuoi schemi da qualsiasi dispositivo, ovunque nel mondo.</p>
+        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '2rem 2rem 4rem 2rem', padding: '2.5rem', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, right: 0, padding: '8px 15px', background: 'var(--primary)', color: 'white', fontSize: '0.6rem', fontWeight: '900', borderRadius: '0 0 0 15px' }}>STEP 3</div>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>🚀</div>
+          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>Esporta e Condividi</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Scarica PDF o Excel professionali pronti per essere distribuiti.</p>
         </div>
       </div>
 
@@ -760,28 +766,59 @@ const LandingPage = ({ onEnter, config }) => {
       </div>
 
       <div style={{ marginTop: '5rem', width: '100%', position: 'relative' }}>
-        <div className="glass-panel" style={{ padding: '1rem', borderRadius: '2rem', overflow: 'hidden', boxShadow: '0 30px 60px -20px rgba(0,0,0,0.1)' }}>
-          <div style={{ aspectRatio: '16/9', background: '#000', borderRadius: '1.5rem', overflow: 'hidden', height: '400px', border: '1px solid var(--glass-border)', position: 'relative' }}>
-             {/* IMPORTANTE: Questo video richiede il push del file /public/demo.mp4 su GitHub */}
+        <h2 style={{ marginBottom: '3rem', fontSize: '2rem', fontWeight: '900' }}>Guarda l'AI in azione</h2>
+        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '2.5rem', overflow: 'hidden', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.15)', border: '1px solid var(--glass-border)' }}>
+          <div style={{ aspectRatio: '16/9', background: '#000', borderRadius: '1.5rem', overflow: 'hidden', height: '500px', border: '1px solid var(--glass-border)', position: 'relative' }}>
              <video 
                src={demoVideo}
                autoPlay 
                loop 
                muted 
                playsInline 
-               preload="auto"
-               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-               onCanPlay={(e) => e.target.play()}
+               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
              />
-             <div style={{ position: 'absolute', bottom: '20px', left: '20px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', background: 'rgba(0,0,0,0.5)', padding: '4px 12px', borderRadius: '1rem', backdropFilter: 'blur(10px)' }}>
-               ✨ Demo Anteprima Sistema
+             <div style={{ position: 'absolute', top: '20px', left: '20px', display: 'flex', gap: '10px' }}>
+                <div style={{ background: 'rgba(0,0,0,0.6)', color: 'white', padding: '6px 15px', borderRadius: '100px', fontSize: '0.7rem', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>● Live Demo</div>
+                <div style={{ background: 'var(--primary)', color: 'white', padding: '6px 15px', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 'bold' }}>AI Engine v2.5</div>
              </div>
           </div>
         </div>
-        {/* Floating cards decoration */}
-        <div className="glass-card floating-badge" style={{ position: 'absolute', top: '10%', right: '-5%', animationDelay: '0.5s' }}>📊 Copertura OK</div>
-        <div className="glass-card floating-badge" style={{ position: 'absolute', bottom: '20%', left: '-5%', animationDelay: '1s', background: 'var(--accent-success)' }}>✅ 100% Sicurezza</div>
+        
+        {/* Floating elements decoration */}
+        <div className="glass-card floating-badge" style={{ position: 'absolute', top: '20%', right: '-8%', animationDelay: '0.5s', padding: '1rem 2rem', borderRadius: '1.5rem' }}>
+          <div style={{ fontSize: '1.2rem', marginBottom: '5px' }}>📊</div>
+          <div>Copertura 100%</div>
+        </div>
+        <div className="glass-card floating-badge" style={{ position: 'absolute', bottom: '15%', left: '-8%', animationDelay: '1.2s', background: 'var(--accent-success)', padding: '1rem 2rem', borderRadius: '1.5rem' }}>
+          <div style={{ fontSize: '1.2rem', marginBottom: '5px' }}>✅</div>
+          <div>Sicurezza Garantita</div>
+        </div>
       </div>
+
+      <footer style={{ marginTop: '8rem', padding: '4rem 0', borderTop: '1px solid var(--glass-border)', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ fontWeight: '900', fontSize: '1.5rem', marginBottom: '0.5rem' }}>{config.appName} <span style={{ color: 'var(--primary)' }}>Pro</span></div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>© 2026 Shift-Pro AI. Tutti i diritti riservati.</p>
+        </div>
+        <div style={{ display: 'flex', gap: '2rem' }}>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', marginBottom: '1rem', color: 'var(--primary)' }}>Prodotto</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+              <span>Funzionalità</span>
+              <span>Integrazioni</span>
+              <span>Prezzi <Badge style={{ fontSize: '0.6rem', padding: '2px 5px' }}>PRO</Badge></span>
+            </div>
+          </div>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', marginBottom: '1rem', color: 'var(--primary)' }}>Supporto</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+              <span>Documentazione</span>
+              <span>Guide Video</span>
+              <span>Contatti</span>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
