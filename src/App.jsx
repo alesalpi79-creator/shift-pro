@@ -726,17 +726,17 @@ const CaseStudy = ({ id, onBack }) => {
   };
 
   return (
-    <div className="fade-in" style={{ padding: '4rem 2rem', maxWidth: '900px', margin: '0 auto', textAlign: 'left' }}>
-      <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: 'bold', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <div className="fade-in" style={{ padding: '3rem 1.5rem', maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
+      <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
         ← Torna alla Home
       </button>
-      <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginBottom: '4rem' }}>
-        <div style={{ width: '80px', height: '80px', background: data.color, borderRadius: '20px', display: 'grid', placeItems: 'center', fontSize: '2rem' }}>
+      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginBottom: '3rem' }}>
+        <div style={{ width: '60px', height: '60px', background: data.color, borderRadius: '15px', display: 'grid', placeItems: 'center', fontSize: '1.5rem' }}>
           {id === 1 ? '🚚' : '🏥'}
         </div>
         <div>
-          <h1 style={{ fontSize: '3rem', fontWeight: 900, letterSpacing: '-0.04em' }}>{data.title}</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>{data.client}</p>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-0.04em' }}>{data.title}</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>{data.client}</p>
         </div>
       </div>
 
@@ -787,41 +787,41 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
       {/* HERO SECTION */}
       {/* HERO SECTION */}
-      <section style={{ padding: '8rem 0', textAlign: 'center' }}>
-        <div className="reveal floating-badge" style={{ marginBottom: '2rem' }}>
+      <section style={{ padding: '6rem 0', textAlign: 'center' }}>
+        <div className="reveal floating-badge" style={{ marginBottom: '1.5rem' }}>
           🚀 Versione 2.5 — Ora disponibile
         </div>
-        <h1 className="reveal hero-title" style={{ fontSize: '5.5rem', marginBottom: '2rem', letterSpacing: '-0.04em', fontWeight: 900 }}>
+        <h1 className="reveal hero-title" style={{ fontSize: '4.5rem', marginBottom: '1.5rem', letterSpacing: '-0.04em', fontWeight: 900 }}>
           Turni perfetti. <br/>Senza stress.
         </h1>
-        <p className="reveal" style={{ fontSize: '1.4rem', color: 'var(--text-muted)', maxWidth: '800px', margin: '0 auto 4rem auto', lineHeight: 1.5 }}>
+        <p className="reveal" style={{ fontSize: '1.25rem', color: 'var(--text-muted)', maxWidth: '700px', margin: '0 auto 3rem auto', lineHeight: 1.4 }}>
           Genera turni ottimizzati in 30 secondi. <br/>
           <strong>Riduci i conflitti del 40%</strong> e libera il tuo team dai fogli Excel.
         </p>
 
-        <div className="reveal" style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem' }}>
+        <div className="reveal" style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
           <button className="btn-hero" onClick={onEnter}>
             Inizia Progetto
           </button>
-          <button className="btn-primary" style={{ background: 'white', color: 'var(--text-main)', border: '1px solid var(--glass-border)', padding: '1.5rem 3rem', borderRadius: '100px' }} onClick={() => document.getElementById('work').scrollIntoView({behavior: 'smooth'})}>
+          <button className="btn-primary" style={{ background: 'white', color: 'var(--text-main)', border: '1px solid var(--glass-border)', padding: '1rem 2rem', borderRadius: '100px' }} onClick={() => document.getElementById('work').scrollIntoView({behavior: 'smooth'})}>
             Guarda Risultati
           </button>
         </div>
       </section>
 
       {/* STATS SECTION */}
-      <section className="reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4rem', padding: '6rem 0', borderTop: '1px solid var(--glass-border)', borderBottom: '1px solid var(--glass-border)', marginBottom: '8rem' }}>
+      <section className="reveal" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3rem', padding: '4rem 0', borderTop: '1px solid var(--glass-border)', borderBottom: '1px solid var(--glass-border)', marginBottom: '6rem' }}>
         <div>
           <div className="stat-number">40+</div>
-          <p style={{ fontWeight: '600', opacity: 0.6 }}>Aziende Attive</p>
+          <p style={{ fontWeight: '600', opacity: 0.6, fontSize: '0.9rem' }}>Aziende Attive</p>
         </div>
         <div>
           <div className="stat-number">99.9%</div>
-          <p style={{ fontWeight: '600', opacity: 0.6 }}>Precisione Algoritmo</p>
+          <p style={{ fontWeight: '600', opacity: 0.6, fontSize: '0.9rem' }}>Precisione Algoritmo</p>
         </div>
         <div>
           <div className="stat-number">5k+</div>
-          <p style={{ fontWeight: '600', opacity: 0.6 }}>Ore Risparmiate</p>
+          <p style={{ fontWeight: '600', opacity: 0.6, fontSize: '0.9rem' }}>Ore Risparmiate</p>
         </div>
       </section>
 
@@ -836,18 +836,18 @@ const LandingPage = ({ onEnter, config, setView }) => {
       </div>
 
       {/* PROBLEM & SOLUTION SECTION */}
-      <div className="reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', width: '100%', marginBottom: '10rem', textAlign: 'left' }}>
-        <div className="glass-card" style={{ padding: '3.5rem', borderRadius: '3rem', borderTop: '8px solid #ef4444' }}>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.03em' }}>Il caos dei turni.</h2>
-          <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>La gestione manuale è lenta, soggetta a errori e genera malumori.</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div className="reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', width: '100%', marginBottom: '8rem', textAlign: 'left' }}>
+        <div className="glass-card" style={{ padding: '2.5rem', borderRadius: '2.5rem', borderTop: '8px solid #ef4444' }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1.2rem', letterSpacing: '-0.03em' }}>Il caos dei turni.</h2>
+          <p style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>La gestione manuale è lenta, soggetta a errori e genera malumori.</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', fontSize: '0.95rem' }}>
              <div style={{ display: 'flex', gap: '10px' }}>❌ Stress da Excel</div>
              <div style={{ display: 'flex', gap: '10px' }}>❌ Conflitti orari</div>
              <div style={{ display: 'flex', gap: '10px' }}>❌ Sanzioni per riposi</div>
           </div>
         </div>
-        <div className="glass-card" style={{ padding: '3.5rem', borderRadius: '3rem', borderTop: '8px solid var(--primary)' }}>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.03em' }}>L'ordine dell'AI.</h2>
+        <div className="glass-card" style={{ padding: '2.5rem', borderRadius: '2.5rem', borderTop: '8px solid var(--primary)' }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1.2rem', letterSpacing: '-0.03em' }}>L'ordine dell'AI.</h2>
           <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>Automatizza la logica, rispetta i vincoli e massimizza l'efficienza.</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
              <div style={{ display: 'flex', gap: '10px' }}>✅ Algoritmo Istantaneo</div>
@@ -858,12 +858,12 @@ const LandingPage = ({ onEnter, config, setView }) => {
       </div>
 
       {/* PORTFOLIO / CASE STUDIES SECTION */}
-      <section id="work" className="reveal" style={{ marginBottom: '10rem' }}>
-        <div style={{ textAlign: 'left', marginBottom: '4rem' }}>
-          <h2 style={{ fontSize: '3rem', fontWeight: 900, letterSpacing: '-0.04em' }}>Progetti in primo piano.</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>Soluzioni reali per sfide logistiche complesse.</p>
+      <section id="work" className="reveal" style={{ marginBottom: '8rem' }}>
+        <div style={{ textAlign: 'left', marginBottom: '2.5rem' }}>
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 900, letterSpacing: '-0.04em' }}>Progetti in primo piano.</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>Soluzioni reali per sfide logistiche complesse.</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
           <div className="portfolio-card glass-card" style={{ padding: 0 }} onClick={() => setView('case-study-1')}>
              {/* Simulazione Mockup con Gradient */}
              <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'grid', placeItems: 'center' }}>
@@ -894,10 +894,10 @@ const LandingPage = ({ onEnter, config, setView }) => {
       </section>
 
       {/* VIDEO DEMO */}
-      <div id="demo-section" className="reveal" style={{ width: '100%', position: 'relative', marginBottom: '10rem' }}>
-        <h2 style={{ marginBottom: '3rem', fontSize: '2.5rem', fontWeight: '900', textAlign: 'left', letterSpacing: '-0.04em' }}>Guarda l'AI in azione.</h2>
-        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '3rem', overflow: 'hidden', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.15)', border: '1px solid var(--glass-border)' }}>
-          <div style={{ aspectRatio: '16/9', background: '#000', borderRadius: '2rem', overflow: 'hidden', height: '600px', border: '1px solid var(--glass-border)', position: 'relative' }}>
+      <div id="demo-section" className="reveal" style={{ width: '100%', position: 'relative', marginBottom: '8rem' }}>
+        <h2 style={{ marginBottom: '2.5rem', fontSize: '2.2rem', fontWeight: '900', textAlign: 'left', letterSpacing: '-0.04em' }}>Guarda l'AI in azione.</h2>
+        <div className="glass-panel" style={{ padding: '1rem', borderRadius: '2.5rem', overflow: 'hidden', boxShadow: '0 30px 60px -20px rgba(0,0,0,0.1)', border: '1px solid var(--glass-border)' }}>
+          <div style={{ aspectRatio: '16/9', background: '#000', borderRadius: '1.8rem', overflow: 'hidden', height: '450px', border: '1px solid var(--glass-border)', position: 'relative' }}>
              <video src={demoVideo} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
              <div style={{ position: 'absolute', top: '30px', left: '30px', display: 'flex', gap: '15px' }}>
                 <div style={{ background: 'rgba(255,255,255,0.9)', color: '#0f172a', padding: '8px 20px', borderRadius: '100px', fontSize: '0.8rem', fontWeight: '800' }}>DEMO LIVE</div>
@@ -1275,7 +1275,7 @@ function App() {
       <main style={{ 
         flex: 1, 
         minWidth: 0, 
-        padding: view === 'landing' ? '0' : '2.5rem', 
+        padding: view === 'landing' ? '0' : '1.5rem', 
         position: 'relative',
         zIndex: 1,
         overflowY: 'auto'
@@ -1285,9 +1285,9 @@ function App() {
             <LandingPage config={config} setView={setView} onEnter={() => { setView('app'); setTab('calendar'); }} />
           ) : (
             <>
-              <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <header style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
-                  <h1 style={{ fontSize: '2rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.25rem' }}>
+                  <h1 style={{ fontSize: '1.5rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.2rem' }}>
                     {activeTab === 'calendar' ? 'Dashboard Turni' : 
                      activeTab === 'staff' ? 'Gestione Personale' : 
                      activeTab === 'stats' ? 'Analytics Avanzate' : 'Impostazioni Sistema'}
