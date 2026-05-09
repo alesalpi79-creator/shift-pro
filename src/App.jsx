@@ -1108,6 +1108,46 @@ const LandingPage = ({ onEnter, config, setView }) => {
         </div>
       </section>
 
+      {/* APP DOWNLOAD & CONTACT SECTION */}
+      <section id="contact" className="reveal" style={{ padding: '8rem 0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', alignItems: 'start' }}>
+        
+        {/* App CTA */}
+        <div className="glass-card" style={{ padding: '3rem', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)', color: 'white', border: 'none' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>📱</div>
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.1 }}>Porta i tuoi turni sempre con te.</h2>
+          <p style={{ fontSize: '1.1rem', marginBottom: '2rem', opacity: 0.9 }}>
+            Il sito è già una <strong>App (PWA)</strong>. Accedi da smartphone e clicca su <strong>"Aggiungi a Home"</strong> per installarla senza passare dagli store.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', flex: 1, textAlign: 'center' }}>
+              <div style={{ fontWeight: '800' }}>iOS</div>
+              <div style={{ fontSize: '0.8rem' }}>Condividi > Aggiungi a Home</div>
+            </div>
+            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', flex: 1, textAlign: 'center' }}>
+              <div style={{ fontWeight: '800' }}>Android</div>
+              <div style={{ fontSize: '0.8rem' }}>Menu > Installa App</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Form */}
+        <div style={{ textAlign: 'left' }}>
+          <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '1rem', letterSpacing: '-0.04em' }}>Hai domande?</h2>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem' }}>Scrivici per una demo personalizzata o per supporto tecnico.</p>
+          
+          <form style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }} onSubmit={(e) => e.preventDefault()}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
+              <input type="text" placeholder="Nome" className="input-main" style={{ padding: '1.2rem' }} />
+              <input type="email" placeholder="Email" className="input-main" style={{ padding: '1.2rem' }} />
+            </div>
+            <textarea placeholder="Il tuo messaggio..." className="input-main" style={{ padding: '1.2rem', minHeight: '150px', resize: 'vertical' }}></textarea>
+            <button className="btn-hero" style={{ width: '100%', justifyContent: 'center', padding: '1.2rem', borderRadius: '12px' }}>
+              Invia Messaggio 🚀
+            </button>
+          </form>
+        </div>
+      </section>
+
       <footer style={{ marginTop: '8rem', padding: '4rem 0', borderTop: '1px solid var(--glass-border)', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
         <div style={{ textAlign: 'left' }}>
           <div style={{ fontWeight: '900', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Turni <span style={{ color: 'var(--primary)' }}>Pro</span></div>

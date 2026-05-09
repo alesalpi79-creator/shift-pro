@@ -10,17 +10,23 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icons.svg'],
       manifest: {
-        name: 'Shift-Pro',
-        short_name: 'ShiftPro',
-        description: 'Professional shift scheduling application',
-        theme_color: '#3b82f6',
+        name: 'Turni Pro AI',
+        short_name: 'TurniPro',
+        description: 'Gestione turni intelligente con intelligenza artificiale',
+        theme_color: '#6366f1',
         background_color: '#ffffff',
         display: 'standalone',
         icons: [
           {
-            src: 'favicon.svg',
-            sizes: '192x192 512x512',
-            type: 'image/svg+xml',
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any maskable'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
             purpose: 'any maskable'
           }
         ]
