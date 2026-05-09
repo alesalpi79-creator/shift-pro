@@ -920,8 +920,8 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
       <footer style={{ marginTop: '8rem', padding: '4rem 0', borderTop: '1px solid var(--glass-border)', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
         <div style={{ textAlign: 'left' }}>
-          <div style={{ fontWeight: '900', fontSize: '1.5rem', marginBottom: '0.5rem' }}>{config.appName} <span style={{ color: 'var(--primary)' }}>Pro</span></div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>© 2026 Shift-Pro AI. Tutti i diritti riservati.</p>
+          <div style={{ fontWeight: '900', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Turni Pro <span style={{ color: 'var(--primary)' }}>Pro</span></div>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>© 2026 Turni Pro AI. Tutti i diritti riservati.</p>
         </div>
         <div style={{ display: 'flex', gap: '2rem' }}>
           <div style={{ textAlign: 'left' }}>
@@ -935,9 +935,29 @@ const LandingPage = ({ onEnter, config, setView }) => {
           <div style={{ textAlign: 'left' }}>
             <div style={{ fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', marginBottom: '1rem', color: 'var(--primary)' }}>Supporto</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-              <span>Documentazione</span>
-              <span>Guide Video</span>
-              <span>Contatti</span>
+              <div className="tooltip-container">
+                <span>Documentazione</span>
+                <div className="tooltip-content">
+                  <strong>In arrivo 📚</strong><br/>
+                  Manuale utente e API reference in fase di redazione.
+                </div>
+              </div>
+              <div className="tooltip-container">
+                <span>Guide Video</span>
+                <div className="tooltip-content">
+                  <strong>In arrivo 🎥</strong><br/>
+                  Tutorial su YouTube in corso di montaggio.
+                </div>
+              </div>
+              <div className="tooltip-container">
+                <span style={{ fontWeight: 'bold', color: 'var(--primary)' }}>Contatti</span>
+                <div className="tooltip-content">
+                  <strong>Contattami Subito 📧</strong><br/>
+                  Email: info@turnipro.it<br/>
+                  WhatsApp: +39 3XX XXXXXXX<br/>
+                  <small>(Disponibile Lun-Ven 09:00-18:00)</small>
+                </div>
+              </div>
             </div>
           </div>
         </div>

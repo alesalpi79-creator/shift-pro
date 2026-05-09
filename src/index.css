@@ -729,3 +729,35 @@ button[data-shift="CF"] {
     transform: none !important;
   }
 }
+
+/* Tooltip Styles */
+.tooltip-container {
+  position: relative;
+  cursor: help;
+}
+
+.tooltip-content {
+  position: absolute;
+  bottom: 150%;
+  left: 0;
+  background: white;
+  color: #0f172a;
+  padding: 1rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  width: 220px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  z-index: 1000;
+}
+
+.tooltip-container:hover .tooltip-content {
+  opacity: 1;
+  visibility: visible;
+  bottom: 180%;
+}
+
