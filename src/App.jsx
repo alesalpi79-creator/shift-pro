@@ -920,7 +920,7 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
       <footer style={{ marginTop: '8rem', padding: '4rem 0', borderTop: '1px solid var(--glass-border)', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
         <div style={{ textAlign: 'left' }}>
-          <div style={{ fontWeight: '900', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Turni Pro <span style={{ color: 'var(--primary)' }}>Pro</span></div>
+          <div style={{ fontWeight: '900', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Turni <span style={{ color: 'var(--primary)' }}>Pro</span></div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>© 2026 Turni Pro AI. Tutti i diritti riservati.</p>
         </div>
         <div style={{ display: 'flex', gap: '2rem' }}>
@@ -952,10 +952,10 @@ const LandingPage = ({ onEnter, config, setView }) => {
               <div className="tooltip-container">
                 <span style={{ fontWeight: 'bold', color: 'var(--primary)' }}>Contatti</span>
                 <div className="tooltip-content">
-                  <strong>Contattami Subito 📧</strong><br/>
-                  Email: info@turnipro.it<br/>
-                  WhatsApp: +39 3XX XXXXXXX<br/>
-                  <small>(Disponibile Lun-Ven 09:00-18:00)</small>
+                  <strong>Contatti Diretti 📧</strong><br/>
+                  Nome: Alessandro Alpi<br/>
+                  Email: alesalpi79@gmail.com<br/>
+                  <small>(Disponibile per consulenze e supporto)</small>
                 </div>
               </div>
             </div>
@@ -1307,7 +1307,7 @@ function App() {
             <>
               <header style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
-                  <h1 style={{ fontSize: '1.5rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.2rem' }}>
+                  <h1 style={{ fontSize: '1.35rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.15rem' }}>
                     {activeTab === 'calendar' ? 'Dashboard Turni' : 
                      activeTab === 'staff' ? 'Gestione Personale' : 
                      activeTab === 'stats' ? 'Analytics Avanzate' : 'Impostazioni Sistema'}

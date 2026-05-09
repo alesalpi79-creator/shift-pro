@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;600;800;900&display=swap');
 
 html {
-  font-size: 14px; /* Scaliamo tutto il sito del ~12% */
+  font-size: 13px !important; /* Riduzione più aggressiva per visibilità immediata */
 }
 
 :root {
