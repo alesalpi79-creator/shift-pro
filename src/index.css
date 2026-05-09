@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;600;800;900&display=swap');
+
 :root {
+  --font-main: 'Outfit', sans-serif;
   /* Premium Light Palette */
   --bg-main: #f8fafc;           /* Slate 50 */
   --bg-sidebar: #ffffff;        /* Pure White */
@@ -37,19 +40,18 @@
 }
 
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-main);
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: var(--bg-main);
   color: var(--text-main);
-  min-height: 100vh;
-  overflow-x: hidden;
   line-height: 1.5;
+  overflow-x: hidden;
+  transition: background-color 0.5s ease;
 }
 
 /* Premium Animations */
@@ -358,12 +360,12 @@ label, p {
 }
 
 .btn-hero {
-  border-radius: 1.5rem 4rem 1.5rem 4rem;
-  padding: 1.25rem 3.5rem;
+  border-radius: 100px; /* More startup look */
+  padding: 1.5rem 4rem;
   font-size: 1.1rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  font-weight: 800;
+  text-transform: none; /* Cleaner */
+  letter-spacing: -0.02em;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
   border: none;
@@ -400,8 +402,59 @@ label, p {
   100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
 }
 
-.fade-in {
-  animation: fadeUpIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stat-number {
+  font-size: 4rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.05em;
+}
+
+.portfolio-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  aspect-ratio: 4/3;
+  cursor: pointer;
+}
+
+.portfolio-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portfolio-card:hover img {
+  transform: scale(1.1);
+}
+
+.portfolio-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15,23,42,0.9), transparent);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.portfolio-card:hover .portfolio-overlay {
+  opacity: 1;
 }
 
 .pulse-active {
