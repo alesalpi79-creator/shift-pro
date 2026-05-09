@@ -1046,19 +1046,19 @@ function App() {
   React.useEffect(() => {
     const isLanding = view === 'landing';
     
-    // Default values for Landing Page (more vibrant and less dark)
-    const primary = isLanding ? '#4f46e5' : config.primaryColor; // Indigo più brillante
-    const bg = isLanding ? '#111827' : (config.backgroundColor || '#0f172a');
-    const text = isLanding ? '#ffffff' : (config.textColor || '#ffffff');
-    const sideText = isLanding ? '#ffffff' : (config.sidebarTextColor || '#ffffff');
-    const glass = isLanding ? 0.3 : (config.glassOpacity || 0.4);
+    // Default values for Landing Page (Premium Light)
+    const primary = isLanding ? '#6366f1' : config.primaryColor; 
+    const bg = isLanding ? '#f8fafc' : (config.backgroundColor || '#f8fafc');
+    const text = isLanding ? '#0f172a' : (config.textColor || '#0f172a');
+    const sideText = isLanding ? '#0f172a' : (config.sidebarTextColor || '#0f172a');
+    const glass = isLanding ? 0.7 : (config.glassOpacity || 0.4);
 
     document.documentElement.style.setProperty('--primary', primary);
     document.documentElement.style.setProperty('--bg-main', bg);
-    document.documentElement.style.setProperty('--bg-sidebar', (bg + 'E6'));
+    document.documentElement.style.setProperty('--bg-sidebar', (isLanding ? '#ffffff' : (bg + 'E6')));
     document.documentElement.style.setProperty('--text-main', text);
     document.documentElement.style.setProperty('--text-sidebar', sideText);
-    document.documentElement.style.setProperty('--glass-bg', `rgba(15, 23, 42, ${glass})`);
+    document.documentElement.style.setProperty('--glass-bg', isLanding ? `rgba(255, 255, 255, 0.7)` : `rgba(15, 23, 42, ${glass})`);
     
     if (config.shiftColors && !isLanding) {
       Object.keys(config.shiftColors).forEach(k => {
@@ -1088,7 +1088,7 @@ function App() {
         top: 0, left: 0, 
         width: '100vw', height: '100vh',
         background: isLanding 
-          ? 'radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%)' 
+          ? 'radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%)' 
           : (config.backgroundColor || 'var(--bg-main)'),
         backgroundImage: (!isLanding && config.backgroundImage) ? `url(${config.backgroundImage})` : 'none',
         backgroundSize: config.backgroundMode === 'repeat' ? 'auto' : config.backgroundMode || 'cover',
