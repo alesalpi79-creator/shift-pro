@@ -53,9 +53,15 @@ html {
 body {
   background: var(--bg-main);
   color: var(--text-main);
-  line-height: 1.5;
+  line-height: 1.4;
   overflow-x: hidden;
   transition: background-color 0.5s ease;
+}
+
+@media (min-width: 1200px) {
+  body {
+    zoom: 0.8; /* Riduzione globale del 20% su desktop per far stare tutto nello schermo */
+  }
 }
 
 /* Premium Animations */

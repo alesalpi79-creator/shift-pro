@@ -354,7 +354,7 @@ const DayDetails = ({ date, onClose, selectedEmployee = null, selection = [], on
   };
 
   return (
-    <div className="fade-in" style={{ position: 'fixed', top: 0, right: 0, width: '420px', height: '100vh', background: 'var(--bg-sidebar)', borderLeft: '1px solid var(--glass-border)', padding: '2rem', zIndex: 100, boxShadow: '-10px 0 30px rgba(0,0,0,0.5)', overflowY: 'auto' }}>
+    <div className="fade-in" style={{ position: 'fixed', top: 0, right: 0, width: '380px', height: '100vh', background: 'var(--bg-sidebar)', borderLeft: '1px solid var(--glass-border)', padding: '1.25rem', zIndex: 100, boxShadow: '-10px 0 30px rgba(0,0,0,0.5)', overflowY: 'auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <h2 style={{ fontSize: '1.2rem' }}>{date.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })}</h2>
         <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
@@ -837,7 +837,7 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
       {/* PROBLEM & SOLUTION SECTION */}
       <div className="reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', width: '100%', marginBottom: '8rem', textAlign: 'left' }}>
-        <div className="glass-card" style={{ padding: '2.5rem', borderRadius: '2.5rem', borderTop: '8px solid #ef4444' }}>
+        <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '2rem', borderTop: '8px solid #ef4444' }}>
           <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1.2rem', letterSpacing: '-0.03em' }}>Il caos dei turni.</h2>
           <p style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>La gestione manuale è lenta, soggetta a errori e genera malumori.</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', fontSize: '0.95rem' }}>
@@ -846,7 +846,7 @@ const LandingPage = ({ onEnter, config, setView }) => {
              <div style={{ display: 'flex', gap: '10px' }}>❌ Sanzioni per riposi</div>
           </div>
         </div>
-        <div className="glass-card" style={{ padding: '2.5rem', borderRadius: '2.5rem', borderTop: '8px solid var(--primary)' }}>
+        <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '2rem', borderTop: '8px solid var(--primary)' }}>
           <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1.2rem', letterSpacing: '-0.03em' }}>L'ordine dell'AI.</h2>
           <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>Automatizza la logica, rispetta i vincoli e massimizza l'efficienza.</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
