@@ -1013,6 +1013,34 @@ const LandingPage = ({ onEnter, config, setView }) => {
         </div>
       </section>
 
+      {/* TESTIMONIALS SECTION */}
+      <section className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '4rem', letterSpacing: '-0.04em' }}>
+          Cosa dicono le aziende
+        </h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
+          {[
+            { text: "Turni Pro AI ci ha ridotto del 35% gli straordinari e ha eliminato completamente i conflitti tra reparti.", author: "Marco R.", role: "Responsabile Produzione" },
+            { text: "In 20 anni non avevo mai visto un sistema così veloce nel generare turni complessi. Impressionante.", author: "Laura B.", role: "HR Manager" },
+            { text: "Abbiamo risparmiato più di 120 ore al mese solo nella pianificazione. L'AI fa davvero la differenza.", author: "Stefano G.", role: "Direttore Operativo" }
+          ].map((t, i) => (
+            <div key={i} className="glass-card" style={{ flex: '1 1 300px', padding: '2.5rem', textAlign: 'left' }}>
+              <div style={{ color: 'var(--primary)', fontSize: '2rem', marginBottom: '1rem', fontWeight: 900 }}>“</div>
+              <p style={{ fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '2rem', fontStyle: 'italic', lineHeight: 1.6, opacity: 0.9 }}>{t.text}</p>
+              <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ width: '40px', height: '40px', background: 'var(--primary-glow)', borderRadius: '50%', display: 'grid', placeItems: 'center', color: 'var(--primary)', fontWeight: 900, fontSize: '0.8rem' }}>
+                  {t.author.charAt(0)}
+                </div>
+                <div>
+                  <strong style={{ color: 'var(--text-main)', display: 'block', fontSize: '1rem' }}>{t.author}</strong>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{t.role}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* VIDEO DEMO */}
       <div id="demo-section" className="reveal" style={{ width: '100%', position: 'relative', marginBottom: '8rem' }}>
         <h2 style={{ marginBottom: '2.5rem', fontSize: '2.2rem', fontWeight: '900', textAlign: 'left', letterSpacing: '-0.04em' }}>Guarda l'AI in azione.</h2>
