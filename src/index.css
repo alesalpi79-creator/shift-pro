@@ -224,6 +224,18 @@ body::after {
 .settings-layout .glass-card:nth-child(5) { border-radius: 3rem 1.5rem 4rem 1rem; }
 .settings-layout .glass-card:nth-child(6) { border-radius: 1.5rem 3rem 1.5rem 3rem; }
 
+.faq-card {
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.faq-card:hover {
+  transform: scale(1.02) translateY(-5px);
+  box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15);
+  border-color: var(--primary);
+  z-index: 10;
+}
+
 .organic-blob {
   border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
   background: linear-gradient(45deg, var(--primary), var(--secondary));

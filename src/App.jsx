@@ -1099,7 +1099,7 @@ const LandingPage = ({ onEnter, config, setView }) => {
             { q: "Supporta turni notturni e rotazioni?", a: "Certo. Il sistema gestisce rotazioni settimanali, turni notturni e cicli complessi senza errori." },
             { q: "Quanto tempo serve per generare un piano turni?", a: "Meno di 30 secondi. L'AI calcola milioni di combinazioni in tempo reale." }
           ].map((faq, i) => (
-            <div key={i} className="glass-card" style={{ padding: '2rem', borderLeft: i % 2 === 0 ? '4px solid var(--primary)' : '4px solid var(--secondary)', transition: 'transform 0.3s ease' }}>
+            <div key={i} className="glass-card faq-card" style={{ padding: '2rem', borderLeft: i % 2 === 0 ? '4px solid var(--primary)' : '4px solid var(--secondary)' }}>
               <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.8rem', color: 'var(--text-main)' }}>{faq.q}</h3>
               <p style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>{faq.a}</p>
             </div>
