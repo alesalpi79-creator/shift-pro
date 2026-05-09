@@ -1121,11 +1121,11 @@ const LandingPage = ({ onEnter, config, setView }) => {
           <div style={{ display: 'flex', gap: '1rem' }}>
             <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', flex: 1, textAlign: 'center' }}>
               <div style={{ fontWeight: '800' }}>iOS</div>
-              <div style={{ fontSize: '0.8rem' }}>Condividi > Aggiungi a Home</div>
+              <div style={{ fontSize: '0.8rem' }}>Condividi &gt; Aggiungi a Home</div>
             </div>
             <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', flex: 1, textAlign: 'center' }}>
               <div style={{ fontWeight: '800' }}>Android</div>
-              <div style={{ fontSize: '0.8rem' }}>Menu > Installa App</div>
+              <div style={{ fontSize: '0.8rem' }}>Menu &gt; Installa App</div>
             </div>
           </div>
         </div>
