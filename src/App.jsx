@@ -110,14 +110,14 @@ const Sidebar = ({ activeTab, setTab, setView }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <span style={{ fontSize: '0.6rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '0.1em' }}>Database Schemi</span>
           {userRole === 'admin' && (
-            <button 
-              onClick={() => {
-                const name = window.prompt("Nome del nuovo schema:");
-                if (name) addSchedule(name);
-              }}
-              style={{ background: 'var(--primary)', border: 'none', color: 'white', width: '20px', height: '20px', borderRadius: '50%', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold', display: 'grid', placeItems: 'center' }}
-              title="Crea nuovo archivio"
-            >+</button>
+              <button 
+                onClick={() => {
+                  const name = window.prompt("Nome del nuovo schema:");
+                  if (name) addSchedule(name);
+                }}
+                style={{ background: 'var(--primary)', border: 'none', color: 'white', width: '20px', height: '20px', borderRadius: '50%', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold', display: 'grid', placeItems: 'center' }}
+                title="Crea nuovo archivio"
+              >+</button>
           )}
         </div>
         
@@ -197,7 +197,7 @@ const Sidebar = ({ activeTab, setTab, setView }) => {
           }}
           style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem', cursor: 'pointer' }}
         >
-          <IconUser /> Loggato come <strong style={{ color: 'white' }}>{userRole === 'admin' ? 'ADMIN' : 'USER'}</strong>
+          <IconUser /> Loggato come <strong style={{ color: 'var(--text-main)' }}>{userRole === 'admin' ? 'ADMIN' : 'USER'}</strong>
         </div>
         <button 
           onClick={() => {
@@ -357,7 +357,7 @@ const DayDetails = ({ date, onClose, selectedEmployee = null, selection = [], on
     <div className="fade-in" style={{ position: 'fixed', top: 0, right: 0, width: '420px', height: '100vh', background: 'var(--bg-sidebar)', borderLeft: '1px solid var(--glass-border)', padding: '2rem', zIndex: 100, boxShadow: '-10px 0 30px rgba(0,0,0,0.5)', overflowY: 'auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <h2 style={{ fontSize: '1.2rem' }}>{date.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })}</h2>
-        <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
+        <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
       </div>
 
       {(() => {
@@ -540,7 +540,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
   return (
     <div className="table-container fade-in" style={{ position: 'relative' }}>
       {toast && (
-        <div style={{ position: 'absolute', top: '-40px', left: '50%', transform: 'translateX(-50%)', background: 'var(--primary)', color: 'white', padding: '0.5rem 1.5rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 1000, boxShadow: '0 4px 15px rgba(0,0,0,0.3)', border: '1px solid white' }}>
+        <div style={{ position: 'absolute', top: '-40px', left: '50%', transform: 'translateX(-50%)', background: 'var(--primary)', color: 'white', padding: '0.5rem 1.5rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold', zIndex: 1000, boxShadow: '0 4px 15px rgba(0,0,0,0.1)', border: '1px solid white' }}>
           {toast}
         </div>
       )}
@@ -573,7 +573,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
               return (
                 <th key={d.toISOString()} title={isUnderstaffed ? missingDesc.join(' | ') : 'Copertura OK'}
                   style={{ 
-                    color: (isHoliday(d) || d.getDay() === 0 || d.getDay() === 6) ? 'var(--accent-warning)' : 'white',
+                    color: (isHoliday(d) || d.getDay() === 0 || d.getDay() === 6) ? 'var(--accent-warning)' : 'var(--text-main)',
                     borderTop: (d.getDay() === 0 || d.getDay() === 6 || isHoliday(d)) ? '3px solid var(--accent-warning)' : 'none'
                   }}
                 >
@@ -646,7 +646,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
                       )}
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: '1.2' }}>
-                      <div style={{ fontWeight: '600', fontSize: '0.9rem', color: 'white' }}>{emp.name}</div>
+                      <div style={{ fontWeight: '600', fontSize: '0.9rem', color: 'var(--text-main)' }}>{emp.name}</div>
                       <div style={{ display: 'flex', gap: '4px', alignItems: 'center', marginTop: '2px' }}>
                         <span style={{ fontSize: '0.65rem', color: roleColor, fontWeight: 'bold', textTransform: 'uppercase' }}>{emp.role}</span>
                         {userRole === 'admin' && <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>[Sq. {emp.team || 1}]</span>}
@@ -682,7 +682,7 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
                       {shiftType !== 'R' && (
                         <div className="shift-pill" data-shift={shiftType} style={{ 
                           background: bgColor, 
-                          color: 'white', 
+                          color: shiftType === 'R' ? 'var(--text-muted)' : 'white', 
                           transform: isSelected ? 'scale(0.95)' : 'none',
                           boxShadow: isSelected ? '0 0 10px var(--primary)' : 'none'
                         }}>
@@ -754,8 +754,8 @@ const LandingPage = ({ onEnter, config }) => {
       </div>
 
       <div style={{ marginTop: '5rem', width: '100%', position: 'relative' }}>
-        <div className="glass-panel" style={{ padding: '1rem', borderRadius: '2rem', overflow: 'hidden', boxShadow: '0 50px 100px -20px rgba(0,0,0,0.5)' }}>
-          <div style={{ aspectRatio: '16/9', background: '#0f172a', borderRadius: '1.5rem', overflow: 'hidden', height: '400px', border: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
+        <div className="glass-panel" style={{ padding: '1rem', borderRadius: '2rem', overflow: 'hidden', boxShadow: '0 30px 60px -20px rgba(0,0,0,0.1)' }}>
+          <div style={{ aspectRatio: '16/9', background: '#000', borderRadius: '1.5rem', overflow: 'hidden', height: '400px', border: '1px solid var(--glass-border)', position: 'relative' }}>
              {/* IMPORTANTE: Questo video richiede il push del file /public/demo.mp4 su GitHub */}
              <video 
                src={demoVideo}

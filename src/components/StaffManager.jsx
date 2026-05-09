@@ -129,7 +129,7 @@ export default function StaffManager() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
           {employees.map(e => (
-            <div key={e.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)' }}>
+            <div key={e.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(15, 23, 42, 0.02)', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)' }}>
               {editingId === e.id ? (
                 <div style={{ display: 'flex', gap: '0.5rem', width: '100%', alignItems: 'center', flexWrap: 'wrap' }}>
                   <input className="input-main" style={{ padding: '0.4rem', flex: '1 1 100%' }} value={editName} onChange={ev => setEditName(ev.target.value)} />
@@ -150,7 +150,7 @@ export default function StaffManager() {
                   )}
                   <input type="number" className="input-main" style={{ padding: '0.4rem', width: '60px' }} value={editOffset} onChange={ev => setEditOffset(parseInt(ev.target.value) || 0)} title="Offset" />
                   
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '100%', marginTop: '10px', background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '100%', marginTop: '10px', background: 'rgba(15, 23, 42, 0.03)', padding: '10px', borderRadius: '8px' }}>
                     <div style={{ position: 'relative', width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                       {editAvatar ? <img src={editAvatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontWeight: 'bold' }}>{editInitials}</span>}
                     </div>
@@ -202,7 +202,7 @@ export default function StaffManager() {
                           {config.roles.find(r => r.id === e.role)?.label}
                         </span>
                         {e.role === 'OP' && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Squadra {e.team || 1}</span>}
-                        <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', padding: '2px 4px', borderRadius: '3px' }}>Off: {e.offset || 0}</span>
+                        <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', background: 'rgba(0,0,0,0.05)', padding: '2px 4px', borderRadius: '3px' }}>Off: {e.offset || 0}</span>
                       </div>
                     </div>
                   </div>

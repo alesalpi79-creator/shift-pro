@@ -24,9 +24,9 @@ const PremiumColorPicker = ({ value, onChange, label, isOpen, onToggle, selected
           onClick={onToggle}
           style={{ 
             width: '100%', height: '42px', borderRadius: '12px', background: value, 
-            border: '2px solid rgba(255,255,255,0.2)', cursor: 'pointer', boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+            border: '1px solid var(--glass-border)', cursor: 'pointer', boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
             display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '0.75rem', fontWeight: 'bold',
-            color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.5)', transition: 'all 0.2s'
+            color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.3)', transition: 'all 0.2s'
           }} 
         >
           {isOpen ? 'CHIUDI TAVOLOZZA' : 'CAMBIA COLORE'}
@@ -34,12 +34,12 @@ const PremiumColorPicker = ({ value, onChange, label, isOpen, onToggle, selected
 
         {isOpen && (
           <div style={{ 
-            padding: '1rem', background: 'rgba(15, 23, 42, 0.95)', marginTop: '8px', 
+            padding: '1rem', background: 'var(--bg-sidebar)', marginTop: '8px', 
             borderRadius: '16px', border: '1px solid var(--primary)', 
-            boxShadow: '0 10px 30px rgba(0,0,0,0.5)', zIndex: 100,
+            boxShadow: '0 10px 30px rgba(0,0,0,0.1)', zIndex: 100,
             animation: 'fadeUpIn 0.3s ease'
           }}>
-            <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '800' }}>1. Scegli Tonalità</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '800' }}>1. Scegli Tonalità</div>
             <div style={{ display: 'flex', overflowX: 'auto', gap: '12px', paddingBottom: '12px' }} className="no-scrollbar">
               {hues.map(h => (
                 <div 
@@ -65,8 +65,8 @@ const PremiumColorPicker = ({ value, onChange, label, isOpen, onToggle, selected
             </div>
 
             {selectedHue && (
-              <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '800' }}>2. Gradazione ({selectedHue.name})</div>
+              <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid var(--glass-border)' }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '800' }}>2. Gradazione ({selectedHue.name})</div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
                   {selectedHue.shades.map(s => (
                     <div 
@@ -255,7 +255,7 @@ export default function RuleSettings() {
       >
         {/* SCHEDA 1: IDENTITÀ APP */}
         <div className="glass-card" style={{ width: '100%', minWidth: '100%', flex: '0 0 100%', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '1.2rem', boxSizing: 'border-box' }}>
-          <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>🏷️ Identità</h3>
+          <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.75rem' }}>🏷️ Identità</h3>
           
           <div className="form-group">
             <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>Logo Aziendale</label>
@@ -304,7 +304,7 @@ export default function RuleSettings() {
 
         {/* SCHEDA 2: TAVOLOZZA COLORI */}
         <div className="glass-card" style={{ width: '100%', minWidth: '100%', flex: '0 0 100%', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '0.8rem', boxSizing: 'border-box' }}>
-          <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>🎨 Tavolozza</h3>
+          <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.75rem' }}>🎨 Tavolozza</h3>
           
           <PremiumColorPicker label="Primario" value={config.primaryColor} onChange={val => saveConfig('primaryColor', val)} isOpen={openPickerId === 'primary'} onToggle={() => togglePicker('primary')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
           
@@ -317,7 +317,7 @@ export default function RuleSettings() {
 
         {/* SCHEDA 3: SFONDO & EFFETTI */}
         <div className="glass-card" style={{ width: '100%', minWidth: '100%', flex: '0 0 100%', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '1.2rem', boxSizing: 'border-box' }}>
-          <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>🖼️ Effetti</h3>
+          <h3 style={{ marginBottom: '0.5rem', fontSize: '1.1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.75rem' }}>🖼️ Effetti</h3>
           
           <div className="form-group">
             <label style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '0.8rem', display: 'block' }}>Sfondo Personalizzato</label>
@@ -367,7 +367,7 @@ export default function RuleSettings() {
         </div>
         {/* SCHEDA 4: COLORI E SIGLE TURNI */}
         <div className="glass-card" style={{ width: '100%', minWidth: '100%', flex: '0 0 100%', scrollSnapAlign: 'start', boxSizing: 'border-box' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.75rem' }}>
             <h3 style={{ fontSize: '1.1rem', margin: 0 }}>🎨 Sigle Turni</h3>
             <button 
               onClick={addNewShift}
@@ -426,19 +426,19 @@ export default function RuleSettings() {
   const renderRules = () => (
     <div className="fade-in">
       <div style={{ 
-        background: 'rgba(15, 23, 42, 0.95)', // Quasi solido per bloccare lo sfondo
+        background: 'var(--bg-main)', // Uso variabile dinamica
         backdropFilter: 'blur(40px)',
         borderRadius: '50%', width: '280px', height: '280px', margin: '0 auto 2rem auto',
         display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-        border: '5px solid #6366f1', // Bordo molto più spesso e solido
-        boxShadow: '0 0 80px rgba(99, 102, 241, 0.5), inset 0 0 30px rgba(0,0,0,0.8)',
+        border: '5px solid var(--primary)', 
+        boxShadow: '0 15px 40px var(--primary-glow)',
         position: 'relative'
       }}>
-        <div style={{ position: 'absolute', top: '15%', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '3px', color: '#818cf8', fontWeight: '900' }}>Algoritmo</div>
-        <h3 style={{ fontSize: '1.2rem', marginBottom: '1.25rem', color: 'white', textShadow: '0 2px 10px rgba(0,0,0,1)' }}>Ciclo Turni</h3>
+        <div style={{ position: 'absolute', top: '15%', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '3px', color: 'var(--primary)', fontWeight: '900' }}>Algoritmo</div>
+        <h3 style={{ fontSize: '1.2rem', marginBottom: '1.25rem', color: 'var(--text-main)' }}>Ciclo Turni</h3>
         <input 
           className="input-main" 
-          style={{ width: '85%', textAlign: 'center', background: '#000', border: '2px solid #6366f1', fontSize: '1.2rem', letterSpacing: '2px', fontWeight: 'bold', borderRadius: '10px', color: 'white' }} 
+          style={{ width: '85%', textAlign: 'center', background: 'rgba(0,0,0,0.05)', border: '2px solid var(--primary)', fontSize: '1.2rem', letterSpacing: '2px', fontWeight: 'bold', borderRadius: '10px', color: 'var(--text-main)' }} 
           value={tempCycle} 
           onChange={e => setTempCycle(e.target.value.toUpperCase())} 
         />
@@ -645,22 +645,22 @@ export default function RuleSettings() {
       <div className="glass-card" style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', padding: '8px', borderBottom: '1px solid var(--glass-border)', backdropFilter: 'blur(20px)', overflowX: 'auto' }} className="no-scrollbar">
         <button 
           className={`toggle-btn ${activeSection === 'design' ? 'active' : ''}`} 
-          style={{ flex: '1 0 auto', textShadow: activeSection === 'design' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'design' ? 'white' : 'rgba(255,255,255,0.7)' }} 
+          style={{ flex: '1 0 auto', color: activeSection === 'design' ? 'white' : 'var(--text-muted)' }} 
           onClick={() => setActiveSection('design')}
         >🎨 Estetica</button>
         <button 
           className={`toggle-btn ${activeSection === 'rules' ? 'active' : ''}`} 
-          style={{ flex: '1 0 auto', textShadow: activeSection === 'rules' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'rules' ? 'white' : 'rgba(255,255,255,0.7)' }} 
+          style={{ flex: '1 0 auto', color: activeSection === 'rules' ? 'white' : 'var(--text-muted)' }} 
           onClick={() => setActiveSection('rules')}
         >📊 Regole</button>
         <button 
           className={`toggle-btn ${activeSection === 'constraints' ? 'active' : ''}`} 
-          style={{ flex: '1 0 auto', textShadow: activeSection === 'constraints' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'constraints' ? 'white' : 'rgba(255,255,255,0.7)' }} 
+          style={{ flex: '1 0 auto', color: activeSection === 'constraints' ? 'white' : 'var(--text-muted)' }} 
           onClick={() => setActiveSection('constraints')}
         >⚠️ Sicurezza</button>
         <button 
           className={`toggle-btn ${activeSection === 'integration' ? 'active' : ''}`} 
-          style={{ flex: '1 0 auto', textShadow: activeSection === 'integration' ? 'none' : '0 1px 5px rgba(0,0,0,0.5)', color: activeSection === 'integration' ? 'white' : 'rgba(255,255,255,0.7)' }} 
+          style={{ flex: '1 0 auto', color: activeSection === 'integration' ? 'white' : 'var(--text-muted)' }} 
           onClick={() => setActiveSection('integration')}
         >🌐 Integrazione</button>
       </div>

@@ -73,7 +73,7 @@ const StatsDashboard = () => {
             <select 
               value={viewMonth} 
               onChange={(e) => setViewMonth(parseInt(e.target.value))}
-              style={{ padding: '0.5rem', borderRadius: '8px', background: 'var(--bg-sidebar)', color: 'white', border: '1px solid var(--glass-border)' }}
+              style={{ padding: '0.5rem', borderRadius: '8px', background: 'var(--bg-main)', color: 'var(--text-main)', border: '1px solid var(--glass-border)' }}
             >
               {months.map((m, i) => <option key={m} value={i}>{m}</option>)}
             </select>
@@ -82,7 +82,7 @@ const StatsDashboard = () => {
           <select 
             value={viewYear} 
             onChange={(e) => setViewYear(parseInt(e.target.value))}
-            style={{ padding: '0.5rem', borderRadius: '8px', background: 'var(--bg-sidebar)', color: 'white', border: '1px solid var(--glass-border)' }}
+            style={{ padding: '0.5rem', borderRadius: '8px', background: 'var(--bg-main)', color: 'var(--text-main)', border: '1px solid var(--glass-border)' }}
           >
             {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
           </select>
@@ -122,7 +122,7 @@ const StatsDashboard = () => {
                     <span style={{ fontSize: '0.7rem', opacity: 0.7, fontWeight: 'bold' }}>{row.role}</span>
                   </td>
                   {shiftTypes.map(t => (
-                    <td key={t} style={{ textAlign: 'center', fontWeight: row.counts[t] > 0 ? '600' : '400', color: row.counts[t] > 0 ? 'white' : 'var(--text-muted)' }}>
+                    <td key={t} style={{ textAlign: 'center', fontWeight: row.counts[t] > 0 ? '600' : '400', color: row.counts[t] > 0 ? 'var(--text-main)' : 'var(--text-muted)' }}>
                       {row.counts[t] || '-'}
                     </td>
                   ))}
