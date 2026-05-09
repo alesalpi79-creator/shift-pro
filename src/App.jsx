@@ -725,47 +725,112 @@ const LandingPage = ({ onEnter, config }) => {
       <div className="organic-blob" style={{ bottom: '10%', right: '-5%', width: '500px', height: '500px', background: 'var(--secondary)', animationDelay: '-5s' }}></div>
       <div className="organic-blob" style={{ top: '40%', left: '30%', width: '300px', height: '300px', background: 'var(--accent-success)', opacity: 0.1, animationDuration: '30s' }}></div>
 
+      {/* HERO SECTION */}
       <div className="floating-badge" style={{ marginBottom: '1.5rem' }}>
         🚀 Engine v2.5 Online
       </div>
-      <h1 className="hero-title gradient-text" style={{ fontSize: '3.5rem', marginBottom: '1.5rem' }}>
+      <h1 className="hero-title gradient-text" style={{ fontSize: '4.5rem', marginBottom: '1.5rem', lineHeight: 1.1 }}>
         L'Algoritmo che Libera <br/>il Tuo Tempo.
       </h1>
-      <p style={{ fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: '600', maxWidth: '800px', marginBottom: '1rem', lineHeight: 1.4 }}>
+      <p style={{ fontSize: '1.6rem', color: 'var(--text-main)', fontWeight: '700', maxWidth: '900px', marginBottom: '1.5rem', lineHeight: 1.3 }}>
         Genera turni ottimizzati in 30 secondi, riducendo straordinari e conflitti del 40%.
       </p>
-      <p style={{ fontSize: '1rem', color: 'var(--text-muted)', maxWidth: '600px', marginBottom: '3rem', lineHeight: 1.6 }}>
-        Shift-Pro AI ottimizza rotazioni industriali complesse in millisecondi. Precisione matematica, estetica premium, efficienza totale.
+      <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', maxWidth: '700px', marginBottom: '3.5rem', lineHeight: 1.6 }}>
+        Basta stress per incastri impossibili o violazioni dei riposi. Shift-Pro AI trasforma la gestione del personale in una scienza esatta.
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2.5rem', width: '100%', marginBottom: '6rem' }}>
-        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '3rem 1rem 3rem 1rem', padding: '2.5rem', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, padding: '8px 15px', background: 'var(--primary)', color: 'white', fontSize: '0.6rem', fontWeight: '900', borderRadius: '0 0 0 15px' }}>STEP 1</div>
-          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>⚙️</div>
-          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>Inserisci i Vincoli</h3>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Configura ruoli, disponibilità e leggi (es. 104) in pochi click.</p>
-        </div>
-        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '1rem 3rem 1rem 3rem', padding: '2.5rem', borderTop: '4px solid var(--primary)', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, padding: '8px 15px', background: 'var(--primary)', color: 'white', fontSize: '0.6rem', fontWeight: '900', borderRadius: '0 0 0 15px' }}>STEP 2</div>
-          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>🧠</div>
-          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>L'AI Genera i Turni</h3>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>L'algoritmo bilancia i carichi e risolve i conflitti automaticamente.</p>
-        </div>
-        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '2rem 2rem 4rem 2rem', padding: '2.5rem', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, padding: '8px 15px', background: 'var(--primary)', color: 'white', fontSize: '0.6rem', fontWeight: '900', borderRadius: '0 0 0 15px' }}>STEP 3</div>
-          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>🚀</div>
-          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>Esporta e Condividi</h3>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Scarica PDF o Excel professionali pronti per essere distribuiti.</p>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+      <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '6rem' }}>
         <button className="btn-hero" onClick={onEnter}>
-          🚀 Accedi alla Dashboard
+          🚀 Inizia Ora — Gratis
+        </button>
+        <button className="btn-primary" style={{ padding: '1.25rem 2.5rem', background: 'transparent', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }} onClick={() => document.getElementById('demo-section').scrollIntoView({behavior: 'smooth'})}>
+          Guarda Demo
         </button>
       </div>
 
-      <div style={{ marginTop: '5rem', width: '100%', position: 'relative' }}>
+      {/* PROBLEM & SOLUTION SECTION */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', width: '100%', marginBottom: '8rem', textAlign: 'left', alignItems: 'center' }}>
+        <div className="glass-card" style={{ padding: '3rem', borderRadius: '4rem 1rem 4rem 1rem', background: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.1)' }}>
+          <h2 style={{ fontSize: '1.8rem', marginBottom: '1.5rem', color: '#ef4444' }}>❌ Il Problema</h2>
+          <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '1rem', color: 'var(--text-main)' }}>
+            <li>• Ore perse in fogli Excel infiniti</li>
+            <li>• Conflitti e malumori nel team</li>
+            <li>• Violazione involontaria dei riposi</li>
+            <li>• Difficoltà a gestire ferie e 104</li>
+          </ul>
+        </div>
+        <div className="glass-card" style={{ padding: '3rem', borderRadius: '1rem 4rem 1rem 4rem', borderLeft: '8px solid var(--primary)' }}>
+          <h2 style={{ fontSize: '1.8rem', marginBottom: '1.5rem', color: 'var(--primary)' }}>✅ La Soluzione AI</h2>
+          <p style={{ fontSize: '1.1rem', lineHeight: 1.6, color: 'var(--text-main)' }}>
+            Il nostro algoritmo analizza miliardi di combinazioni per trovare quella perfetta. Rispetta ogni vincolo legale e umano, garantendo equità totale tra i dipendenti.
+          </p>
+        </div>
+      </div>
+
+      {/* HOW IT WORKS / FEATURES */}
+      <h2 style={{ fontSize: '2.5rem', fontWeight: '900', marginBottom: '4rem' }}>Potenza Industriale, Semplicità Cloud</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2.5rem', width: '100%', marginBottom: '8rem' }}>
+        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '2rem', padding: '2.5rem', position: 'relative' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>⚙️</div>
+          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800' }}>Configurazione Smart</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Inserisci ruoli, squadre e vincoli. L'AI impara le tue regole in pochi secondi.</p>
+        </div>
+        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '2rem', padding: '2.5rem' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>🧠</div>
+          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800' }}>Engine AACCRBBRR</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Algoritmo ottimizzato per cicli a rotazione continua e bilanciamento carichi.</p>
+        </div>
+        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '2rem', padding: '2.5rem' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>📅</div>
+          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800' }}>Gestione Anomalie</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Rilevamento automatico di sotto-organico e sovrapposizioni vietate.</p>
+        </div>
+      </div>
+
+      {/* REAL OUTPUT PREVIEW */}
+      <div style={{ width: '100%', marginBottom: '8rem' }}>
+        <h2 style={{ fontSize: '2.2rem', fontWeight: '900', marginBottom: '3rem' }}>Risultati Professionali Pronti all'Uso</h2>
+        <div className="glass-card" style={{ padding: '1rem', background: 'white', borderRadius: '2rem', boxShadow: '0 50px 100px -20px rgba(0,0,0,0.1)' }}>
+          <div style={{ padding: '2rem', textAlign: 'left', borderBottom: '1px solid #eee' }}>
+             <div style={{ fontSize: '1.2rem', fontWeight: '900', color: '#0f172a' }}>Pianificazione Turni — Maggio 2026</div>
+             <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Generato da Shift-Pro AI Engine</div>
+          </div>
+          <div style={{ overflowX: 'auto', padding: '1rem' }}>
+             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+                <thead>
+                   <tr style={{ background: '#f8fafc' }}>
+                      <th style={{ padding: '12px', border: '1px solid #e2e8f0', textAlign: 'left' }}>Personale</th>
+                      {[1,2,3,4,5,6,7].map(d => <th key={d} style={{ padding: '12px', border: '1px solid #e2e8f0' }}>{d} Lun</th>)}
+                   </tr>
+                </thead>
+                <tbody>
+                   {[
+                     {n: 'Marco Rossi', r: 'CT', s: ['A', 'A', 'R', 'C', 'C', 'R', 'B']},
+                     {n: 'Luca Bianchi', r: 'OP', s: ['C', 'R', 'B', 'B', 'R', 'A', 'A']},
+                     {n: 'Anna Verdi', r: 'OP', s: ['R', 'B', 'B', 'R', 'A', 'A', 'R']}
+                   ].map((row, i) => (
+                      <tr key={i}>
+                         <td style={{ padding: '12px', border: '1px solid #e2e8f0', fontWeight: 'bold' }}>{row.n} <br/><span style={{ fontSize: '0.6rem', color: '#6366f1' }}>{row.r}</span></td>
+                         {row.s.map((s, si) => (
+                            <td key={si} style={{ padding: '12px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                               <span style={{ 
+                                  padding: '4px 10px', borderRadius: '4px', background: s === 'R' ? '#f1f5f9' : '#6366f1', color: s === 'R' ? '#64748b' : 'white', fontWeight: 'bold' 
+                               }}>{s}</span>
+                            </td>
+                         ))}
+                      </tr>
+                   ))}
+                </tbody>
+             </table>
+          </div>
+          <div style={{ padding: '1.5rem', textAlign: 'right', background: '#f8fafc', borderRadius: '0 0 2rem 2rem' }}>
+             <button className="btn-hero" style={{ fontSize: '0.8rem', padding: '0.75rem 1.5rem' }}>📄 Scarica Excel Completo</button>
+          </div>
+        </div>
+      </div>
+
+      {/* VIDEO DEMO */}
+      <div id="demo-section" style={{ width: '100%', position: 'relative', marginBottom: '8rem' }}>
         <h2 style={{ marginBottom: '3rem', fontSize: '2rem', fontWeight: '900' }}>Guarda l'AI in azione</h2>
         <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '2.5rem', overflow: 'hidden', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.15)', border: '1px solid var(--glass-border)' }}>
           <div style={{ aspectRatio: '16/9', background: '#000', borderRadius: '1.5rem', overflow: 'hidden', height: '500px', border: '1px solid var(--glass-border)', position: 'relative' }}>
