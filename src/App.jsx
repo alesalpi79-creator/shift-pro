@@ -806,7 +806,7 @@ const LandingPage = ({ onEnter, config }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
               <span>Funzionalità</span>
               <span>Integrazioni</span>
-              <span>Prezzi <Badge style={{ fontSize: '0.6rem', padding: '2px 5px' }}>PRO</Badge></span>
+              <span>Prezzi <span style={{ fontSize: '0.6rem', padding: '2px 8px', background: 'var(--primary)', color: 'white', borderRadius: '100px', fontWeight: 'bold', marginLeft: '5px' }}>PRO</span></span>
             </div>
           </div>
           <div style={{ textAlign: 'left' }}>
