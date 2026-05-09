@@ -713,7 +713,61 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
     </div>
   );
 };
-const LandingPage = ({ onEnter, config }) => {
+const CaseStudy = ({ id, onBack }) => {
+  const data = id === 1 ? {
+    title: "Logistica Nord S.p.A.",
+    client: "Leader GDO Nord Italia",
+    challenge: "Coordinare 400 dipendenti su 4 siti diversi con vincoli di reperibilità complessi.",
+    solution: "Algoritmo AACCRBBRR personalizzato per la rotazione continua h24.",
+    result: "Generazione turni passata da 3 giorni a 30 secondi. Risparmio annuo stimato: €45.000.",
+    color: "#6366f1"
+  } : {
+    title: "Medical Center Hub",
+    client: "Clinica Privata h24",
+    challenge: "Garantire copertura costante delle sale operatorie rispettando i riposi obbligatori dei chirurghi.",
+    solution: "Modulo di sicurezza avanzato per il calcolo automatico degli stacchi di 11 ore.",
+    result: "Eliminazione totale dei conflitti orari e riduzione dello stress del personale del 25%.",
+    color: "#10b981"
+  };
+
+  return (
+    <div className="fade-in" style={{ padding: '4rem 2rem', maxWidth: '900px', margin: '0 auto', textAlign: 'left' }}>
+      <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: 'bold', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        ← Torna alla Home
+      </button>
+      <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginBottom: '4rem' }}>
+        <div style={{ width: '80px', height: '80px', background: data.color, borderRadius: '20px', display: 'grid', placeItems: 'center', fontSize: '2rem' }}>
+          {id === 1 ? '🚚' : '🏥'}
+        </div>
+        <div>
+          <h1 style={{ fontSize: '3rem', fontWeight: 900, letterSpacing: '-0.04em' }}>{data.title}</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>{data.client}</p>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
+        <div className="reveal visible">
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: data.color }}>La Sfida</h3>
+          <p style={{ fontSize: '1.1rem', lineHeight: 1.6, color: 'var(--text-main)' }}>{data.challenge}</p>
+        </div>
+        <div className="reveal visible">
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: data.color }}>La Soluzione Shift-Pro</h3>
+          <p style={{ fontSize: '1.1rem', lineHeight: 1.6, color: 'var(--text-main)' }}>{data.solution}</p>
+        </div>
+        <div className="glass-card" style={{ padding: '3rem', borderLeft: `8px solid ${data.color}` }}>
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Il Risultato</h3>
+          <p style={{ fontSize: '1.3rem', fontWeight: 'bold', color: 'var(--text-main)' }}>{data.result}</p>
+        </div>
+      </div>
+
+      <div style={{ marginTop: '6rem', textAlign: 'center' }}>
+        <button className="btn-hero" onClick={onBack}>Inizia il Tuo Progetto</button>
+      </div>
+    </div>
+  );
+};
+
+const LandingPage = ({ onEnter, config, setView }) => {
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -815,7 +869,7 @@ const LandingPage = ({ onEnter, config }) => {
           <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>Soluzioni reali per sfide logistiche complesse.</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem' }}>
-          <div className="portfolio-card glass-card" style={{ padding: 0 }}>
+          <div className="portfolio-card glass-card" style={{ padding: 0 }} onClick={() => setView('case-study-1')}>
              {/* Simulazione Mockup con Gradient */}
              <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'grid', placeItems: 'center' }}>
                 <div className="glass-card" style={{ width: '80%', height: '60%', transform: 'rotate(-5deg)', boxShadow: '0 30px 60px rgba(0,0,0,0.3)' }}>
@@ -829,10 +883,10 @@ const LandingPage = ({ onEnter, config }) => {
                 <p style={{ color: 'rgba(255,255,255,0.7)' }}>Ottimizzazione 400 dipendenti su 4 siti.</p>
              </div>
           </div>
-          <div className="portfolio-card glass-card" style={{ padding: 0 }}>
+          <div className="portfolio-card glass-card" style={{ padding: 0 }} onClick={() => setView('case-study-2')}>
              <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #10b981, #3b82f6)', display: 'grid', placeItems: 'center' }}>
                 <div className="glass-card" style={{ width: '80%', height: '60%', transform: 'rotate(5deg)', boxShadow: '0 30px 60px rgba(0,0,0,0.3)' }}>
-                   <div style={{ height: '10px', width: '40px', background: '#10b981', borderRadius: '10px', marginBottom: '10px' }}></div>
+                   <div style={{ height: '10px', width: '40px', background: '#10b981', borderRadius: '100px', marginBottom: '10px' }}></div>
                    <div style={{ height: '5px', width: '80%', background: 'rgba(255,255,255,0.1)', borderRadius: '10px', marginBottom: '5px' }}></div>
                 </div>
              </div>
@@ -1149,7 +1203,7 @@ const CommandCenter = ({ config, employees, exceptions }) => {
 
 function App() {
   const [activeTab, setTab] = useState('calendar');
-  const [view, setView] = useState('landing'); // 'landing' or 'app'
+  const [view, setView] = useState('landing'); // 'landing', 'app', 'case-study-1', 'case-study-2'
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return !localStorage.getItem('onboarding_complete') && !localStorage.getItem('shift_pro_employees');
   });
@@ -1186,6 +1240,9 @@ function App() {
       ['a', 'b', 'c', 'r'].forEach(k => document.documentElement.style.setProperty(`--shift-${k}`, k === 'r' ? 'rgba(255,255,255,0.1)' : '#6366f1'));
     }
   }, [config, view]);
+
+  if (view === 'case-study-1') return <CaseStudy id={1} onBack={() => setView('landing')} />;
+  if (view === 'case-study-2') return <CaseStudy id={2} onBack={() => setView('landing')} />;
 
   if (showOnboarding) {
     return (
@@ -1231,7 +1288,7 @@ function App() {
       }}>
         <div style={{ position: 'relative', zIndex: 1 }}>
           {view === 'landing' ? (
-            <LandingPage config={config} onEnter={() => { setView('app'); setTab('calendar'); }} />
+            <LandingPage config={config} setView={setView} onEnter={() => { setView('app'); setTab('calendar'); }} />
           ) : (
             <>
               <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
