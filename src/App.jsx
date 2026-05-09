@@ -709,6 +709,52 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
     </div>
   );
 };
+const ProjectPreviewTable = () => {
+  const fakeData = [
+    { name: "Mario Rossi", role: "CT", shifts: ['A', 'A', 'C', 'C', 'R', 'R', 'B', 'B', 'A', 'A', 'C', 'C', 'R', 'B', 'B'] },
+    { name: "Luca Bianchi", role: "OP", shifts: ['G', 'G', 'G', 'G', 'G', 'R', 'R', 'G', 'G', 'G', 'G', 'G', 'R', 'R', 'G'] },
+    { name: "Anna Verdi", role: "OP", shifts: ['R', 'R', 'B', 'B', 'R', 'R', 'A', 'A', 'C', 'C', 'R', 'R', 'B', 'B', 'R'] },
+    { name: "Elena Neri", role: "SJ", shifts: ['C', 'C', 'R', 'R', 'B', 'B', 'R', 'R', 'A', 'A', 'C', 'C', 'R', 'R', 'B'] },
+  ];
+
+  return (
+    <div style={{ overflowX: 'auto', background: '#0f172a', padding: '1.5rem', borderRadius: '2rem', marginTop: '2.5rem', boxShadow: '0 30px 60px -10px rgba(0,0,0,0.3)' }}>
+       <h4 style={{ color: 'white', marginBottom: '1.5rem', fontSize: '0.9rem', opacity: 0.7, fontWeight: 500, letterSpacing: '0.05em' }}>PREVIEW OUTPUT ALGORITMO</h4>
+       <table style={{ width: '100%', borderCollapse: 'collapse', color: 'white', fontSize: '0.8rem' }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left', padding: '12px', borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', fontSize: '0.65rem' }}>DIPENDENTE</th>
+              {[...Array(15)].map((_, i) => (
+                <th key={i} style={{ padding: '12px', borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', fontSize: '0.65rem' }}>{i+1}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {fakeData.map((emp, i) => (
+              <tr key={i}>
+                <td style={{ padding: '12px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ fontWeight: '800', color: 'white' }}>{emp.name}</div>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--primary)', fontWeight: 'bold' }}>{emp.role}</div>
+                </td>
+                {emp.shifts.map((s, j) => (
+                  <td key={j} style={{ padding: '6px', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ 
+                      width: '28px', height: '28px', borderRadius: '8px', 
+                      background: s === 'A' ? 'var(--shift-a)' : s === 'B' ? 'var(--shift-b)' : s === 'C' ? 'var(--shift-c)' : s === 'G' ? 'var(--shift-g)' : 'rgba(255,255,255,0.05)',
+                      display: 'grid', placeItems: 'center', margin: '0 auto',
+                      fontSize: '0.7rem', fontWeight: 'bold',
+                      boxShadow: s !== 'R' ? '0 4px 10px rgba(0,0,0,0.2)' : 'none'
+                    }}>{s}</div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+       </table>
+    </div>
+  );
+};
+
 const CaseStudy = ({ id, onBack }) => {
   const data = id === 1 ? {
     title: "Logistica Nord S.p.A.",
@@ -750,9 +796,11 @@ const CaseStudy = ({ id, onBack }) => {
           <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: data.color }}>La Soluzione Shift-Pro</h3>
           <p style={{ fontSize: '1.1rem', lineHeight: 1.6, color: 'var(--text-main)' }}>{data.solution}</p>
         </div>
-        <div className="glass-card" style={{ padding: '3rem', borderLeft: `8px solid ${data.color}` }}>
+        <div className="glass-card" style={{ padding: '2.5rem', borderLeft: `8px solid ${data.color}` }}>
           <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Il Risultato</h3>
-          <p style={{ fontSize: '1.3rem', fontWeight: 'bold', color: 'var(--text-main)' }}>{data.result}</p>
+          <p style={{ fontSize: '1.3rem', fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '1rem' }}>{data.result}</p>
+          
+          <ProjectPreviewTable />
         </div>
       </div>
 
