@@ -1066,6 +1066,26 @@ const LandingPage = ({ onEnter, config, setView }) => {
         </div>
 
 
+      {/* FAQ SECTION */}
+      <section className="reveal" style={{ padding: '8rem 0', maxWidth: '900px', margin: '0 auto', textAlign: 'left' }}>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '4rem', textAlign: 'center', letterSpacing: '-0.04em' }}>
+          Domande frequenti
+        </h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {[
+            { q: "Come vengono generati i turni?", a: "L'AI analizza competenze, disponibilità, limiti contrattuali e carichi di lavoro per creare turni ottimizzati senza conflitti." },
+            { q: "Posso modificare i turni generati?", a: "Sì, ogni turno può essere modificato manualmente. L'AI aggiorna automaticamente il resto della pianificazione." },
+            { q: "Supporta turni notturni e rotazioni?", a: "Certo. Il sistema gestisce rotazioni settimanali, turni notturni e cicli complessi senza errori." },
+            { q: "Quanto tempo serve per generare un piano turni?", a: "Meno di 30 secondi. L'AI calcola milioni di combinazioni in tempo reale." }
+          ].map((faq, i) => (
+            <div key={i} className="glass-card" style={{ padding: '2rem', borderLeft: i % 2 === 0 ? '4px solid var(--primary)' : '4px solid var(--secondary)', transition: 'transform 0.3s ease' }}>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.8rem', color: 'var(--text-main)' }}>{faq.q}</h3>
+              <p style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>{faq.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <footer style={{ marginTop: '8rem', padding: '4rem 0', borderTop: '1px solid var(--glass-border)', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
         <div style={{ textAlign: 'left' }}>
           <div style={{ fontWeight: '900', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Turni <span style={{ color: 'var(--primary)' }}>Pro</span></div>
