@@ -2,6 +2,8 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from './context/AppContext';
 import demoVideo from './assets/demo.mp4';
 import chaosImg from './assets/chaos.png';
+import logisticsMockup from './assets/logistics_mockup.png';
+import medicalMockup from './assets/medical_mockup.png';
 import { calculateDailyShifts } from './logic/ShiftEngine';
 import StaffManager from './components/StaffManager';
 import RuleSettings from './components/RuleSettings';
@@ -995,27 +997,15 @@ const LandingPage = ({ onEnter, config, setView }) => {
           <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>Soluzioni reali per sfide logistiche complesse.</p>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-          <div className="portfolio-card glass-card" style={{ padding: 0 }} onClick={() => setView('case-study-1')}>
-             {/* Simulazione Mockup con Gradient */}
-             <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'grid', placeItems: 'center' }}>
-                <div className="glass-card" style={{ width: '80%', height: '60%', transform: 'rotate(-5deg)', boxShadow: '0 30px 60px rgba(0,0,0,0.3)' }}>
-                   <div style={{ height: '10px', width: '40px', background: 'var(--primary)', borderRadius: '10px', marginBottom: '10px' }}></div>
-                   <div style={{ height: '5px', width: '80%', background: 'rgba(255,255,255,0.1)', borderRadius: '10px', marginBottom: '5px' }}></div>
-                   <div style={{ height: '5px', width: '60%', background: 'rgba(255,255,255,0.1)', borderRadius: '10px' }}></div>
-                </div>
-             </div>
+          <div className="portfolio-card glass-card" style={{ padding: 0, overflow: 'hidden' }} onClick={() => setView('case-study-1')}>
+             <img src={logisticsMockup} alt="Logistics Dashboard" style={{ width: '100%', height: '300px', objectFit: 'cover', transition: 'transform 0.5s ease' }} className="portfolio-img" />
              <div className="portfolio-overlay">
                 <h3 style={{ fontSize: '1.5rem', color: 'white', fontWeight: 800 }}>Logistica Nord S.p.A.</h3>
                 <p style={{ color: 'rgba(255,255,255,0.7)' }}>Ottimizzazione 400 dipendenti su 4 siti.</p>
              </div>
           </div>
-          <div className="portfolio-card glass-card" style={{ padding: 0 }} onClick={() => setView('case-study-2')}>
-             <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #10b981, #3b82f6)', display: 'grid', placeItems: 'center' }}>
-                <div className="glass-card" style={{ width: '80%', height: '60%', transform: 'rotate(5deg)', boxShadow: '0 30px 60px rgba(0,0,0,0.3)' }}>
-                   <div style={{ height: '10px', width: '40px', background: '#10b981', borderRadius: '100px', marginBottom: '10px' }}></div>
-                   <div style={{ height: '5px', width: '80%', background: 'rgba(255,255,255,0.1)', borderRadius: '10px', marginBottom: '5px' }}></div>
-                </div>
-             </div>
+          <div className="portfolio-card glass-card" style={{ padding: 0, overflow: 'hidden' }} onClick={() => setView('case-study-2')}>
+             <img src={medicalMockup} alt="Medical Dashboard" style={{ width: '100%', height: '300px', objectFit: 'cover', transition: 'transform 0.5s ease' }} className="portfolio-img" />
              <div className="portfolio-overlay">
                 <h3 style={{ fontSize: '1.5rem', color: 'white', fontWeight: 800 }}>Medical Center Hub</h3>
                 <p style={{ color: 'rgba(255,255,255,0.7)' }}>Gestione turni h24 sala operatoria.</p>
