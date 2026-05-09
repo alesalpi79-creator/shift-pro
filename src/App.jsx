@@ -921,15 +921,15 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div className="stat-number" style={{ background: 'linear-gradient(to bottom, #fff, #cbd5e1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>40+</div>
-          <p style={{ fontWeight: '800', opacity: 0.4, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Aziende Attive</p>
+          <p style={{ fontWeight: '800', opacity: 0.8, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94a3b8' }}>Aziende Attive</p>
         </div>
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div className="stat-number" style={{ background: 'linear-gradient(to bottom, #fff, #cbd5e1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>99.9%</div>
-          <p style={{ fontWeight: '800', opacity: 0.4, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Precisione Algoritmo</p>
+          <p style={{ fontWeight: '800', opacity: 0.8, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94a3b8' }}>Precisione Algoritmo</p>
         </div>
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div className="stat-number" style={{ background: 'linear-gradient(to bottom, #fff, #cbd5e1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>5k+</div>
-          <p style={{ fontWeight: '800', opacity: 0.4, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Ore Risparmiate</p>
+          <p style={{ fontWeight: '800', opacity: 0.8, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94a3b8' }}>Ore Risparmiate</p>
         </div>
       </section>
 
