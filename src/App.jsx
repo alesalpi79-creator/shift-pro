@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from './context/AppContext';
 import demoVideo from './assets/demo.mp4';
+import chaosImg from './assets/chaos.png';
 import { calculateDailyShifts } from './logic/ShiftEngine';
 import StaffManager from './components/StaffManager';
 import RuleSettings from './components/RuleSettings';
@@ -787,25 +788,36 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
       {/* HERO SECTION */}
       {/* HERO SECTION */}
-      <section style={{ padding: '6rem 0', textAlign: 'center' }}>
-        <div className="reveal floating-badge" style={{ marginBottom: '1.5rem' }}>
-          🚀 Versione 2.5 — Ora disponibile
-        </div>
-        <h1 className="reveal hero-title" style={{ fontSize: '4.5rem', marginBottom: '1.5rem', letterSpacing: '-0.04em', fontWeight: 900 }}>
-          Turni perfetti. <br/>Senza stress.
-        </h1>
-        <p className="reveal" style={{ fontSize: '1.25rem', color: 'var(--text-muted)', maxWidth: '700px', margin: '0 auto 3rem auto', lineHeight: 1.4 }}>
-          Genera turni ottimizzati in 30 secondi. <br/>
-          <strong>Riduci i conflitti del 40%</strong> e libera il tuo team dai fogli Excel.
-        </p>
+      <section style={{ padding: '6rem 0', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '4rem' }}>
+        <div style={{ flex: 1 }}>
+          <div className="reveal floating-badge" style={{ marginBottom: '1.5rem' }}>
+            🚀 Versione 2.5 — Ora disponibile
+          </div>
+          <h1 className="reveal hero-title" style={{ fontSize: '5.5rem', marginBottom: '1.5rem', letterSpacing: '-0.04em', fontWeight: 900, lineHeight: 1 }}>
+            Turni perfetti. <br/>Senza stress.
+          </h1>
+          <p className="reveal" style={{ fontSize: '1.3rem', color: 'var(--text-muted)', maxWidth: '600px', marginBottom: '3rem', lineHeight: 1.4 }}>
+            Genera turni ottimizzati in 30 secondi. <br/>
+            <strong>Riduci i conflitti del 40%</strong> e libera il tuo team dai fogli Excel.
+          </p>
 
-        <div className="reveal" style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-          <button className="btn-hero" onClick={onEnter}>
-            Inizia Progetto
-          </button>
-          <button className="btn-primary" style={{ background: 'white', color: 'var(--text-main)', border: '1px solid var(--glass-border)', padding: '1rem 2rem', borderRadius: '100px' }} onClick={() => document.getElementById('work').scrollIntoView({behavior: 'smooth'})}>
-            Guarda Risultati
-          </button>
+          <div className="reveal" style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
+            <button className="btn-hero" onClick={onEnter}>
+              Inizia Progetto
+            </button>
+            <button className="btn-primary" style={{ background: 'white', color: 'var(--text-main)', border: '1px solid var(--glass-border)', padding: '1rem 2rem', borderRadius: '100px' }} onClick={() => document.getElementById('work').scrollIntoView({behavior: 'smooth'})}>
+              Guarda Risultati
+            </button>
+          </div>
+        </div>
+        
+        <div className="reveal" style={{ flex: 1, position: 'relative' }}>
+          <div className="glass-card" style={{ padding: '1rem', borderRadius: '3rem', background: 'white', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.15)' }}>
+            <img src={chaosImg} alt="Scheduling Chaos" style={{ width: '100%', borderRadius: '2.5rem', display: 'block' }} />
+            <div className="glass-card" style={{ position: 'absolute', bottom: '-20px', left: '-20px', padding: '1rem 1.5rem', borderRadius: '1.5rem', background: '#ef4444', color: 'white', fontWeight: 'bold', fontSize: '0.9rem', boxShadow: '0 10px 20px rgba(239, 68, 68, 0.3)' }}>
+              ⚠️ "Il cervello mi esplode!"
+            </div>
+          </div>
         </div>
       </section>
 
