@@ -867,7 +867,7 @@ const LandingPage = ({ onEnter, config }) => {
           <div style={{ fontSize: '1.2rem', marginBottom: '5px' }}>✅</div>
           <div>Sicurezza Garantita</div>
         </div>
-      </div>
+
 
       <footer style={{ marginTop: '8rem', padding: '4rem 0', borderTop: '1px solid var(--glass-border)', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
         <div style={{ textAlign: 'left' }}>
