@@ -910,26 +910,25 @@ const LandingPage = ({ onEnter, config, setView }) => {
       <section className="reveal" style={{ 
         display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3rem', 
         padding: '5rem 2rem', borderRadius: '3rem',
-        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', 
-        color: 'white', marginBottom: '8rem', textAlign: 'center',
-        boxShadow: '0 40px 100px -20px rgba(0,0,0,0.4)',
-        border: '1px solid rgba(255,255,255,0.05)',
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
+        color: 'var(--text-main)', marginBottom: '8rem', textAlign: 'center',
+        boxShadow: '0 20px 50px rgba(0,0,0,0.05)',
+        border: '1px solid var(--glass-border)',
         position: 'relative', overflow: 'hidden'
       }}>
-        <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '300px', height: '300px', background: 'var(--primary)', filter: 'blur(100px)', opacity: 0.2 }}></div>
-        <div style={{ position: 'absolute', bottom: '-100px', right: '-100px', width: '300px', height: '300px', background: 'var(--secondary)', filter: 'blur(100px)', opacity: 0.2 }}></div>
-
+        <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '300px', height: '300px', background: 'var(--primary)', filter: 'blur(120px)', opacity: 0.05 }}></div>
+        
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div className="stat-number" style={{ background: 'linear-gradient(to bottom, #fff, #cbd5e1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>40+</div>
-          <p style={{ fontWeight: '800', opacity: 0.8, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94a3b8' }}>Aziende Attive</p>
+          <div className="stat-number">40+</div>
+          <p style={{ fontWeight: '800', opacity: 0.6, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Aziende Attive</p>
         </div>
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div className="stat-number" style={{ background: 'linear-gradient(to bottom, #fff, #cbd5e1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>99.9%</div>
-          <p style={{ fontWeight: '800', opacity: 0.8, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94a3b8' }}>Precisione Algoritmo</p>
+          <div className="stat-number">99.9%</div>
+          <p style={{ fontWeight: '800', opacity: 0.6, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Precisione Algoritmo</p>
         </div>
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div className="stat-number" style={{ background: 'linear-gradient(to bottom, #fff, #cbd5e1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>5k+</div>
-          <p style={{ fontWeight: '800', opacity: 0.8, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94a3b8' }}>Ore Risparmiate</p>
+          <div className="stat-number">5k+</div>
+          <p style={{ fontWeight: '800', opacity: 0.6, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Ore Risparmiate</p>
         </div>
       </section>
 
