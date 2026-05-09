@@ -1066,6 +1066,27 @@ const LandingPage = ({ onEnter, config, setView }) => {
         </div>
 
 
+      {/* WHY CHOOSE US SECTION */}
+      <section className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '4rem', letterSpacing: '-0.04em' }}>
+          Perché scegliere noi
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2rem' }}>
+          {[
+            { icon: "⚡", t: "Velocità incredibile", d: "Genera turni complessi in pochi secondi, anche con centinaia di dipendenti." },
+            { icon: "🎯", t: "Precisione 99.9%", d: "Nessun conflitto, nessun errore, nessuna sovrapposizione. L'AI rispetta ogni vincolo." },
+            { icon: "💼", t: "Pensato per le aziende", d: "Progettato per produzione, logistica, assistenza e settori con turni complessi." },
+            { icon: "🔒", t: "Affidabilità totale", d: "Dati protetti, calcoli stabili, risultati consistenti. Un sistema su cui puoi contare." }
+          ].map((item, i) => (
+            <div key={i} className="glass-card" style={{ padding: '2rem', textAlign: 'left' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>{item.icon}</div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.8rem' }}>{item.t}</h3>
+              <p style={{ color: 'var(--text-muted)', lineHeight: 1.6, fontSize: '0.95rem' }}>{item.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* FAQ SECTION */}
       <section className="reveal" style={{ padding: '8rem 0', maxWidth: '900px', margin: '0 auto', textAlign: 'left' }}>
         <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '4rem', textAlign: 'center', letterSpacing: '-0.04em' }}>
