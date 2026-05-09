@@ -48,8 +48,6 @@ export const DEFAULT_CONFIG = {
     jollyOp: 3,
     sjOp: 3
   },
-  textColor: "#0f172a",
-  sidebarTextColor: "#0f172a",
   serverUrl: "",
   showUnderstaffedAlert: true
 };

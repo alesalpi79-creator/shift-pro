@@ -489,11 +489,6 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
     setSelection(prev => prev.includes(key) ? prev : [...prev, key]);
   };
 
-  const toggleSelection = (empName, date) => {
-    const dStr = getDateStr(date);
-    const key = `${empName}|${dStr}`;
-    setSelection(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]);
-  };
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -1158,10 +1153,9 @@ const CalendarView = () => {
   );
 };
 
-const CommandCenter = ({ config, employees, exceptions }) => {
+const CommandCenter = ({ employees, exceptions }) => {
   // Calcolo rapido statistiche
   const stats = useMemo(() => {
-    const today = new Date();
     const coverage = 98.5; // Mock per ora, implementabile con ShiftEngine
     const alerts = 0;
     return { coverage, alerts, staff: employees.length };
@@ -1207,7 +1201,7 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return !localStorage.getItem('onboarding_complete') && !localStorage.getItem('shift_pro_employees');
   });
-  const { config, employees } = useApp();
+  const { config, employees, exceptions } = useApp();
 
   const handleOnboardingComplete = () => {
     localStorage.setItem('onboarding_complete', 'true');
@@ -1215,7 +1209,7 @@ function App() {
   };
 
   React.useEffect(() => {
-    const isLanding = view === 'landing';
+    const isLanding = view === 'landing' || view.startsWith('case-study');
     
     // Default values for Landing Page (Premium Light)
     const primary = isLanding ? '#6366f1' : config.primaryColor; 
@@ -1252,7 +1246,7 @@ function App() {
     );
   }
 
-  const isLanding = view === 'landing';
+  const isLanding = view === 'landing' || view.startsWith('case-study');
 
   return (
     <div className="app-container" style={{ position: 'relative' }}>
@@ -1311,7 +1305,7 @@ function App() {
                 )}
               </header>
 
-              <CommandCenter config={config} employees={employees} />
+              <CommandCenter config={config} employees={employees} exceptions={exceptions} />
 
               {activeTab === 'calendar' && <CalendarView />}
               {activeTab === 'staff' && <StaffManager />}

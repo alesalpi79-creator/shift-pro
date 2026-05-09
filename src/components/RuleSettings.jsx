@@ -125,7 +125,6 @@ export default function RuleSettings() {
 
   const safeShiftLabels = config.shiftLabels || {};
   const safeShiftColors = config.shiftColors || {};
-  const safeCycle = Array.isArray(config.cycle) ? config.cycle : (typeof config.cycle === 'string' ? config.cycle.split(',').map(s => s.trim()) : []);
 
   const handleCycleSave = () => {
     const newCycle = tempCycle.split(',').map(s => s.trim().toUpperCase()).filter(s => s.length > 0);
@@ -227,14 +226,14 @@ export default function RuleSettings() {
   };
 
   const scrollToCard = (index) => {
-    if (designCardsRef.current) {
-      const width = designCardsRef.current.offsetWidth;
-      designCardsRef.current.scrollTo({ left: index * width, behavior: 'smooth' });
+    const el = designCardsRef.current;
+    if (el) {
+      const width = el.offsetWidth;
+      el.scrollTo({ left: index * width, behavior: 'smooth' });
       setActiveDesignCard(index);
     }
   };
 
-  const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
 
   const renderDesign = () => (
     <div className="fade-in">
@@ -642,7 +641,7 @@ export default function RuleSettings() {
 
   return (
     <div className="settings-container" style={{ maxWidth: '600px', margin: '0 auto' }}>
-      <div className="glass-card" style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', padding: '8px', borderBottom: '1px solid var(--glass-border)', backdropFilter: 'blur(20px)', overflowX: 'auto' }} className="no-scrollbar">
+      <div className="glass-card no-scrollbar" style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', padding: '8px', borderBottom: '1px solid var(--glass-border)', backdropFilter: 'blur(20px)', overflowX: 'auto' }}>
         <button 
           className={`toggle-btn ${activeSection === 'design' ? 'active' : ''}`} 
           style={{ flex: '1 0 auto', color: activeSection === 'design' ? 'white' : 'var(--text-muted)' }} 

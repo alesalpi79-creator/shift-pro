@@ -2,7 +2,7 @@
  * MOTORE DI CALCOLO SHIFT-PRO (Versione 6.1 - Precisione Chirurgica)
  */
 
-export function getMonthlyRole(employee, date, employees, config) {
+export function getMonthlyRole(employee, date, employees) {
   if (!employee || !date || !employees) return 'OP';
   const d = new Date(date);
   const monthsSinceEpoch = (d.getFullYear() - 2026) * 12 + d.getMonth();

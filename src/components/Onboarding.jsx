@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 
 export default function Onboarding({ onComplete }) {
-  const { config, setConfig, setEmployees } = useApp();
+  const { config, setConfig } = useApp();
   const [step, setStep] = useState(1);
   const [appName, setAppName] = useState(config.appName);
 
