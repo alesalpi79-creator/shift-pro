@@ -205,16 +205,31 @@ body::after {
 .glass-card:nth-child(5) { animation-delay: 0.45s; }
 
 /* Asymmetric / Frizzante shapes for Settings */
-.settings-layout .glass-card:nth-child(1) { border-radius: 2rem 0.5rem 2rem 0.5rem; }
-.settings-layout .glass-card:nth-child(2) { border-radius: 0.5rem 3rem 0.5rem 3rem; }
-.settings-layout .glass-card:nth-child(3) { border-radius: 2rem 2rem 0.5rem 0.5rem; }
-.settings-layout .glass-card:nth-child(4) { border-radius: 0.5rem 0.5rem 3rem 3rem; }
-.settings-layout .glass-card:nth-child(5) { border-radius: 2rem 1rem 3rem 0.5rem; }
-.settings-layout .glass-card:nth-child(6) { border-radius: 1rem 2rem 1rem 2rem; }
+.settings-layout .glass-card:nth-child(1) { border-radius: 4rem 1rem 4rem 1rem; }
+.settings-layout .glass-card:nth-child(2) { border-radius: 1rem 4rem 1rem 4rem; }
+.settings-layout .glass-card:nth-child(3) { border-radius: 3rem 3rem 1rem 1rem; }
+.settings-layout .glass-card:nth-child(4) { border-radius: 1rem 1rem 4rem 4rem; }
+.settings-layout .glass-card:nth-child(5) { border-radius: 3rem 1.5rem 4rem 1rem; }
+.settings-layout .glass-card:nth-child(6) { border-radius: 1.5rem 3rem 1.5rem 3rem; }
+
+.organic-blob {
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  filter: blur(80px);
+  opacity: 0.15;
+  position: absolute;
+  z-index: -1;
+  animation: blob-float 20s infinite alternate;
+}
+
+@keyframes blob-float {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to { transform: translate(100px, 50px) rotate(30deg); }
+}
 
 .glass-card:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.05);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--primary);
 }
 

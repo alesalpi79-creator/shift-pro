@@ -251,7 +251,7 @@ export default function RuleSettings() {
           width: '100%',
           boxSizing: 'border-box'
         }} 
-        className="no-scrollbar settings-horizontal-flow"
+        className="no-scrollbar settings-horizontal-flow settings-layout"
       >
         {/* SCHEDA 1: IDENTITÀ APP */}
         <div className="glass-card" style={{ width: '100%', minWidth: '100%', flex: '0 0 100%', scrollSnapAlign: 'start', display: 'flex', flexDirection: 'column', gap: '1.2rem', boxSizing: 'border-box' }}>

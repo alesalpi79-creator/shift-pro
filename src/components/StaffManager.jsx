@@ -127,9 +127,14 @@ export default function StaffManager() {
             Auto-Distribuisci Turni
           </button>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-          {employees.map(e => (
-            <div key={e.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(15, 23, 42, 0.02)', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+          {employees.map((e, idx) => (
+            <div key={e.id} style={{ 
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+              padding: '1.25rem', background: 'rgba(15, 23, 42, 0.02)', 
+              borderRadius: idx % 2 === 0 ? '2rem 0.5rem 2rem 0.5rem' : '0.5rem 2rem 0.5rem 2rem',
+              border: '1px solid var(--glass-border)'
+            }}>
               {editingId === e.id ? (
                 <div style={{ display: 'flex', gap: '0.5rem', width: '100%', alignItems: 'center', flexWrap: 'wrap' }}>
                   <input className="input-main" style={{ padding: '0.4rem', flex: '1 1 100%' }} value={editName} onChange={ev => setEditName(ev.target.value)} />

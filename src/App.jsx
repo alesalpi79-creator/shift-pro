@@ -717,8 +717,14 @@ const LandingPage = ({ onEnter, config }) => {
   return (
     <div className="fade-in" style={{ 
       minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', 
-      justifyContent: 'center', textAlign: 'center', padding: '2rem', maxWidth: '1200px', margin: '0 auto' 
+      justifyContent: 'center', textAlign: 'center', padding: '4rem 2rem', maxWidth: '1200px', margin: '0 auto',
+      position: 'relative', overflow: 'visible'
     }}>
+      {/* Decorative Blobs */}
+      <div className="organic-blob" style={{ top: '-10%', left: '-10%', width: '400px', height: '400px' }}></div>
+      <div className="organic-blob" style={{ bottom: '10%', right: '-5%', width: '500px', height: '500px', background: 'var(--secondary)', animationDelay: '-5s' }}></div>
+      <div className="organic-blob" style={{ top: '40%', left: '30%', width: '300px', height: '300px', background: 'var(--accent-success)', opacity: 0.1, animationDuration: '30s' }}></div>
+
       <div className="floating-badge" style={{ marginBottom: '1.5rem' }}>
         🚀 Engine v2.5 Online
       </div>
@@ -729,21 +735,21 @@ const LandingPage = ({ onEnter, config }) => {
         Shift-Pro AI ottimizza rotazioni industriali complesse in millisecondi. Precisione matematica, estetica premium, efficienza totale.
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', width: '100%', marginBottom: '4rem' }}>
-        <div className="glass-card" style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚡</div>
-          <h3 style={{ marginBottom: '0.5rem', fontWeight: '800' }}>Velocità AI</h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Genera turni annuali bilanciati in meno di un secondo senza errori umani.</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2.5rem', width: '100%', marginBottom: '6rem' }}>
+        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '3rem 1rem 3rem 1rem', padding: '2.5rem' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>⚡</div>
+          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>Velocità AI</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Genera turni annuali bilanciati in meno di un secondo senza errori umani.</p>
         </div>
-        <div className="glass-card" style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🛡️</div>
-          <h3 style={{ marginBottom: '0.5rem', fontWeight: '800' }}>Precisione Industriale</h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Rispetto ferreo dei vincoli di sicurezza e delle quote legali 104 e riposi.</p>
+        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '1rem 3rem 1rem 3rem', padding: '2.5rem', borderTop: '4px solid var(--primary)' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>🛡️</div>
+          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>Precisione Industriale</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Rispetto ferreo dei vincoli di sicurezza e delle quote legali 104 e riposi.</p>
         </div>
-        <div className="glass-card" style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📱</div>
-          <h3 style={{ marginBottom: '0.5rem', fontWeight: '800' }}>Cloud Native</h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Accedi ai tuoi schemi da qualsiasi dispositivo, ovunque nel mondo.</p>
+        <div className="glass-card" style={{ textAlign: 'left', borderRadius: '2rem 2rem 4rem 2rem', padding: '2.5rem' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 10px var(--primary-glow))' }}>📱</div>
+          <h3 style={{ marginBottom: '0.75rem', fontWeight: '800', fontSize: '1.25rem' }}>Cloud Native</h3>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>Accedi ai tuoi schemi da qualsiasi dispositivo, ovunque nel mondo.</p>
         </div>
       </div>
 

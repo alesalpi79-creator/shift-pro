@@ -9,9 +9,12 @@ export default function Onboarding({ onComplete }) {
   const nextStep = () => setStep(step + 1);
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'var(--bg-main)', display: 'grid', placeItems: 'center', zIndex: 1000 }}>
-      <div className="glass-card" style={{ maxWidth: '450px', width: '90%', textAlign: 'center', padding: '3rem' }}>
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚀</div>
+    <div style={{ position: 'fixed', inset: 0, background: 'var(--bg-main)', display: 'grid', placeItems: 'center', zIndex: 1000, overflow: 'hidden' }}>
+      <div className="organic-blob" style={{ top: '-10%', left: '-10%', width: '400px', height: '400px' }}></div>
+      <div className="organic-blob" style={{ bottom: '-10%', right: '-10%', width: '500px', height: '500px', background: 'var(--secondary)', animationDelay: '-5s' }}></div>
+      
+      <div className="glass-card" style={{ maxWidth: '500px', width: '90%', textAlign: 'center', padding: '4rem', borderRadius: '4rem 1rem 4rem 1rem' }}>
+        <div style={{ fontSize: '4rem', marginBottom: '1.5rem', filter: 'drop-shadow(0 10px 20px var(--primary-glow))' }}>🚀</div>
         
         {step === 1 && (
           <div className="fade-in">
