@@ -954,6 +954,29 @@ const LandingPage = ({ onEnter, config, setView }) => {
         </div>
       </div>
 
+      {/* HOW IT WORKS SECTION */}
+      <section className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '4rem', letterSpacing: '-0.04em' }}>
+          Come funziona
+        </h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
+          {[
+            { icon: "📝", step: "1) Inserisci i vincoli", desc: "Definisci reparti, orari, competenze e limiti contrattuali. L'interfaccia ti guida passo-passo." },
+            { icon: "⚙️", step: "2) L'AI calcola", desc: "Il motore analizza milioni di combinazioni in pochi secondi, eliminando conflitti e straordinari." },
+            { icon: "📊", step: "3) Turni perfetti", desc: "Ricevi una tabella chiara, pronta da esportare o modificare. Con note e suggerimenti dell'AI." }
+          ].map((item, i) => (
+            <div key={i} className="glass-card" style={{ flex: '1 1 300px', padding: '2.5rem', textAlign: 'left', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ 
+                position: 'absolute', top: '-20px', right: '-20px', fontSize: '8rem', opacity: 0.03, fontWeight: 900, pointerEvents: 'none' 
+              }}>{i + 1}</div>
+              <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>{item.icon}</div>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem' }}>{item.step}</h3>
+              <p style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* PORTFOLIO / CASE STUDIES SECTION */}
       <section id="work" className="reveal" style={{ marginBottom: '8rem' }}>
         <div style={{ textAlign: 'left', marginBottom: '2.5rem' }}>
