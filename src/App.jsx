@@ -1538,7 +1538,8 @@ function App() {
     document.documentElement.style.setProperty('--bg-sidebar', (isLanding ? '#ffffff' : (bg + 'E6')));
     document.documentElement.style.setProperty('--text-main', text);
     document.documentElement.style.setProperty('--text-sidebar', sideText);
-    document.documentElement.style.setProperty('--glass-bg', isLanding ? `rgba(255, 255, 255, 0.7)` : `rgba(15, 23, 42, ${glass})`);
+    document.documentElement.style.setProperty('--glass-bg', isLanding ? `rgba(255, 255, 255, 0.7)` : `rgba(255, 255, 255, 0.85)`);
+    document.documentElement.style.setProperty('--glass-border', isLanding ? `rgba(15, 23, 42, 0.08)` : `rgba(15, 23, 42, 0.12)`);
     
     if (config.shiftColors && !isLanding) {
       Object.keys(config.shiftColors).forEach(k => {
