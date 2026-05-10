@@ -897,7 +897,7 @@ const LandingPage = ({ onEnter, config, setView }) => {
       <section style={{ padding: '6rem 0', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '4rem' }}>
         <div style={{ flex: 1 }}>
           <div className="reveal floating-badge" style={{ marginBottom: '1.5rem' }}>
-            🚀 Versione 2.6 — Ottimizzazione Mobile
+            🚀 Versione 2.6.2 — Protezione Avanzata
           </div>
           <h1 className="reveal hero-title" style={{ fontSize: 'min(5.5rem, 12vw)', marginBottom: '1.5rem', letterSpacing: '-0.04em', fontWeight: 900, lineHeight: 1.1 }}>
             Turni perfetti. <br/>Senza stress.
