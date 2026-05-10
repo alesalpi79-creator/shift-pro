@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://shift-pro.vercel.app/sitemap.xml
+Sitemap: https://shiftproapp.com/sitemap.xml
