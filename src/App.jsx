@@ -244,6 +244,25 @@ const Sidebar = ({ activeTab, setTab, setView }) => {
             </label>
           </div>
         )}
+
+        {!isPro && (
+          <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--primary-glow)', borderRadius: '12px', border: '1px solid var(--primary)', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '5px' }}>VERSIONE TRIAL</div>
+            <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '10px' }}>Passa a Pro per sbloccare tutte le funzioni.</p>
+            <button 
+              className="btn-primary" 
+              style={{ width: '100%', fontSize: '0.7rem', background: 'var(--primary)', border: 'none' }}
+              onClick={() => {
+                if (window.confirm("Vuoi attivare la licenza Pro a 7,99€/mese?")) {
+                  setIsPro(true);
+                  alert("Grazie! Ora sei un utente PRO. (In produzione qui ci sarebbe Stripe)");
+                }
+              }}
+            >
+              🚀 ATTIVA PRO
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1447,13 +1466,65 @@ const CommandCenter = ({ employees, exceptions }) => {
   );
 };
 
+const PaywallOverlay = ({ onUnlock }) => {
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+      background: 'rgba(15, 23, 42, 0.98)', backdropFilter: 'blur(10px)',
+      zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
+      padding: '2rem', textAlign: 'center', color: 'white'
+    }}>
+      <div style={{ 
+        width: '80px', height: '80px', background: 'var(--primary)', borderRadius: '20px', 
+        fontSize: '3rem', display: 'grid', placeItems: 'center', marginBottom: '2rem',
+        boxShadow: '0 0 40px var(--primary-glow)'
+      }}>🔒</div>
+      <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '1rem' }}>Periodo di Prova Scaduto</h2>
+      <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', maxWidth: '500px', marginBottom: '3rem', lineHeight: 1.5 }}>
+        La tua settimana gratuita è terminata. Per continuare a generare turni professionali e gestire il tuo staff, attiva l'abbonamento Pro.
+      </p>
+      
+      <div className="glass-card" style={{ padding: '2rem', border: '2px solid var(--primary)', maxWidth: '400px', width: '100%', marginBottom: '2rem' }}>
+        <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--primary)', fontWeight: 800, marginBottom: '0.5rem' }}>Abbonamento Mensile</div>
+        <div style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '1rem' }}>7,99€ <span style={{ fontSize: '1rem', opacity: 0.5 }}>/ mese</span></div>
+        <ul style={{ textAlign: 'left', fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '2rem', paddingLeft: '1rem' }}>
+          <li>✓ Generazione illimitata turni AI</li>
+          <li>✓ Gestione multi-schema</li>
+          <li>✓ Esportazione Excel e Stampa</li>
+          <li>✓ Supporto tecnico dedicato</li>
+        </ul>
+        <button 
+          className="btn-hero" 
+          style={{ width: '100%', padding: '1rem' }}
+          onClick={() => {
+            // In una implementazione reale, qui reindirizzeresti a Stripe Checkout
+            // Esempio: window.location.href = 'https://buy.stripe.com/tuo-link-qui';
+            alert("Reindirizzamento al pagamento sicuro (Stripe)...");
+            onUnlock(); 
+          }}
+        >
+          Attiva Ora 🚀
+        </button>
+      </div>
+      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Pagamento sicuro crittografato • Disdici quando vuoi</p>
+    </div>
+  );
+};
+
 function App() {
   const [activeTab, setTab] = useState('calendar');
   const [view, setView] = useState('landing'); // 'landing', 'app', 'case-study-1', 'case-study-2'
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return !localStorage.getItem('onboarding_complete') && !localStorage.getItem('shift_pro_employees');
   });
-  const { config, employees, exceptions } = useApp();
+  const { config, employees, exceptions, isPro, setIsPro, trialStartDate } = useApp();
+
+  const isTrialExpired = useMemo(() => {
+    const start = new Date(trialStartDate).getTime();
+    const now = new Date().getTime();
+    const diffDays = (now - start) / (1000 * 60 * 60 * 24);
+    return diffDays > 7;
+  }, [trialStartDate]);
 
   const handleOnboardingComplete = () => {
     localStorage.setItem('onboarding_complete', 'true');
@@ -1502,6 +1573,9 @@ function App() {
 
   return (
     <div className="app-container" style={{ position: 'relative' }}>
+      {view !== 'landing' && !isPro && isTrialExpired && (
+        <PaywallOverlay onUnlock={() => setIsPro(true)} />
+      )}
       {/* Background Layer: Only active in App view, neutral in Landing */}
       <div style={{
         position: 'fixed',

@@ -149,13 +149,33 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('shift_pro_active_id', activeScheduleId);
   }, [schedules, activeScheduleId]);
 
+  // Gestione Trial e Pagamento
+  const [isPro, setIsPro] = useState(() => {
+    return localStorage.getItem('shift_pro_is_pro') === 'true';
+  });
+
+  const [trialStartDate, setTrialStartDate] = useState(() => {
+    const saved = localStorage.getItem('shift_pro_trial_start');
+    if (saved) return saved;
+    const now = new Date().toISOString();
+    localStorage.setItem('shift_pro_trial_start', now);
+    return now;
+  });
+
+  // Persistenza isPro
+  useEffect(() => {
+    localStorage.setItem('shift_pro_is_pro', isPro);
+  }, [isPro]);
+
   const value = {
     userRole, setUserRole,
     schedules, activeScheduleId, setActiveScheduleId,
     addSchedule, deleteSchedule, renameSchedule,
     config, setConfig,
     employees, setEmployees,
-    exceptions, setExceptions
+    exceptions, setExceptions,
+    isPro, setIsPro,
+    trialStartDate
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
