@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from './context/AppContext';
+// Trigger Deploy: Rename project v2.6.9
 import chaosImg from './assets/chaos.png';
 import logisticsMockup from './assets/logistics_mockup.png';
 import medicalMockup from './assets/medical_mockup.png';
