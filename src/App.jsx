@@ -894,6 +894,51 @@ const LandingPage = ({ onEnter, config, setView }) => {
       minHeight: '100vh', width: '100%', padding: '0 2rem', maxWidth: '1400px', margin: '0 auto',
       position: 'relative', overflow: 'visible'
     }}>
+      
+      {/* NAVBAR */}
+      <nav style={{ 
+        position: 'fixed', top: 0, left: 0, right: 0, height: '80px', 
+        background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(20px)', 
+        borderBottom: '1px solid rgba(255,255,255,0.05)', zIndex: 1000,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 2rem'
+      }}>
+        <div style={{ width: '100%', maxWidth: '1400px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {/* Logo Section */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ 
+              width: '42px', height: '42px', borderRadius: '12px', 
+              background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
+              display: 'grid', placeItems: 'center', color: 'white', fontWeight: '900', fontSize: '1.4rem',
+              boxShadow: '0 8px 16px var(--primary-glow)'
+            }}>T</div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontWeight: '900', fontSize: '1.2rem', color: 'white', letterSpacing: '-0.02em', lineHeight: 1 }}>Turni Pro <span style={{ color: 'var(--primary)' }}>AI</span></div>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '2px' }}>Smart Workforce Platform</div>
+            </div>
+          </div>
+
+          {/* Menu Links (Desktop) */}
+          <div style={{ display: 'flex', gap: '2.5rem', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: '600' }} className="nav-links-desktop">
+            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Prodotto</span>
+            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Funzionalità</span>
+            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Prezzi</span>
+            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Contatti</span>
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <button 
+              onClick={() => onEnter()}
+              style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '0.6rem 1.5rem', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.85rem' }}
+            >Login</button>
+            <button 
+              onClick={() => onEnter()}
+              className="btn-hero"
+              style={{ padding: '0.6rem 1.5rem', borderRadius: '10px', fontSize: '0.85rem', boxShadow: 'none' }}
+            >Inizia Gratis</button>
+          </div>
+        </div>
+      </nav>
 
       {/* Decorative Blobs */}
       <div className="organic-blob" style={{ top: '-10%', left: '-10%', width: '400px', height: '400px' }}></div>
@@ -902,24 +947,25 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
       {/* HERO SECTION */}
       {/* HERO SECTION */}
-      <section style={{ padding: '6rem 0', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '4rem' }}>
+      <section style={{ padding: '12rem 0 6rem 0', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '4rem' }}>
         <div style={{ flex: 1 }}>
-          <div className="reveal floating-badge" style={{ marginBottom: '1.5rem' }}>
-            🚀 Versione 2.6.2 — Protezione Avanzata
+          <div className="reveal floating-badge" style={{ marginBottom: '1.5rem', background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '6px 16px', borderRadius: '100px', fontWeight: '800', fontSize: '0.75rem' }}>
+            ⚡ L'AI PIÙ VELOCE SUL MERCATO
           </div>
-          <h1 className="reveal hero-title" style={{ fontSize: 'min(5.5rem, 12vw)', marginBottom: '1.5rem', letterSpacing: '-0.04em', fontWeight: 900, lineHeight: 1.1 }}>
-            Turni perfetti. <br/>Senza stress.
+          <h1 className="reveal hero-title" style={{ fontSize: 'min(4.5rem, 10vw)', marginBottom: '1.5rem', letterSpacing: '-0.05em', fontWeight: 900, lineHeight: 1.1 }}>
+            L'unico sistema che genera turni <span style={{ color: 'var(--primary)' }}>ottimizzati in 30 secondi.</span>
           </h1>
-          <p className="reveal" style={{ fontSize: '1.3rem', color: 'var(--text-muted)', maxWidth: '600px', marginBottom: '3rem', lineHeight: 1.4 }}>
-            Genera turni ottimizzati in 30 secondi. <br/>
-            <strong>Settimana gratuita</strong> poi solo <strong>7,99€/mese</strong>. <br/>
-            Libera il tuo team dallo stress degli Excel.
+          <p className="reveal" style={{ fontSize: '1.25rem', color: 'var(--text-muted)', maxWidth: '650px', marginBottom: '3rem', lineHeight: 1.5 }}>
+            Rispetta vincoli, contratti e preferenze del personale senza sforzo. Risparmia ore di lavoro manuale ogni settimana con la potenza dell'Intelligenza Artificiale.
           </p>
 
-          <div className="reveal hero-actions" style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
-            <button className="btn-hero" onClick={onEnter} style={{ flex: '1 1 auto', minWidth: '280px' }}>
-              Inizia Prova Gratuita 7 Giorni 🚀
+          <div className="reveal hero-actions" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'flex-start' }}>
+            <button className="btn-hero" onClick={() => onEnter()} style={{ padding: '1.5rem 3.5rem', fontSize: '1.1rem' }}>
+              Inizia Prova Gratuita 14 Giorni 🚀
             </button>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '1rem' }}>
+              <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓</span> Nessuna carta richiesta — Attivazione istantanea
+            </div>
           </div>
         </div>
         
@@ -989,24 +1035,42 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
       {/* HOW IT WORKS SECTION */}
       <section className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '4rem', letterSpacing: '-0.04em' }}>
-          Come funziona
-        </h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
+        <h2 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>Come funziona</h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '5rem', maxWidth: '750px', margin: '0 auto 5rem auto' }}>
+          Tre passaggi concreti per eliminare il caos dalla tua pianificazione aziendale.
+        </p>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem' }}>
           {[
-            { icon: "📝", step: "1) Inserisci i vincoli", desc: "Definisci reparti, orari, competenze e limiti contrattuali. L'interfaccia ti guida passo-passo." },
-            { icon: "⚙️", step: "2) L'AI calcola", desc: "Il motore analizza milioni di combinazioni in pochi secondi, eliminando conflitti e straordinari." },
-            { icon: "📊", step: "3) Turni perfetti", desc: "Ricevi una tabella chiara, pronta da esportare o modificare. Con note e suggerimenti dell'AI." }
+            { 
+              icon: "📥", 
+              step: "Carica i dati", 
+              desc: "Importi turni, reparti, contratti e preferenze del personale. L'interfaccia intuitiva ti guida in ogni inserimento." 
+            },
+            { 
+              icon: "⚙️", 
+              step: "Genera i turni", 
+              desc: "L'AI analizza milioni di combinazioni e propone la soluzione ottimale rispettando ogni vincolo in soli 30 secondi." 
+            },
+            { 
+              icon: "📊", 
+              step: "Pubblica e monitora", 
+              desc: "Esporta i turni, inviali al personale e monitora coperture e straordinari da un'unica dashboard centralizzata." 
+            }
           ].map((item, i) => (
-            <div key={i} className="glass-card" style={{ flex: '1 1 300px', padding: '2.5rem', textAlign: 'left', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ 
-                position: 'absolute', top: '-20px', right: '-20px', fontSize: '8rem', opacity: 0.03, fontWeight: 900, pointerEvents: 'none' 
-              }}>{i + 1}</div>
-              <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>{item.icon}</div>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem' }}>{item.step}</h3>
-              <p style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>{item.desc}</p>
+            <div key={i} className="glass-card" style={{ padding: '3.5rem 2.5rem', textAlign: 'center', borderRadius: '3rem', position: 'relative', transition: 'transform 0.3s ease' }}>
+              <div style={{ position: 'absolute', top: '2rem', left: '2rem', fontSize: '4rem', fontWeight: '900', opacity: 0.05, color: 'var(--primary)' }}>{i + 1}</div>
+              <div style={{ fontSize: '4rem', marginBottom: '2rem' }}>{item.icon}</div>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1.2rem' }}>{item.step}</h3>
+              <p style={{ color: 'var(--text-muted)', lineHeight: 1.7, fontSize: '1rem' }}>{item.desc}</p>
             </div>
           ))}
+        </div>
+
+        <div style={{ marginTop: '6rem' }}>
+          <button className="btn-hero" onClick={() => onEnter()} style={{ margin: '0 auto' }}>
+            Prova Gratuita 14 Giorni 🚀
+          </button>
         </div>
       </section>
 
@@ -1063,16 +1127,16 @@ const LandingPage = ({ onEnter, config, setView }) => {
       </section>
 
       {/* PRICING CTA SECTION */}
-      <section className="reveal" style={{ padding: '4rem 0', textAlign: 'center', background: 'var(--primary-glow)', borderRadius: '2rem', marginBottom: '8rem', border: '1px solid var(--primary)' }}>
-        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>
+      <section className="reveal" style={{ padding: '6rem 2rem', textAlign: 'center', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%)', borderRadius: '3rem', marginBottom: '8rem', border: '1px solid var(--primary)' }}>
+        <h2 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>
           Semplice. Trasparente. Pro.
         </h2>
-        <p style={{ fontSize: '1.2rem', color: 'var(--text-main)', marginBottom: '2.5rem', opacity: 0.8 }}>
-          Inizia oggi la tua <strong>settimana gratuita</strong>. <br/>
-          Poi solo <strong>7,99€ al mese</strong> per gestire tutti i tuoi turni senza limiti.
+        <p style={{ fontSize: '1.25rem', color: 'var(--text-main)', marginBottom: '3rem', opacity: 0.9 }}>
+          Tutte le funzioni Pro incluse nella tua <strong>prova gratuita di 14 giorni</strong>. <br/>
+          Nessun impegno, nessuna carta richiesta. Poi solo <strong>7,99€ al mese</strong>.
         </p>
-        <button className="btn-hero" onClick={onEnter}>
-          Attiva Settimana Gratuita 🚀
+        <button className="btn-hero" onClick={() => onEnter()} style={{ margin: '0 auto' }}>
+          Inizia Ora Prova Gratuita 14 Giorni 🚀
         </button>
       </section>
 
@@ -1133,20 +1197,22 @@ const LandingPage = ({ onEnter, config, setView }) => {
       <section id="contact" className="reveal" style={{ padding: '8rem 0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', alignItems: 'start' }}>
         
         {/* App CTA */}
-        <div className="glass-card" style={{ padding: '3rem', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)', color: 'white', border: 'none' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>📱</div>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.1 }}>Porta i tuoi turni sempre con te.</h2>
-          <p style={{ fontSize: '1.1rem', marginBottom: '2rem', opacity: 0.9 }}>
-            Il sito è già una <strong>App (PWA)</strong>. Accedi da smartphone e clicca su <strong>"Aggiungi a Home"</strong> per installarla senza passare dagli store.
+        <div className="glass-card" style={{ padding: '4rem 3rem', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)', color: 'white', border: 'none', borderRadius: '3rem', boxShadow: '0 30px 60px var(--primary-glow)' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🎁</div>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.1 }}>Pronto a rivoluzionare i tuoi turni?</h2>
+          <p style={{ fontSize: '1.1rem', marginBottom: '2.5rem', opacity: 0.9 }}>
+            Inizia oggi la tua prova gratuita di 14 giorni. Avrai accesso a tutte le funzioni Pro senza alcun vincolo.
           </p>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', flex: 1, textAlign: 'center' }}>
-              <div style={{ fontWeight: '800' }}>iOS</div>
-              <div style={{ fontSize: '0.8rem' }}>Condividi &gt; Aggiungi a Home</div>
-            </div>
-            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.2)', borderRadius: '12px', flex: 1, textAlign: 'center' }}>
-              <div style={{ fontWeight: '800' }}>Android</div>
-              <div style={{ fontSize: '0.8rem' }}>Menu &gt; Installa App</div>
+          <button className="btn-hero" style={{ background: 'white', color: 'var(--primary)', boxShadow: '0 15px 35px rgba(0,0,0,0.2)', width: '100%', justifyContent: 'center' }} onClick={() => setShowOnboarding(true)}>
+            Inizia Prova Gratuita 14 Giorni 🚀
+          </button>
+          <div style={{ marginTop: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2.5rem' }}>
+            <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', opacity: 0.8 }}>Installabile anche come App (PWA) su tutti i dispositivi:</p>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <div style={{ padding: '0.8rem', background: 'rgba(255,255,255,0.15)', borderRadius: '12px', flex: 1, textAlign: 'center' }}>
+                <div style={{ fontWeight: '800', fontSize: '0.8rem' }}>iOS / Android</div>
+                <div style={{ fontSize: '0.7rem' }}>Aggiungi a Home</div>
+              </div>
             </div>
           </div>
         </div>
