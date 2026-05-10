@@ -253,10 +253,7 @@ const Sidebar = ({ activeTab, setTab, setView }) => {
               className="btn-primary" 
               style={{ width: '100%', fontSize: '0.7rem', background: 'var(--primary)', border: 'none' }}
               onClick={() => {
-                if (window.confirm("Vuoi attivare la licenza Pro a 7,99€/mese?")) {
-                  setIsPro(true);
-                  alert("Grazie! Ora sei un utente PRO. (In produzione qui ci sarebbe Stripe)");
-                }
+                window.location.href = 'https://buy.stripe.com/3cI8wP1T67tDcSkdPO8bS00';
               }}
             >
               🚀 ATTIVA PRO
@@ -1497,10 +1494,7 @@ const PaywallOverlay = ({ onUnlock }) => {
           className="btn-hero" 
           style={{ width: '100%', padding: '1rem' }}
           onClick={() => {
-            // In una implementazione reale, qui reindirizzeresti a Stripe Checkout
-            // Esempio: window.location.href = 'https://buy.stripe.com/tuo-link-qui';
-            alert("Reindirizzamento al pagamento sicuro (Stripe)...");
-            onUnlock(); 
+            window.location.href = 'https://buy.stripe.com/3cI8wP1T67tDcSkdPO8bS00';
           }}
         >
           Attiva Ora 🚀
