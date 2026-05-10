@@ -1081,6 +1081,62 @@ const LandingPage = ({ onEnter, config, setView }) => {
         </div>
       </section>
 
+      {/* SHIFT TABLE EXAMPLE SECTION */}
+      <section className="reveal" style={{ padding: '4rem 0', marginBottom: '8rem' }}>
+        <div className="glass-card" style={{ padding: '3rem', borderRadius: '3rem', overflow: 'hidden', textAlign: 'left' }}>
+          <div style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.8rem', letterSpacing: '-0.03em' }}>
+              Esempio di turni generati dall’AI
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>
+              Ecco come appare un piano turni ottimizzato dal nostro algoritmo in pochi secondi.
+            </p>
+          </div>
+
+          <div style={{ overflowX: 'auto', borderRadius: '1.5rem', border: '1px solid var(--glass-border)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.95rem' }}>
+              <thead>
+                <tr style={{ background: 'rgba(255,255,255,0.03)', textAlign: 'left' }}>
+                  <th style={{ padding: '1.2rem', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: '800' }}>Dipendente</th>
+                  <th style={{ padding: '1.2rem', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: '800' }}>Reparto</th>
+                  <th style={{ padding: '1.2rem', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: '800' }}>Turno</th>
+                  <th style={{ padding: '1.2rem', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: '800' }}>Ore totali</th>
+                  <th style={{ padding: '1.2rem', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: '800' }}>Note AI</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { name: "Rossi M.", dep: "Assemblaggio", shift: "06:00 – 14:00", type: "mattina", hours: 40, note: "✨ Turno stabile, nessun conflitto" },
+                  { name: "Bianchi L.", dep: "Verniciatura", shift: "14:00 – 22:00", type: "pomeriggio", hours: 38, note: "🎯 Copertura completa weekend" },
+                  { name: "Verdi A.", dep: "Qualità", shift: "22:00 – 06:00", type: "notte", hours: 36, note: "🤖 Rotazione auto ogni 7 giorni" },
+                  { name: "Neri F.", dep: "Assemblaggio", shift: "06:00 – 14:00", type: "mattina", hours: 40, note: "⚖️ Bilanciamento carichi ottimale" }
+                ].map((row, i) => (
+                  <tr key={i} style={{ transition: 'background 0.2s', borderBottom: i === 3 ? 'none' : '1px solid var(--glass-border)' }} onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+                    <td style={{ padding: '1.2rem', color: 'var(--text-main)', fontWeight: '600' }}>{row.name}</td>
+                    <td style={{ padding: '1.2rem', color: 'var(--text-muted)' }}>{row.dep}</td>
+                    <td style={{ padding: '1.2rem' }}>
+                      <span style={{ 
+                        padding: '6px 14px', borderRadius: '100px', fontSize: '0.8rem', fontWeight: '800', color: 'white',
+                        background: row.type === 'mattina' ? '#f59e0b' : row.type === 'pomeriggio' ? '#ea580c' : '#2563eb',
+                        boxShadow: `0 4px 12px ${row.type === 'mattina' ? 'rgba(245, 158, 11, 0.3)' : row.type === 'pomeriggio' ? 'rgba(234, 88, 12, 0.3)' : 'rgba(37, 99, 235, 0.3)'}`
+                      }}>
+                        {row.shift}
+                      </span>
+                    </td>
+                    <td style={{ padding: '1.2rem', color: 'var(--text-main)', fontWeight: '700' }}>{row.hours}h</td>
+                    <td style={{ padding: '1.2rem', color: 'var(--primary)', fontStyle: 'italic', fontSize: '0.85rem' }}>{row.note}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          <div style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            <span style={{ color: 'var(--accent-success)' }}>●</span> L'AI ha verificato 1.420 combinazioni per questo reparto.
+          </div>
+        </div>
+      </section>
+
       {/* PORTFOLIO / CASE STUDIES SECTION */}
       <section id="work" className="reveal" style={{ marginBottom: '8rem' }}>
         <div style={{ textAlign: 'left', marginBottom: '2.5rem' }}>
