@@ -889,6 +889,11 @@ const LandingPage = ({ onEnter, config, setView }) => {
     return () => observer.disconnect();
   }, []);
 
+  const scrollTo = (id) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div className="landing-wrapper" style={{ 
       minHeight: '100vh', width: '100%', padding: '0 2rem', maxWidth: '1400px', margin: '0 auto',
@@ -919,10 +924,10 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
           {/* Menu Links (Desktop) */}
           <div style={{ display: 'flex', gap: '2.5rem', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: '600' }} className="nav-links-desktop">
-            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Prodotto</span>
-            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Funzionalità</span>
-            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Prezzi</span>
-            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Contatti</span>
+            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => scrollTo('how-it-works')} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Prodotto</span>
+            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => scrollTo('features')} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Funzionalità</span>
+            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => scrollTo('pricing')} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Prezzi</span>
+            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => scrollTo('contact')} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Contatti</span>
           </div>
 
           {/* Action Buttons */}
@@ -1034,7 +1039,7 @@ const LandingPage = ({ onEnter, config, setView }) => {
       </div>
 
       {/* HOW IT WORKS SECTION */}
-      <section className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
+      <section id="how-it-works" className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
         <h2 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>Come funziona</h2>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '5rem', maxWidth: '750px', margin: '0 auto 5rem auto' }}>
           Tre passaggi concreti per eliminare il caos dalla tua pianificazione aziendale.
@@ -1127,7 +1132,7 @@ const LandingPage = ({ onEnter, config, setView }) => {
       </section>
 
       {/* PRICING CTA SECTION */}
-      <section className="reveal" style={{ padding: '6rem 2rem', textAlign: 'center', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%)', borderRadius: '3rem', marginBottom: '8rem', border: '1px solid var(--primary)' }}>
+      <section id="pricing" className="reveal" style={{ padding: '6rem 2rem', textAlign: 'center', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%)', borderRadius: '3rem', marginBottom: '8rem', border: '1px solid var(--primary)' }}>
         <h2 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>
           Semplice. Trasparente. Pro.
         </h2>
@@ -1153,7 +1158,7 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
 
       {/* WHY CHOOSE US SECTION */}
-      <section className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
+      <section id="features" className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
         <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '4rem', letterSpacing: '-0.04em' }}>
           Perché scegliere noi
         </h2>
