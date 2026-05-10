@@ -9,6 +9,8 @@ export const DEFAULT_CONFIG = {
   backgroundColor: "#f8fafc",
   textColor: "#0f172a",
   sidebarTextColor: "#0f172a",
+  glassColor: "#ffffff",
+  glassOpacity: 0.85,
   cycle: ['A', 'A', 'C', 'C', 'B', 'B', 'R', 'R'], // Default 8-day cycle as per Excel
   cycleSJ: ['A', 'R', 'C', 'R', 'R', 'B', 'R', 'R', 'R'], // Semi-Jolly 9-day cycle as per Excel
   baseDate: '2026-08-01', // Starting from a known month
@@ -53,7 +55,7 @@ export const DEFAULT_CONFIG = {
 };
 
 export const AppProvider = ({ children }) => {
-  const [userRole, setUserRole] = useState('viewer');
+  const [userRole, setUserRole] = useState('admin');
   
   // Gestione Multi-Schema
   const [schedules, setSchedules] = useState(() => {

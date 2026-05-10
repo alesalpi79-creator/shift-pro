@@ -11,6 +11,13 @@ import ExportModule from './components/ExportModule';
 import StatsDashboard from './components/StatsDashboard';
 import './index.css';
 
+const hexToRgb = (hex) => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? 
+    `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : 
+    '255, 255, 255';
+};
+
 // Component Icons (Simulated Premium)
 const IconCalendar = () => <span className="nav-icon">📅</span>;
 const IconUsers = () => <span className="nav-icon">👥</span>;
@@ -1570,14 +1577,15 @@ function App() {
     const bg = isLanding ? '#f8fafc' : (config.backgroundColor || '#f8fafc');
     const text = isLanding ? '#0f172a' : (config.textColor || '#0f172a');
     const sideText = isLanding ? '#0f172a' : (config.sidebarTextColor || '#0f172a');
-    const glass = isLanding ? 0.7 : (config.glassOpacity || 0.4);
+    const glass = isLanding ? 0.7 : (config.glassOpacity || 0.85);
+    const gColor = isLanding ? '255, 255, 255' : hexToRgb(config.glassColor || '#ffffff');
 
     document.documentElement.style.setProperty('--primary', primary);
     document.documentElement.style.setProperty('--bg-main', bg);
     document.documentElement.style.setProperty('--bg-sidebar', (isLanding ? '#ffffff' : (bg + 'E6')));
     document.documentElement.style.setProperty('--text-main', text);
     document.documentElement.style.setProperty('--text-sidebar', sideText);
-    document.documentElement.style.setProperty('--glass-bg', isLanding ? `rgba(255, 255, 255, 0.7)` : `rgba(255, 255, 255, 0.85)`);
+    document.documentElement.style.setProperty('--glass-bg', `rgba(${gColor}, ${glass})`);
     document.documentElement.style.setProperty('--glass-border', isLanding ? `rgba(15, 23, 42, 0.08)` : `rgba(15, 23, 42, 0.12)`);
     
     if (config.shiftColors && !isLanding) {

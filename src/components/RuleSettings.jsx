@@ -312,6 +312,8 @@ export default function RuleSettings() {
           <PremiumColorPicker label="Testo App" value={config.textColor || '#ffffff'} onChange={val => saveConfig('textColor', val)} isOpen={openPickerId === 'text'} onToggle={() => togglePicker('text')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
           
           <PremiumColorPicker label="Testo Sidebar" value={config.sidebarTextColor || '#ffffff'} onChange={val => saveConfig('sidebarTextColor', val)} isOpen={openPickerId === 'sideText'} onToggle={() => togglePicker('sideText')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
+          
+          <PremiumColorPicker label="Colore Vetro (Schede)" value={config.glassColor || '#ffffff'} onChange={val => saveConfig('glassColor', val)} isOpen={openPickerId === 'glassColor'} onToggle={() => togglePicker('glassColor')} selectedHue={selectedHue} setSelectedHue={handleHueSelect} />
         </div>
 
         {/* SCHEDA 3: SFONDO & EFFETTI */}
