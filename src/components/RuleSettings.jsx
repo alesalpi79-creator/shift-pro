@@ -651,18 +651,11 @@ export default function RuleSettings() {
               className="input-main"
               placeholder="Inserisci codice sblocco..."
               style={{ fontSize: '0.7rem', padding: '8px' }}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && e.target.value === 'ADMIN2026') {
-                  const { setIsPro } = require('../context/AppContext'); // This might not work in hooks, better use the prop
-                  // We'll use the setIsPro from context
-                }
-              }}
               onChange={e => {
-                if (e.target.value === 'ADMIN2026') {
-                  // Lo sbloccheremo tramite una funzione passata o direttamente qui
+                if (e.target.value.toUpperCase() === 'ADMIN2026') {
                   window.dispatchEvent(new CustomEvent('unlock-pro'));
                   e.target.value = '';
-                  alert("✅ Accesso Admin Attivato! Versione PRO sbloccata.");
+                  alert("✅ Accesso Sviluppatore Attivato! Versione PRO sbloccata.");
                 }
               }}
             />

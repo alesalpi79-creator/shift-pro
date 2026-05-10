@@ -45,7 +45,7 @@ const isHoliday = (date) => {
   return holidays.some(h => h.d === d && h.m === m);
 };
 
-const Sidebar = ({ activeTab, setTab, setView }) => {
+const Sidebar = ({ activeTab, setTab, setView, setShowLogin }) => {
   const { 
     userRole, setUserRole, 
     schedules, activeScheduleId, setActiveScheduleId, 
