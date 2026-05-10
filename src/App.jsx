@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from './context/AppContext';
 // Trigger Deploy: Rename project v2.6.9
 import chaosImg from './assets/chaos.png';
+import heroMockup from './assets/hero_mockup.png';
 import logisticsMockup from './assets/logistics_mockup.png';
 import medicalMockup from './assets/medical_mockup.png';
 import { calculateDailyShifts } from './logic/ShiftEngine';
@@ -923,10 +924,10 @@ const LandingPage = ({ onEnter, config, setView }) => {
         </div>
         
         <div className="reveal" style={{ flex: 1, position: 'relative' }}>
-          <div className="glass-card" style={{ padding: '1rem', borderRadius: '3rem', background: 'white', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.15)' }}>
-            <img src={chaosImg} alt="Scheduling Chaos" style={{ width: '100%', borderRadius: '2.5rem', display: 'block' }} />
-            <div className="glass-card" style={{ position: 'absolute', bottom: '-20px', left: '-20px', padding: '1rem 1.5rem', borderRadius: '1.5rem', background: '#ef4444', color: 'white', fontWeight: 'bold', fontSize: '0.9rem', boxShadow: '0 10px 20px rgba(239, 68, 68, 0.3)' }}>
-              ⚠️ "Il cervello mi esplode!"
+          <div className="glass-card" style={{ padding: '0.5rem', borderRadius: '2rem', background: 'white', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
+            <img src={heroMockup} alt="Turni Pro AI Dashboard" style={{ width: '100%', borderRadius: '1.5rem', display: 'block', transform: 'scale(1.02)' }} />
+            <div className="glass-card" style={{ position: 'absolute', bottom: '20px', right: '20px', padding: '0.75rem 1.25rem', borderRadius: '1rem', background: 'var(--primary)', color: 'white', fontWeight: 'bold', fontSize: '0.8rem', boxShadow: '0 10px 20px var(--primary-glow)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>✨ Dashboard AI Attiva</span>
             </div>
           </div>
         </div>
@@ -963,7 +964,10 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
       {/* PROBLEM & SOLUTION SECTION */}
       <div className="reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', width: '100%', marginBottom: '8rem', textAlign: 'left' }}>
-        <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '2rem', borderTop: '8px solid #ef4444' }}>
+        <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '2rem', borderTop: '8px solid #ef4444', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: '1rem', right: '1rem', opacity: 0.1, width: '100px' }}>
+            <img src={chaosImg} alt="Chaos" style={{ width: '100%' }} />
+          </div>
           <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1.2rem', letterSpacing: '-0.03em' }}>Il caos dei turni.</h2>
           <p style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>La gestione manuale è lenta, soggetta a errori e genera malumori.</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', fontSize: '0.95rem' }}>
