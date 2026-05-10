@@ -1042,40 +1042,40 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
       {/* HOW IT WORKS SECTION */}
       <section id="how-it-works" className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>Come funziona</h2>
+        <h2 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>Come funziona</h2>
         <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '5rem', maxWidth: '750px', margin: '0 auto 5rem auto' }}>
-          Tre passaggi concreti per eliminare il caos dalla tua pianificazione aziendale.
+          L'intelligenza artificiale al servizio della tua organizzazione in tre semplici passi.
         </p>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem' }}>
           {[
             { 
-              icon: "📥", 
-              step: "Carica i dati", 
-              desc: "Importi turni, reparti, contratti e preferenze del personale. L'interfaccia intuitiva ti guida in ogni inserimento." 
+              icon: "📝", 
+              step: "1) Inserisci i vincoli", 
+              desc: "Definisci reparti, orari, competenze e limiti contrattuali. L’interfaccia ti guida passo‑passo in ogni inserimento." 
             },
             { 
               icon: "⚙️", 
-              step: "Genera i turni", 
-              desc: "L'AI analizza milioni di combinazioni e propone la soluzione ottimale rispettando ogni vincolo in soli 30 secondi." 
+              step: "2) L’AI calcola la soluzione", 
+              desc: "Il motore analizza milioni di combinazioni in pochi secondi, eliminando conflitti e straordinari inutili." 
             },
             { 
               icon: "📊", 
-              step: "Pubblica e monitora", 
-              desc: "Esporta i turni, inviali al personale e monitora coperture e straordinari da un'unica dashboard centralizzata." 
+              step: "3) Ottieni i turni perfetti", 
+              desc: "Ricevi una tabella chiara, pronta da esportare o modificare. Con note e suggerimenti preziosi dell’AI." 
             }
           ].map((item, i) => (
-            <div key={i} className="glass-card" style={{ padding: '3.5rem 2.5rem', textAlign: 'center', borderRadius: '3rem', position: 'relative', transition: 'transform 0.3s ease' }}>
-              <div style={{ position: 'absolute', top: '2rem', left: '2rem', fontSize: '4rem', fontWeight: '900', opacity: 0.05, color: 'var(--primary)' }}>{i + 1}</div>
-              <div style={{ fontSize: '4rem', marginBottom: '2rem' }}>{item.icon}</div>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '1.2rem' }}>{item.step}</h3>
-              <p style={{ color: 'var(--text-muted)', lineHeight: 1.7, fontSize: '1rem' }}>{item.desc}</p>
+            <div key={i} className="glass-card" style={{ padding: '3.5rem 2.5rem', textAlign: 'center', borderRadius: '3.5rem', position: 'relative', transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)', borderTop: i === 1 ? '4px solid var(--primary)' : '1px solid var(--glass-border)' }}>
+              <div style={{ position: 'absolute', top: '2rem', left: '2rem', fontSize: '6rem', fontWeight: '900', opacity: 0.03, color: 'var(--primary)', fontStyle: 'italic' }}>0{i + 1}</div>
+              <div style={{ fontSize: '4.5rem', marginBottom: '2rem', filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.2))' }}>{item.icon}</div>
+              <h3 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '1.2rem', color: 'var(--text-main)' }}>{item.step}</h3>
+              <p style={{ color: 'var(--text-muted)', lineHeight: 1.7, fontSize: '1.05rem' }}>{item.desc}</p>
             </div>
           ))}
         </div>
 
         <div style={{ marginTop: '6rem' }}>
-          <button className="btn-hero" onClick={() => onEnter()} style={{ margin: '0 auto' }}>
+          <button className="btn-hero" onClick={() => onEnter()} style={{ margin: '0 auto', boxShadow: '0 20px 40px var(--primary-glow)' }}>
             Prova Gratuita 14 Giorni 🚀
           </button>
         </div>
