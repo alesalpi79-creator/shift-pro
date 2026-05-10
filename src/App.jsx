@@ -43,7 +43,7 @@ const Sidebar = ({ activeTab, setTab, setView }) => {
     userRole, setUserRole, 
     schedules, activeScheduleId, setActiveScheduleId, 
     addSchedule, deleteSchedule, renameSchedule,
-    config, setConfig, employees, setEmployees, exceptions, setExceptions 
+    config, setConfig, employees, setEmployees, exceptions, setExceptions, isPro
   } = useApp();
 
   const handleExport = () => {
