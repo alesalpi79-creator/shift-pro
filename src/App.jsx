@@ -908,8 +908,10 @@ const LandingPage = ({ onEnter, config, setView }) => {
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 2rem'
       }}>
         <div style={{ width: '100%', maxWidth: '1400px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {/* Logo Section */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div 
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
             <div style={{ 
               width: '42px', height: '42px', borderRadius: '12px', 
               background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
