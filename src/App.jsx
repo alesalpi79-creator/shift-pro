@@ -1161,20 +1161,36 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
       {/* WHY CHOOSE US SECTION */}
       <section id="features" className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '4rem', letterSpacing: '-0.04em' }}>
+        <h2 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '4rem', letterSpacing: '-0.04em' }}>
           Perché scegliere noi
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2.5rem' }}>
           {[
-            { icon: "⚡", t: "Velocità incredibile", d: "Genera turni complessi in pochi secondi, anche con centinaia di dipendenti." },
-            { icon: "🎯", t: "Precisione 99.9%", d: "Nessun conflitto, nessun errore, nessuna sovrapposizione. L'AI rispetta ogni vincolo." },
-            { icon: "💼", t: "Pensato per le aziende", d: "Progettato per produzione, logistica, assistenza e settori con turni complessi." },
-            { icon: "🔒", t: "Affidabilità totale", d: "Dati protetti, calcoli stabili, risultati consistenti. Un sistema su cui puoi contare." }
+            { 
+              icon: "⚡", 
+              t: "Velocità incredibile", 
+              d: "Genera turni ottimizzati in meno di 30 secondi, anche con centinaia di vincoli complessi." 
+            },
+            { 
+              icon: "🎯", 
+              t: "Precisione del 99,9%", 
+              d: "Rispetta contratti, riposi minimi, preferenze e competenze senza errori o conflitti." 
+            },
+            { 
+              icon: "🏭", 
+              t: "Pensato per turni complessi", 
+              d: "Ideale per produzione, logistica e sanità: gestisce rotazioni, notti, straordinari e multi‑reparto." 
+            },
+            { 
+              icon: "🔒", 
+              t: "Affidabilità totale", 
+              d: "Ogni soluzione è verificata dall’AI e pronta per essere pubblicata senza modifiche manuali." 
+            }
           ].map((item, i) => (
-            <div key={i} className="glass-card" style={{ padding: '2rem', textAlign: 'left' }}>
-              <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>{item.icon}</div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.8rem' }}>{item.t}</h3>
-              <p style={{ color: 'var(--text-muted)', lineHeight: 1.6, fontSize: '0.95rem' }}>{item.d}</p>
+            <div key={i} className="glass-card" style={{ padding: '3rem 2rem', textAlign: 'left', borderRadius: '2.5rem', transition: 'all 0.4s ease' }}>
+              <div style={{ fontSize: '3.5rem', marginBottom: '2rem', display: 'block' }}>{item.icon}</div>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--text-main)' }}>{item.t}</h3>
+              <p style={{ color: 'var(--text-muted)', lineHeight: 1.7, fontSize: '1rem' }}>{item.d}</p>
             </div>
           ))}
         </div>
