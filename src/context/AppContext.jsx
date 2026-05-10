@@ -177,7 +177,13 @@ export const AppProvider = ({ children }) => {
     employees, setEmployees,
     exceptions, setExceptions,
     isPro, setIsPro,
-    trialStartDate
+    trialStartDate,
+    isTrialExpired: (() => {
+      const start = new Date(trialStartDate).getTime();
+      const now = new Date().getTime();
+      const diffDays = (now - start) / (1000 * 60 * 60 * 24);
+      return diffDays > 7;
+    })()
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

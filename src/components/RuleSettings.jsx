@@ -589,9 +589,25 @@ export default function RuleSettings() {
   const renderAccess = () => (
     <div className="fade-in">
       <div className="glass-card" style={{ border: '1px solid var(--primary)', marginBottom: '1.5rem' }}>
-        <h3 style={{ fontSize: '1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>🔐 Password Dipendenti (Ospite)</h3>
+        <h3 style={{ fontSize: '1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>👑 Password Amministratore</h3>
         <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
-          Definisci la password che i tuoi collaboratori useranno per accedere all'app in modalità "Sola Lettura".
+          Questa password ti permette di modificare ogni aspetto dell'applicazione.
+        </p>
+        <div className="form-group">
+          <input 
+            type="password" 
+            className="input-main" 
+            placeholder="Scegli nuova password Admin..." 
+            value={config.adminPassword || ""} 
+            onChange={e => saveConfig('adminPassword', e.target.value)} 
+          />
+        </div>
+      </div>
+
+      <div className="glass-card" style={{ border: '1px solid var(--glass-border)', marginBottom: '1.5rem' }}>
+        <h3 style={{ fontSize: '1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>👥 Password Dipendenti (Ospite)</h3>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+          Condividi questa password con i tuoi collaboratori per l'accesso in sola lettura.
         </p>
         <div className="form-group">
           <input 
@@ -602,9 +618,6 @@ export default function RuleSettings() {
             onChange={e => saveConfig('guestPassword', e.target.value)} 
           />
         </div>
-        <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '10px', fontStyle: 'italic' }}>
-          Consegna questa password manualmente ai tuoi dipendenti.
-        </p>
       </div>
 
       <div className="glass-card">

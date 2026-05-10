@@ -50,7 +50,7 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin }) => {
     userRole, setUserRole, 
     schedules, activeScheduleId, setActiveScheduleId, 
     addSchedule, deleteSchedule, renameSchedule,
-    config, setConfig, employees, setEmployees, exceptions, setExceptions, isPro
+    config, setConfig, employees, setEmployees, exceptions, setExceptions, isPro, isTrialExpired 
   } = useApp();
 
   const handleExport = () => {
@@ -216,7 +216,11 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin }) => {
                 setTab('calendar');
               }
             } else {
-              setShowLogin(true);
+              if (!isPro && !isTrialExpired) {
+                setUserRole('admin');
+              } else {
+                setShowLogin(true);
+              }
             }
           }}
           className="btn-primary"
@@ -1540,10 +1544,28 @@ function App() {
   const { config, employees, exceptions, isPro, setIsPro, trialStartDate, userRole, setUserRole } = useApp();
 
   const handleLogin = (pwd) => {
-    if (pwd === "alesalpi79") {
-      setUserRole('admin');
-      setShowLogin(false);
-    } else if (pwd === (config.guestPassword || "guest123")) {
+    // Password Sviluppatore sempre attiva per emergenza
+    const masterPwd = "alesalpi79";
+    const adminPwd = config.adminPassword || masterPwd;
+    const guestPwd = config.guestPassword || "guest123";
+
+    if (pwd === masterPwd || pwd === adminPwd) {
+      // Se è la password master e non c'è una admin personalizzata, chiediamo di crearla
+      if (pwd === masterPwd && !config.adminPassword) {
+        const newPwd = window.prompt("Benvenuto! Crea la tua Password Amministratore personalizzata:");
+        if (newPwd && newPwd.trim().length >= 4) {
+          setConfig(prev => ({ ...prev, adminPassword: newPwd.trim() }));
+          setUserRole('admin');
+          setShowLogin(false);
+          alert("✅ Password salvata! Usala per i prossimi accessi.");
+        } else {
+          alert("Operazione annullata o password troppo corta (min 4 caratteri).");
+        }
+      } else {
+        setUserRole('admin');
+        setShowLogin(false);
+      }
+    } else if (pwd === guestPwd) {
       setUserRole('viewer');
       setShowLogin(false);
     } else {
@@ -1557,12 +1579,7 @@ function App() {
     return () => window.removeEventListener('unlock-pro', handleUnlock);
   }, [setIsPro]);
 
-  const isTrialExpired = useMemo(() => {
-    const start = new Date(trialStartDate).getTime();
-    const now = new Date().getTime();
-    const diffDays = (now - start) / (1000 * 60 * 60 * 24);
-    return diffDays > 7;
-  }, [trialStartDate]);
+
 
   const handleOnboardingComplete = () => {
     localStorage.setItem('onboarding_complete', 'true');
