@@ -72,7 +72,7 @@ const StatsDashboard = () => {
           {statMode === 'monthly' && (
             <select 
               value={viewMonth} 
-              onChange={(e) => setViewMonth(parseInt(e.target.value))}
+              onChange={function(e) { setViewMonth(parseInt(e.target.value)) }}
               style={{ padding: '0.5rem', borderRadius: '8px', background: 'var(--bg-main)', color: 'var(--text-main)', border: '1px solid var(--glass-border)' }}
             >
               {months.map((m, i) => <option key={m} value={i}>{m}</option>)}

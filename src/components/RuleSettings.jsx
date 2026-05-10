@@ -444,6 +444,21 @@ export default function RuleSettings() {
         <button className="btn-primary" onClick={handleCycleSave} style={{ marginTop: '1.5rem', borderRadius: '2rem', padding: '12px 30px', background: '#6366f1', fontWeight: 'bold', boxShadow: '0 10px 20px rgba(99, 102, 241, 0.4)' }}>Salva Ciclo</button>
       </div>
 
+      <div className="glass-card" style={{ marginBottom: '1.5rem' }}>
+        <h3 style={{ marginBottom: '0.5rem', fontSize: '1rem' }}>📅 Inizio Rotazione</h3>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+          Scegli da quale giorno del calendario far partire il calcolo automatico dei turni.
+        </p>
+        <div className="form-group">
+          <input 
+            type="date" 
+            className="input-main" 
+            value={config.baseDate || '2026-01-01'} 
+            onChange={e => saveConfig('baseDate', e.target.value)} 
+          />
+        </div>
+      </div>
+
       <div className="glass-card">
         <h3 style={{ marginBottom: '1rem', fontSize: '1rem' }}>Quote Jolly / SJ</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>

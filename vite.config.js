@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons.svg', 'sitemap.xml', 'privacy.html', 'google67e6969bb5c8f46f.html'],
+      includeAssets: ['favicon.svg', 'icons.svg', 'sitemap.xml', 'robots.txt', 'privacy.html', 'google67e6969bb5c8f46f.html'],
       manifest: {
         name: 'Turni Pro AI',
         short_name: 'TurniPro',

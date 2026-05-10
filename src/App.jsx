@@ -886,7 +886,8 @@ const LandingPage = ({ onEnter, config, setView }) => {
           </h1>
           <p className="reveal" style={{ fontSize: '1.3rem', color: 'var(--text-muted)', maxWidth: '600px', marginBottom: '3rem', lineHeight: 1.4 }}>
             Genera turni ottimizzati in 30 secondi. <br/>
-            <strong>Riduci i conflitti del 40%</strong> e libera il tuo team dai fogli Excel.
+            <strong>Settimana gratuita</strong> poi solo <strong>7,99€/mese</strong>. <br/>
+            Libera il tuo team dallo stress degli Excel.
           </p>
 
           <div className="reveal" style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
@@ -938,7 +939,7 @@ const LandingPage = ({ onEnter, config, setView }) => {
 
       <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '6rem' }}>
         <button className="btn-hero" onClick={onEnter}>
-          🚀 Inizia Ora — Gratis
+          🚀 Inizia la tua settimana gratuita
         </button>
         <button className="btn-primary" style={{ padding: '1.25rem 2.5rem', background: 'transparent', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }} onClick={() => document.getElementById('demo-section').scrollIntoView({behavior: 'smooth'})}>
           Guarda Demo
@@ -1042,18 +1043,19 @@ const LandingPage = ({ onEnter, config, setView }) => {
         </div>
       </section>
 
-      {/* VIDEO DEMO */}
-      <div id="demo-section" className="reveal" style={{ width: '100%', position: 'relative', marginBottom: '8rem' }}>
-        <h2 style={{ marginBottom: '2.5rem', fontSize: '2.2rem', fontWeight: '900', textAlign: 'left', letterSpacing: '-0.04em' }}>Guarda l'AI in azione.</h2>
-        <div className="glass-panel" style={{ padding: '1rem', borderRadius: '2.5rem', overflow: 'hidden', boxShadow: '0 30px 60px -20px rgba(0,0,0,0.1)', border: '1px solid var(--glass-border)' }}>
-          <div style={{ aspectRatio: '16/9', background: '#000', borderRadius: '1.8rem', overflow: 'hidden', height: '450px', border: '1px solid var(--glass-border)', position: 'relative' }}>
-             <video src={demoVideo} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-             <div style={{ position: 'absolute', top: '30px', left: '30px', display: 'flex', gap: '15px' }}>
-                <div style={{ background: 'rgba(255,255,255,0.9)', color: '#0f172a', padding: '8px 20px', borderRadius: '100px', fontSize: '0.8rem', fontWeight: '800' }}>DEMO LIVE</div>
-             </div>
-          </div>
-        </div>
-      </div>
+      {/* PRICING CTA SECTION */}
+      <section className="reveal" style={{ padding: '4rem 0', textAlign: 'center', background: 'var(--primary-glow)', borderRadius: '2rem', marginBottom: '8rem', border: '1px solid var(--primary)' }}>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>
+          Semplice. Trasparente. Pro.
+        </h2>
+        <p style={{ fontSize: '1.2rem', color: 'var(--text-main)', marginBottom: '2.5rem', opacity: 0.8 }}>
+          Inizia oggi la tua <strong>settimana gratuita</strong>. <br/>
+          Poi solo <strong>7,99€ al mese</strong> per gestire tutti i tuoi turni senza limiti.
+        </p>
+        <button className="btn-hero" onClick={onEnter}>
+          Attiva Settimana Gratuita 🚀
+        </button>
+      </section>
 
         
         {/* Floating elements decoration */}
@@ -1159,7 +1161,7 @@ const LandingPage = ({ onEnter, config, setView }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
               <span>Funzionalità</span>
               <span>Integrazioni</span>
-              <span>Prezzi <span style={{ fontSize: '0.6rem', padding: '2px 8px', background: 'var(--primary)', color: 'white', borderRadius: '100px', fontWeight: 'bold', marginLeft: '5px' }}>PRO</span></span>
+              <span>Prezzi (7,99€/mese) <span style={{ fontSize: '0.6rem', padding: '2px 8px', background: 'var(--primary)', color: 'white', borderRadius: '100px', fontWeight: 'bold', marginLeft: '5px' }}>PRO</span></span>
             </div>
           </div>
           <div style={{ textAlign: 'left' }}>
