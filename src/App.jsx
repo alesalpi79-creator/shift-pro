@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from './context/AppContext';
-import demoVideo from './assets/demo.mp4';
 import chaosImg from './assets/chaos.png';
 import logisticsMockup from './assets/logistics_mockup.png';
 import medicalMockup from './assets/medical_mockup.png';
@@ -546,8 +545,11 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
       });
       })
       .sort((a, b) => {
-        if (a.role !== b.role) return a.role === 'CT' ? -1 : 1;
-        return a.name.localeCompare(b.name);
+        if (!a || !b) return 0;
+        const roleA = a.role || '';
+        const roleB = b.role || '';
+        if (roleA !== roleB) return roleA === 'CT' ? -1 : 1;
+        return (a.name || '').localeCompare(b.name || '');
       });
   }, [employees, gridData]);
 
@@ -895,9 +897,9 @@ const LandingPage = ({ onEnter, config, setView }) => {
       <section style={{ padding: '6rem 0', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '4rem' }}>
         <div style={{ flex: 1 }}>
           <div className="reveal floating-badge" style={{ marginBottom: '1.5rem' }}>
-            🚀 Versione 2.5 — Ora disponibile
+            🚀 Versione 2.6 — Ottimizzazione Mobile
           </div>
-          <h1 className="reveal hero-title" style={{ fontSize: '5.5rem', marginBottom: '1.5rem', letterSpacing: '-0.04em', fontWeight: 900, lineHeight: 1 }}>
+          <h1 className="reveal hero-title" style={{ fontSize: 'min(5.5rem, 12vw)', marginBottom: '1.5rem', letterSpacing: '-0.04em', fontWeight: 900, lineHeight: 1.1 }}>
             Turni perfetti. <br/>Senza stress.
           </h1>
           <p className="reveal" style={{ fontSize: '1.3rem', color: 'var(--text-muted)', maxWidth: '600px', marginBottom: '3rem', lineHeight: 1.4 }}>
@@ -906,12 +908,9 @@ const LandingPage = ({ onEnter, config, setView }) => {
             Libera il tuo team dallo stress degli Excel.
           </p>
 
-          <div className="reveal" style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem' }}>
-            <button className="btn-hero" onClick={onEnter}>
-              Inizia Progetto
-            </button>
-            <button className="btn-primary" style={{ background: 'white', color: 'var(--text-main)', border: '1px solid var(--glass-border)', padding: '1rem 2rem', borderRadius: '100px' }} onClick={() => document.getElementById('work').scrollIntoView({behavior: 'smooth'})}>
-              Guarda Risultati
+          <div className="reveal hero-actions" style={{ display: 'flex', justifyContent: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
+            <button className="btn-hero" onClick={onEnter} style={{ flex: '1 1 auto', minWidth: '280px' }}>
+              Inizia Prova Gratuita 7 Giorni 🚀
             </button>
           </div>
         </div>
@@ -953,14 +952,7 @@ const LandingPage = ({ onEnter, config, setView }) => {
       </section>
 
 
-      <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '6rem' }}>
-        <button className="btn-hero" onClick={onEnter}>
-          🚀 Inizia la tua settimana gratuita
-        </button>
-        <button className="btn-primary" style={{ padding: '1.25rem 2.5rem', background: 'transparent', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }} onClick={() => document.getElementById('demo-section').scrollIntoView({behavior: 'smooth'})}>
-          Guarda Demo
-        </button>
-      </div>
+      {/* Sezione Bottom Rimossa per pulizia */}
 
       {/* PROBLEM & SOLUTION SECTION */}
       <div className="reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', width: '100%', marginBottom: '8rem', textAlign: 'left' }}>
@@ -1608,7 +1600,19 @@ function App() {
       }}>
         <div style={{ position: 'relative', zIndex: 1 }}>
           {view === 'landing' ? (
-            <LandingPage config={config} setView={setView} onEnter={() => { setView('app'); setTab('calendar'); }} />
+            <LandingPage 
+              config={config} 
+              setView={setView} 
+              onEnter={() => { 
+                try {
+                  setView('app'); 
+                  setTab('calendar');
+                } catch (e) {
+                  console.error("Transition Error:", e);
+                  window.location.reload(); // Fallback di sicurezza
+                }
+              }} 
+            />
           ) : (
             <>
               <header style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>

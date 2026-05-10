@@ -236,6 +236,60 @@ body::after {
   z-index: 10;
 }
 
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  .organic-blob {
+    display: none !important;
+  }
+
+  .landing-wrapper {
+    padding: 0 1rem !important;
+    overflow-x: hidden !important;
+  }
+
+  section {
+    flex-direction: column !important;
+    text-align: center !important;
+    padding: 2rem 0 !important;
+    gap: 2rem !important;
+  }
+
+  .hero-title {
+    font-size: 2.8rem !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+  }
+
+  .hero-actions {
+    justify-content: center !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .hero-actions .btn-hero, .hero-actions .btn-primary {
+    width: 100% !important;
+  }
+
+  .stat-number {
+    font-size: 2.5rem !important;
+  }
+
+  .portfolio-card {
+    grid-column: span 2 !important;
+  }
+
+  .glass-card {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Hide specific floating badges on mobile if they overlap */
+  .floating-badge {
+    display: none !important;
+  }
+}
+
+/* Base styles for blobs */
 .organic-blob {
   border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
   background: linear-gradient(45deg, var(--primary), var(--secondary));
