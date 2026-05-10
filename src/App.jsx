@@ -209,18 +209,13 @@ const Sidebar = ({ activeTab, setTab, setView }) => {
                 setTab('calendar');
               }
             } else {
-              const pwd = window.prompt("Inserisci la password di amministrazione:");
-              if (pwd === "alesalpi79") {
-                setUserRole('admin');
-              } else if (pwd !== null) {
-                alert("Password errata!");
-              }
+              setShowLogin(true);
             }
           }}
           className="btn-primary"
           style={{ width: '100%', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--glass-border)', fontSize: '0.7rem' }}
         >
-          {userRole === 'admin' ? 'Passa a Visualizzatore' : 'Passa a Amministratore'}
+          {userRole === 'admin' ? 'Passa a Visualizzatore' : 'Accesso Amministratore'}
         </button>
 
         {userRole === 'admin' && (
@@ -1455,6 +1450,37 @@ const CommandCenter = ({ employees, exceptions }) => {
   );
 };
 
+const LoginOverlay = ({ onLogin, onCancel }) => {
+  const [pwd, setPwd] = useState('');
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+      background: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(10px)',
+      zIndex: 10000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem'
+    }}>
+      <div className="glass-card" style={{ maxWidth: '400px', width: '100%', textAlign: 'center', padding: '2.5rem' }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔐</div>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>Accesso Protetto</h2>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>Inserisci la password per accedere al sistema.</p>
+        <input 
+          type="password" 
+          className="input-main" 
+          placeholder="Password..." 
+          value={pwd} 
+          onChange={(e) => setPwd(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && onLogin(pwd)}
+          autoFocus
+          style={{ marginBottom: '1.5rem', textAlign: 'center', fontSize: '1.2rem' }}
+        />
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button className="btn-primary" style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)' }} onClick={onCancel}>Annulla</button>
+          <button className="btn-hero" style={{ flex: 2, padding: '0.75rem', fontSize: '1rem', justifyContent: 'center' }} onClick={() => onLogin(pwd)}>Entra 🚀</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const PaywallOverlay = ({ onUnlock }) => {
   return (
     <div style={{
@@ -1503,7 +1529,20 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return !localStorage.getItem('onboarding_complete') && !localStorage.getItem('shift_pro_employees');
   });
-  const { config, employees, exceptions, isPro, setIsPro, trialStartDate } = useApp();
+  const [showLogin, setShowLogin] = useState(false);
+  const { config, employees, exceptions, isPro, setIsPro, trialStartDate, userRole, setUserRole } = useApp();
+
+  const handleLogin = (pwd) => {
+    if (pwd === "alesalpi79") {
+      setUserRole('admin');
+      setShowLogin(false);
+    } else if (pwd === (config.guestPassword || "guest123")) {
+      setUserRole('viewer');
+      setShowLogin(false);
+    } else {
+      alert("Password errata!");
+    }
+  };
 
   useEffect(() => {
     const handleUnlock = () => setIsPro(true);
@@ -1566,6 +1605,9 @@ function App() {
 
   return (
     <div className="app-container" style={{ position: 'relative' }}>
+      {view !== 'landing' && showLogin && (
+        <LoginOverlay onLogin={handleLogin} onCancel={() => setShowLogin(false)} />
+      )}
       {view !== 'landing' && !isPro && isTrialExpired && (
         <PaywallOverlay onUnlock={() => setIsPro(true)} />
       )}
@@ -1589,7 +1631,7 @@ function App() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 0 }}></div>
       )}
       {view !== 'landing' && (
-        <Sidebar activeTab={activeTab} setTab={setTab} setView={setView} />
+        <Sidebar activeTab={activeTab} setTab={setTab} setView={setView} setShowLogin={setShowLogin} />
       )}
       <main style={{ 
         flex: 1, 

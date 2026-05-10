@@ -92,7 +92,7 @@ const PremiumColorPicker = ({ value, onChange, label, isOpen, onToggle, selected
 };
 
 export default function RuleSettings() {
-  const { config, setConfig, employees, setEmployees, exceptions, setExceptions } = useApp();
+  const { config, setConfig, employees, setEmployees, exceptions, setExceptions, userRole } = useApp();
   const [activeSection, setActiveSection] = useState('design');
   
   // Stato persistente per il color picker per evitare chiusure dovute a re-render
@@ -584,6 +584,40 @@ export default function RuleSettings() {
     </div>
   );
 
+  const renderAccess = () => (
+    <div className="fade-in">
+      <div className="glass-card" style={{ border: '1px solid var(--primary)', marginBottom: '1.5rem' }}>
+        <h3 style={{ fontSize: '1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>🔐 Password Dipendenti (Ospite)</h3>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+          Definisci la password che i tuoi collaboratori useranno per accedere all'app in modalità "Sola Lettura".
+        </p>
+        <div className="form-group">
+          <input 
+            type="text" 
+            className="input-main" 
+            placeholder="Es: guest123" 
+            value={config.guestPassword || ""} 
+            onChange={e => saveConfig('guestPassword', e.target.value)} 
+          />
+        </div>
+        <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '10px', fontStyle: 'italic' }}>
+          Consegna questa password manualmente ai tuoi dipendenti.
+        </p>
+      </div>
+
+      <div className="glass-card">
+        <h3 style={{ fontSize: '1rem', marginBottom: '1rem' }}>🛡️ Stato Accesso</h3>
+        <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>Ruolo Attuale:</div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: '900' }}>{userRole.toUpperCase()}</div>
+          </div>
+          <div style={{ fontSize: '1.5rem' }}>{userRole === 'admin' ? '👑' : '👁️'}</div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderIntegration = () => (
     <div className="fade-in">
       <div className="glass-card" style={{ border: '1px solid var(--primary)' }}>
@@ -695,6 +729,11 @@ export default function RuleSettings() {
           style={{ flex: '1 0 auto', color: activeSection === 'integration' ? 'white' : 'var(--text-muted)' }} 
           onClick={() => setActiveSection('integration')}
         >🌐 Integrazione</button>
+        <button 
+          className={`toggle-btn ${activeSection === 'access' ? 'active' : ''}`} 
+          style={{ flex: '1 0 auto', color: activeSection === 'access' ? 'white' : 'var(--text-muted)' }} 
+          onClick={() => setActiveSection('access')}
+        >🔒 Accesso</button>
       </div>
 
       <div className="section-content">
@@ -702,6 +741,7 @@ export default function RuleSettings() {
         {activeSection === 'rules' && renderRules()}
         {activeSection === 'constraints' && renderConstraints()}
         {activeSection === 'integration' && renderIntegration()}
+        {activeSection === 'access' && renderAccess()}
       </div>
     </div>
   );
