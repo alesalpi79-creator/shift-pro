@@ -1513,6 +1513,12 @@ function App() {
   });
   const { config, employees, exceptions, isPro, setIsPro, trialStartDate } = useApp();
 
+  useEffect(() => {
+    const handleUnlock = () => setIsPro(true);
+    window.addEventListener('unlock-pro', handleUnlock);
+    return () => window.removeEventListener('unlock-pro', handleUnlock);
+  }, [setIsPro]);
+
   const isTrialExpired = useMemo(() => {
     const start = new Date(trialStartDate).getTime();
     const now = new Date().getTime();

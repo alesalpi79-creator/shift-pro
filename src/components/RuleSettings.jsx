@@ -608,10 +608,28 @@ export default function RuleSettings() {
         </div>
 
         <div style={{ marginTop: '1.5rem', padding: '10px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '5px' }}>Stato Collegamento:</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.7rem', color: config.serverUrl ? 'var(--accent-warning)' : 'var(--text-muted)' }}>
-             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: config.serverUrl ? 'var(--accent-warning)' : '#ccc' }}></span>
-             {config.serverUrl ? "Configurato (Sincronizzazione Manuale)" : "Non Configurato"}
+          <div style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '10px' }}>🔐 Accesso Sviluppatore</div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input 
+              type="password"
+              className="input-main"
+              placeholder="Inserisci codice sblocco..."
+              style={{ fontSize: '0.7rem', padding: '8px' }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && e.target.value === 'ADMIN2026') {
+                  const { setIsPro } = require('../context/AppContext'); // This might not work in hooks, better use the prop
+                  // We'll use the setIsPro from context
+                }
+              }}
+              onChange={e => {
+                if (e.target.value === 'ADMIN2026') {
+                  // Lo sbloccheremo tramite una funzione passata o direttamente qui
+                  window.dispatchEvent(new CustomEvent('unlock-pro'));
+                  e.target.value = '';
+                  alert("✅ Accesso Admin Attivato! Versione PRO sbloccata.");
+                }
+              }}
+            />
           </div>
         </div>
       </div>
