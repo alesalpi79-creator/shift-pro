@@ -413,7 +413,7 @@ export default function RuleSettings() {
               width: activeDesignCard === i ? '24px' : '10px', 
               height: '10px', 
               borderRadius: '10px', 
-              background: activeDesignCard === i ? 'var(--primary)' : 'rgba(255,255,255,0.2)',
+              background: activeDesignCard === i ? 'var(--primary)' : 'rgba(15, 23, 42, 0.15)',
               cursor: 'pointer',
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               boxShadow: activeDesignCard === i ? '0 0 10px var(--primary-glow)' : 'none'
