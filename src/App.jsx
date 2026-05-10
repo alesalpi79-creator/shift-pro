@@ -1542,7 +1542,7 @@ function App() {
     return !localStorage.getItem('onboarding_complete') && !localStorage.getItem('shift_pro_employees');
   });
   const [showLogin, setShowLogin] = useState(false);
-  const { config, employees, exceptions, isPro, setIsPro, trialStartDate, userRole, setUserRole } = useApp();
+  const { config, employees, exceptions, isPro, setIsPro, trialStartDate, isTrialExpired, userRole, setUserRole } = useApp();
 
   const handleLogin = (pwd) => {
     // Password Sviluppatore sempre attiva per emergenza
