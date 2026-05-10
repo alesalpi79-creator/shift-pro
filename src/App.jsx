@@ -47,7 +47,7 @@ const isHoliday = (date) => {
   return holidays.some(h => h.d === d && h.m === m);
 };
 
-const Sidebar = ({ activeTab, setTab, setView, setShowLogin }) => {
+const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport }) => {
   const { 
     userRole, setUserRole, 
     schedules, activeScheduleId, setActiveScheduleId, 
@@ -173,6 +173,9 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin }) => {
             </div>
             <div className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setTab('settings')}>
               <IconSettings /> Impostazioni
+            </div>
+            <div className="nav-item" onClick={() => setShowExport(true)} style={{ color: 'var(--primary)', fontWeight: 'bold' }}>
+              <IconExport /> Esporta PDF/Excel
             </div>
           </>
         )}
@@ -1362,13 +1365,11 @@ const LandingPage = ({ onEnter, config, setView }) => {
   );
 };
 
-const CalendarView = () => {
+const CalendarView = ({ viewDate, setViewDate, showExport, setShowExport }) => {
   const { employees, exceptions, config } = useApp();
-  const [viewDate, setViewDate] = useState(new Date());
   const [viewMode, setViewMode] = useState('calendar'); // 'calendar' or 'grid'
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [showExport, setShowExport] = useState(false);
   const [selection, setSelection] = useState([]); // Stato di selezione condiviso (Tank Mode)
 
   const handleDayClick = (date, employeeName = null) => {
@@ -1403,7 +1404,6 @@ const CalendarView = () => {
           onBatchUpdate={() => setSelection([])}
         />
       )}
-      {showExport && <ExportModule onClose={() => setShowExport(false)} currentViewDate={viewDate} />}
       
       <header className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1.25rem 2rem', borderBottom: '1px solid var(--glass-border)', flexWrap: 'wrap', gap: '1.5rem' }}>
         <div style={{ cursor: 'pointer' }} onClick={() => monthInputRef.current?.showPicker()}>
@@ -1687,6 +1687,8 @@ const PaywallOverlay = ({ onUnlock }) => {
 function App() {
   const [activeTab, setTab] = useState('calendar');
   const [view, setView] = useState('landing'); // 'landing', 'app', 'case-study-1', 'case-study-2'
+  const [viewDate, setViewDate] = useState(new Date());
+  const [showExport, setShowExport] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return !localStorage.getItem('onboarding_complete') && !localStorage.getItem('shift_pro_employees');
   });
@@ -1783,6 +1785,7 @@ function App() {
       {view !== 'landing' && showLogin && (
         <LoginOverlay onLogin={handleLogin} onCancel={() => setShowLogin(false)} />
       )}
+      {showExport && <ExportModule onClose={() => setShowExport(false)} currentViewDate={viewDate} />}
       {view !== 'landing' && !isPro && isTrialExpired && (
         <PaywallOverlay onUnlock={() => setIsPro(true)} />
       )}
@@ -1806,7 +1809,7 @@ function App() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 0 }}></div>
       )}
       {view !== 'landing' && (
-        <Sidebar activeTab={activeTab} setTab={setTab} setView={setView} setShowLogin={setShowLogin} />
+        <Sidebar activeTab={activeTab} setTab={setTab} setView={setView} setShowLogin={setShowLogin} setShowExport={setShowExport} />
       )}
       <main style={{ 
         flex: 1, 
@@ -1848,14 +1851,15 @@ function App() {
                 </div>
                 {activeTab === 'calendar' && (
                    <div style={{ display: 'flex', gap: '1rem' }}>
-                     <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => window.print()}>🖨️ Stampa Report</button>
+                     <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowExport(true)}>📥 Esporta PDF</button>
+                     <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => window.print()}>🖨️ Stampa</button>
                    </div>
                 )}
               </header>
 
               <CommandCenter config={config} employees={employees} exceptions={exceptions} />
 
-              {activeTab === 'calendar' && <CalendarView />}
+              {activeTab === 'calendar' && <CalendarView viewDate={viewDate} setViewDate={setViewDate} showExport={showExport} setShowExport={setShowExport} />}
               {activeTab === 'staff' && <StaffManager />}
               {activeTab === 'stats' && <StatsDashboard />}
               {activeTab === 'settings' && <RuleSettings />}
