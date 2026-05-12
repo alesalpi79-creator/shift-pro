@@ -863,7 +863,8 @@ const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
         </div>
         <div style={{ display: 'flex', gap: '2rem', fontSize: '0.85rem', fontWeight: '600' }}>
           <a href="#features" style={{ color: 'inherit', textDecoration: 'none' }}>Funzionalità</a>
-          <a href="#demo" style={{ color: 'inherit', textDecoration: 'none' }}>Demo Video</a>
+          <a href="#testimonials" style={{ color: 'inherit', textDecoration: 'none' }}>Testimonianze</a>
+          <a href="#cases" style={{ color: 'inherit', textDecoration: 'none' }}>Casi Studio</a>
           <a href="#pricing" style={{ color: 'inherit', textDecoration: 'none' }}>Prezzi</a>
         </div>
         <button onClick={onEnter} className="btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '50px', fontSize: '0.8rem' }}>Prova Gratis</button>
@@ -931,34 +932,6 @@ const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
         </div>
       </section>
 
-      <section id="demo" style={{ padding: '8rem 2rem', textAlign: 'center' }}>
-         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: '900', marginBottom: '3rem' }}>Guarda Turni Pro in azione.</h2>
-            <div style={{ 
-               aspectRatio: '16/9', 
-               background: '#0f172a', 
-               borderRadius: '2.5rem', 
-               display: 'grid', 
-               placeItems: 'center',
-               boxShadow: '0 40px 80px -15px rgba(0,0,0,0.2)',
-               overflow: 'hidden',
-               position: 'relative'
-            }}>
-               <div style={{ position: 'absolute', inset: 0, background: `url(${logisticsMockup})`, backgroundSize: 'cover', opacity: 0.4 }}></div>
-               <button style={{ 
-                  width: '80px', height: '80px', borderRadius: '50%', 
-                  background: 'white', border: 'none', cursor: 'pointer',
-                  fontSize: '1.5rem', display: 'grid', placeItems: 'center',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-                  zIndex: 1, transition: 'transform 0.3s'
-               }}
-               onClick={onPlayVideo}
-               onMouseEnter={e => e.target.style.transform = 'scale(1.1)'}
-               onMouseLeave={e => e.target.style.transform = 'scale(1)'}
-               >▶️</button>
-            </div>
-         </div>
-      </section>
 
       {/* NEW: HOW IT WORKS SECTION */}
       <section style={{ padding: '6rem 2rem', background: 'white' }}>
@@ -1168,24 +1141,6 @@ const CaseStudy = ({ id, onBack }) => {
   );
 };
 
-const VideoOverlay = ({ onClose }) => (
-  <div className="dialog-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(10px)', display: 'grid', placeItems: 'center', zIndex: 30000 }}>
-    <div style={{ width: '90%', maxWidth: '1000px', position: 'relative' }}>
-      <button onClick={onClose} style={{ position: 'absolute', top: '-40px', right: '0', background: 'transparent', border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer' }}>×</button>
-      <div style={{ aspectRatio: '16/9', background: '#000', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
-        <iframe 
-          width="100%" 
-          height="100%" 
-          src="https://www.youtube.com/embed/6_6v9eO-2tY?autoplay=1" 
-          title="Turni Pro Demo" 
-          frameBorder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-          allowFullScreen
-        ></iframe>
-      </div>
-    </div>
-  </div>
-);
 
 const LoginOverlay = ({ onLogin, onCancel }) => {
   const [pwd, setPwd] = useState("");
@@ -1348,7 +1303,6 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [userRole, setUserRole] = useState('viewer');
-  const [showVideo, setShowVideo] = useState(false);
   
   const [dialog, setDialog] = useState({ 
     isOpen: false, 
@@ -1442,9 +1396,7 @@ export default function App() {
           config={config} 
           setView={setView} 
           onEnter={() => { setView('app'); setTab('calendar'); }} 
-          onPlayVideo={() => setShowVideo(true)}
         />
-        {showVideo && <VideoOverlay onClose={() => setShowVideo(false)} />}
         <Dialog 
           isOpen={dialog.isOpen}
           type={dialog.type}
