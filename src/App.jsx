@@ -303,7 +303,7 @@ const DayDetails = ({ date, onClose, selectedEmployee = null, selection = [], on
   // Se è stato selezionato un dipendente specifico, filtriamo la lista
   const filteredShifts = useMemo(() => {
     if (!selectedEmployee) return shifts;
-    return shifts.filter(s => s.name === selectedEmployee);
+    return (shifts || []).filter(s => s.name === selectedEmployee);
   }, [shifts, selectedEmployee]);
 
   const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -318,7 +318,7 @@ const DayDetails = ({ date, onClose, selectedEmployee = null, selection = [], on
         const toRemoveSet = new Set(selection);
         
         // Rimuoviamo le vecchie
-        updated = updated.filter(ex => !toRemoveSet.has(`${ex.employee}|${ex.date}`));
+        updated = (updated || []).filter(ex => !toRemoveSet.has(`${ex.employee}|${ex.date}`));
         
         // Aggiungiamo le nuove
         if (type) {
@@ -336,7 +336,7 @@ const DayDetails = ({ date, onClose, selectedEmployee = null, selection = [], on
 
     // Altrimenti aggiornamento singolo classico
     const existingException = exceptions.find(ex => ex.employee === employeeName && ex.date === dateStr);
-    const filtered = exceptions.filter(ex => !(ex.employee === employeeName && ex.date === dateStr));
+    const filtered = (exceptions || []).filter(ex => !(ex.employee === employeeName && ex.date === dateStr));
     
     if (existingException && existingException.type === type) {
       setExceptions(filtered);
@@ -454,11 +454,11 @@ const DayDetails = ({ date, onClose, selectedEmployee = null, selection = [], on
       })()}
 
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {renderGroup('Turno A (Mattina)', filteredShifts.filter(s => s.finalShift === 'A'), 'var(--shift-a)')}
-        {renderGroup('Turno B (Notte)', filteredShifts.filter(s => s.finalShift === 'B'), 'var(--shift-b)')}
-        {renderGroup('Turno C (Pomeriggio)', filteredShifts.filter(s => s.finalShift === 'C'), 'var(--shift-c)')}
-        {renderGroup('Assenze Speciali', filteredShifts.filter(s => ['FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].includes(s.finalShift)), 'var(--text-muted)')}
-        {renderGroup('A Riposo / Jolly / Giornaliero', filteredShifts.filter(s => ['R', 'G'].includes(s.finalShift)), null)}
+        {renderGroup('Turno A (Mattina)', (filteredShifts || []).filter(s => s.finalShift === 'A'), 'var(--shift-a)')}
+        {renderGroup('Turno B (Notte)', (filteredShifts || []).filter(s => s.finalShift === 'B'), 'var(--shift-b)')}
+        {renderGroup('Turno C (Pomeriggio)', (filteredShifts || []).filter(s => s.finalShift === 'C'), 'var(--shift-c)')}
+        {renderGroup('Assenze Speciali', (filteredShifts || []).filter(s => ['FE', 'MA', 'RT', 'DS', '104', 'CO', 'CF'].includes(s.finalShift)), 'var(--text-muted)')}
+        {renderGroup('A Riposo / Jolly / Giornaliero', (filteredShifts || []).filter(s => ['R', 'G'].includes(s.finalShift)), null)}
       </div>
     </div>
   );
@@ -565,14 +565,15 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
   }, [realDays, employees, exceptions, config]);
 
   const visibleEmployees = useMemo(() => {
-    return employees.filter(emp => {
+    return (employees || []).filter(emp => {
+      if (!emp) return false;
       // Se ci sono 5 o meno dipendenti in totale, li mostriamo tutti sempre (uso personale)
-      if (employees.length <= 5) return true;
+      if ((employees || []).length <= 5) return true;
 
       // Altrimenti mostriamo solo chi ha turni attivi nel periodo (uso aziendale)
-      return gridData.some(dayShifts => {
-        if (!dayShifts) return false;
-        const s = dayShifts.find(x => x.name === emp.name);
+      return (gridData || []).some(dayShifts => {
+        if (!dayShifts || !Array.isArray(dayShifts)) return false;
+        const s = dayShifts.find(x => x && x.name === emp.name);
         return s && (['A', 'B', 'C'].includes(s.finalShift) || s.isJolly || s.isSJ);
       });
       })
@@ -601,10 +602,10 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
               let isUnderstaffed = false;
               let missingDesc = [];
 
-              if (dayShifts && config.constraints) {
+              if (dayShifts && Array.isArray(dayShifts) && config.constraints) {
                  ['A', 'B', 'C'].forEach(st => {
-                    const ctCount = dayShifts.filter(s => s.finalShift === st && s.baseRole === 'CT').length;
-                    const opCount = dayShifts.filter(s => s.finalShift === st && s.baseRole === 'OP').length;
+                    const ctCount = dayShifts.filter(s => s && s.finalShift === st && s.baseRole === 'CT').length;
+                    const opCount = dayShifts.filter(s => s && s.finalShift === st && s.baseRole === 'OP').length;
                     const reqCT = config.constraints?.[st]?.CT || 1;
                     const reqOP = config.constraints?.[st]?.OP || 3;
                     if (ctCount !== reqCT) {
@@ -840,10 +841,10 @@ const LandingPage = ({ config, setView, onEnter }) => {
           NUOVA VERSIONE 2.7 • OTTIMIZZAZIONE AI
         </div>
         <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4.5rem)', fontWeight: '900', lineHeight: '1', letterSpacing: '-0.04em', marginBottom: '1.5rem', color: '#0f172a' }}>
-          Pianifica i turni in <span style={{ color: 'var(--primary)' }}>pochi secondi.</span>
+          Gestisci i tuoi <span style={{ color: 'var(--primary)' }}>Turni Pro AI</span> in pochi secondi.
         </h1>
         <p style={{ fontSize: '1.25rem', color: '#64748b', marginBottom: '3rem', maxWidth: '700px', margin: '0 auto 3rem' }}>
-          L'unico software che combina algoritmi di rotazione industriale con un'interfaccia premium. Gestisci il tuo team senza stress.
+          Turni Pro AI è l'unico software che combina algoritmi di rotazione industriale con un'interfaccia premium. Gestisci il tuo team senza stress.
         </p>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button onClick={onEnter} className="btn-primary" style={{ padding: '1.25rem 2.5rem', fontSize: '1rem', borderRadius: '1rem', boxShadow: '0 20px 40px var(--primary-glow)' }}>Inizia Ora — È Gratis</button>

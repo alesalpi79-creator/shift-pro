@@ -85,12 +85,16 @@ export const AppProvider = ({ children }) => {
     return schedules[0].id;
   });
 
-  // Troviamo lo schema attivo
-  const activeSchedule = schedules.find(s => s.id === activeScheduleId) || schedules[0];
+  // Troviamo lo schema attivo con fallback di sicurezza
+  const activeSchedule = schedules.find(s => s.id === activeScheduleId) || schedules[0] || { config: DEFAULT_CONFIG, employees: [], exceptions: [] };
 
   // Helper per aggiornare lo schema attivo
   const updateActiveSchedule = (updates) => {
-    setSchedules(prev => prev.map(s => s.id === activeScheduleId ? { ...s, ...updates } : s));
+    setSchedules(prev => {
+      const exists = prev.some(s => s.id === activeScheduleId);
+      if (!exists) return prev;
+      return prev.map(s => s.id === activeScheduleId ? { ...s, ...updates } : s);
+    });
   };
 
   // Funzioni per gestire gli schemi
@@ -113,7 +117,7 @@ export const AppProvider = ({ children }) => {
     const newSchedules = schedules.filter(s => s.id !== id);
     setSchedules(newSchedules);
     if (activeScheduleId === id) {
-      setActiveScheduleId(newSchedules[0].id);
+      setActiveScheduleId(newSchedules[0]?.id || "");
     }
   };
 
@@ -121,22 +125,25 @@ export const AppProvider = ({ children }) => {
     setSchedules(prev => prev.map(s => s.id === id ? { ...s, name: newName } : s));
   };
 
-  // Esposizione dati e setter compatibili con i componenti esistenti
-  const config = activeSchedule.config;
+  // Esposizione dati e setter compatibili con i componenti esistenti (con sicurezza extra)
+  const config = activeSchedule.config || DEFAULT_CONFIG;
   const setConfig = (updater) => {
-    const newConfig = typeof updater === 'function' ? updater(activeSchedule.config) : updater;
+    const currentConfig = activeSchedule.config || DEFAULT_CONFIG;
+    const newConfig = typeof updater === 'function' ? updater(currentConfig) : updater;
     updateActiveSchedule({ config: newConfig });
   };
 
-  const employees = activeSchedule.employees;
+  const employees = Array.isArray(activeSchedule.employees) ? activeSchedule.employees : [];
   const setEmployees = (updater) => {
-    const newEmployees = typeof updater === 'function' ? updater(activeSchedule.employees) : updater;
+    const currentEmployees = Array.isArray(activeSchedule.employees) ? activeSchedule.employees : [];
+    const newEmployees = typeof updater === 'function' ? updater(currentEmployees) : updater;
     updateActiveSchedule({ employees: newEmployees });
   };
 
-  const exceptions = activeSchedule.exceptions;
+  const exceptions = Array.isArray(activeSchedule.exceptions) ? activeSchedule.exceptions : [];
   const setExceptions = (updater) => {
-    const newExceptions = typeof updater === 'function' ? updater(activeSchedule.exceptions) : updater;
+    const currentExceptions = Array.isArray(activeSchedule.exceptions) ? activeSchedule.exceptions : [];
+    const newExceptions = typeof updater === 'function' ? updater(currentExceptions) : updater;
     updateActiveSchedule({ exceptions: newExceptions });
   };
 

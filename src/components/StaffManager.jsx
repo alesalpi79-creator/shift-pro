@@ -122,13 +122,13 @@ export default function StaffManager() {
 
       <div className="glass-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h3>Lista Dipendenti ({employees.length})</h3>
+          <h3>Lista Dipendenti ({(employees || []).length})</h3>
           <button className="btn-primary" onClick={autoBalanceOffsets} style={{ fontSize: '0.8rem', padding: '0.5rem 1rem' }}>
             Auto-Distribuisci Turni
           </button>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
-          {employees.map((e, idx) => (
+          {(employees || []).map((e, idx) => (
             <div key={e.id} style={{ 
               display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
               padding: '1.25rem', background: 'rgba(15, 23, 42, 0.02)', 
