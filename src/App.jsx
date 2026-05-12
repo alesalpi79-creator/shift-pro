@@ -1308,15 +1308,9 @@ export default function App() {
   const isLanding = view === 'landing' || view.startsWith('case-study');
 
   return (
-    <div className="app-container" style={{ position: 'relative' }}>
-      {view !== 'landing' && showLogin && (
-        <LoginOverlay onLogin={handleLogin} onCancel={() => setShowLogin(false)} />
-      )}
-      {showExport && <ExportModule onClose={() => setShowExport(false)} currentViewDate={viewDate} />}
-      {view !== 'landing' && !isPro && isTrialExpired && (
-        <PaywallOverlay onUnlock={() => setIsPro(true)} />
-      )}
-      {/* Background Layer: Only active in App view, neutral in Landing */}
+    <div className={isLanding ? "landing-mode" : "app-mode"} style={{ minHeight: '100vh', display: 'flex', flexDirection: isLanding ? 'column' : 'row' }}>
+      
+      {/* Background Layer */}
       <div style={{
         position: 'fixed',
         top: 0, left: 0, 
@@ -1332,12 +1326,29 @@ export default function App() {
         pointerEvents: 'none'
       }}></div>
 
-      {!isLanding && config.backgroundImage && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 0 }}></div>
+      {view !== 'landing' && showLogin && (
+        <LoginOverlay onLogin={handleLogin} onCancel={() => setShowLogin(false)} />
       )}
+      
+      {showExport && <ExportModule onClose={() => setShowExport(false)} currentViewDate={viewDate} />}
+      
+      {view !== 'landing' && !isPro && isTrialExpired && (
+        <PaywallOverlay onUnlock={() => setIsPro(true)} />
+      )}
+
       {view !== 'landing' && (
-        <Sidebar activeTab={activeTab} setTab={setTab} setView={setView} setShowLogin={setShowLogin} setShowExport={setShowExport} showAlert={showAlert} showConfirm={showConfirm} showPrompt={showPrompt} />
+        <Sidebar 
+          activeTab={activeTab} 
+          setTab={setTab} 
+          setView={setView} 
+          setShowLogin={setShowLogin} 
+          setShowExport={setShowExport} 
+          showAlert={showAlert} 
+          showConfirm={showConfirm} 
+          showPrompt={showPrompt} 
+        />
       )}
+
       <main style={{ 
         flex: 1, 
         minWidth: 0, 
@@ -1346,50 +1357,41 @@ export default function App() {
         zIndex: 1,
         overflowY: 'auto'
       }}>
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          {view === 'landing' ? (
-            <LandingPage 
-              config={config} 
-              setView={setView} 
-              onEnter={() => { 
-                try {
-                  setView('app'); 
-                  setTab('calendar');
-                } catch (e) {
-                  console.error("Transition Error:", e);
-                }
-              }} 
-            />
-          ) : (
-            <>
-              <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-                <div>
-                   <h1 style={{ fontSize: '2.25rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.25rem' }}>
-                     {activeTab === 'calendar' ? 'Gestione Turni' : 
-                      activeTab === 'staff' ? 'Team Management' : 
-                      activeTab === 'stats' ? 'Analytics Avanzate' : 'Impostazioni Sistema'}
-                   </h1>
-                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                     {activeTab === 'calendar' ? 'Ottimizzazione rotazioni industriali in tempo reale.' : 
-                      activeTab === 'staff' ? 'Configura i ruoli e le competenze del tuo team.' : 
-                      activeTab === 'stats' ? 'Monitora performance e bilanciamento dei carichi.' : 'Configura l\'algoritmo e l\'identità visiva.'}
-                   </p>
-                </div>
-                {activeTab === 'calendar' && (
-                   <div style={{ display: 'flex', gap: '1rem' }}>
-                     <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowExport(true)}>📥 Esporta PDF</button>
-                     <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => window.print()}>🖨️ Stampa</button>
-                   </div>
-                )}
-              </header>
+        {view === 'landing' ? (
+          <LandingPage 
+            config={config} 
+            setView={setView} 
+            onEnter={() => { setView('app'); setTab('calendar'); }} 
+          />
+        ) : (
+          <div style={{ maxWidth: '1600px', margin: '0 auto' }}>
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+              <div>
+                 <h1 style={{ fontSize: '2.25rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.25rem' }}>
+                   {activeTab === 'calendar' ? 'Gestione Turni' : 
+                    activeTab === 'staff' ? 'Team Management' : 
+                    activeTab === 'stats' ? 'Analytics Avanzate' : 'Impostazioni Sistema'}
+                 </h1>
+                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                   {activeTab === 'calendar' ? 'Ottimizzazione rotazioni industriali in tempo reale.' : 
+                    activeTab === 'staff' ? 'Configura i ruoli e le competenze del tuo team.' : 
+                    activeTab === 'stats' ? 'Monitora performance e bilanciamento dei carichi.' : 'Configura l\'algoritmo e l\'identità visiva.'}
+                 </p>
+              </div>
+              {activeTab === 'calendar' && (
+                 <div style={{ display: 'flex', gap: '1rem' }}>
+                   <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowExport(true)}>📥 Esporta PDF</button>
+                   <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => window.print()}>🖨️ Stampa</button>
+                 </div>
+              )}
+            </header>
 
-              {activeTab === 'calendar' && <CalendarView viewDate={viewDate} setViewDate={setViewDate} showExport={showExport} setShowExport={setShowExport} />}
-              {activeTab === 'staff' && <StaffManager />}
-              {activeTab === 'stats' && <StatsDashboard />}
-              {activeTab === 'settings' && <RuleSettings showAlert={showAlert} showConfirm={showConfirm} showPrompt={showPrompt} />}
-            </>
-          )}
-        </div>
+            {activeTab === 'calendar' && <CalendarView viewDate={viewDate} setViewDate={setViewDate} showExport={showExport} setShowExport={setShowExport} />}
+            {activeTab === 'staff' && <StaffManager />}
+            {activeTab === 'stats' && <StatsDashboard />}
+            {activeTab === 'settings' && <RuleSettings showAlert={showAlert} showConfirm={showConfirm} showPrompt={showPrompt} />}
+          </div>
+        )}
       </main>
 
       <Dialog 
