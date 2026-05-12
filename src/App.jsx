@@ -846,7 +846,7 @@ const ProjectPreviewTable = () => {
 };
 
 
-const LandingPage = ({ config, setView, onEnter }) => {
+const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
   return (
     <div className="landing-page" style={{ color: '#1e293b' }}>
       <nav className="glass-nav" style={{ 
@@ -952,6 +952,7 @@ const LandingPage = ({ config, setView, onEnter }) => {
                   boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
                   zIndex: 1, transition: 'transform 0.3s'
                }}
+               onClick={onPlayVideo}
                onMouseEnter={e => e.target.style.transform = 'scale(1.1)'}
                onMouseLeave={e => e.target.style.transform = 'scale(1)'}
                >▶️</button>
@@ -998,6 +999,59 @@ const LandingPage = ({ config, setView, onEnter }) => {
               <div style={{ flex: 1, minWidth: '300px', background: '#f1f5f9', borderRadius: '2rem', padding: '2rem' }}>
                 <img src={heroMockup} alt="Step 3" style={{ width: '100%', borderRadius: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }} />
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS SECTION */}
+      <section id="testimonials" style={{ padding: '8rem 2rem', background: '#f8fafc' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: '900', marginBottom: '1rem' }}>Cosa dicono i professionisti.</h2>
+            <p style={{ color: '#64748b' }}>Unisciti a oltre 500 aziende che hanno già ottimizzato i loro turni.</p>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2.5rem' }}>
+            {[
+              { name: "Mario Rossi", role: "Direttore Logistica", quote: "Turni Pro ha cambiato radicalmente il nostro modo di lavorare. Incredibile la velocità dell'algoritmo.", stars: 5 },
+              { name: "Dr. Stefano Bianchi", role: "Caposala - Clinica Sanitaria", quote: "Finalmente abbiamo dimezzato i tempi di pianificazione. La gestione delle ferie non è più un incubo.", stars: 5 },
+              { name: "Giulia Neri", role: "HR Manager - Industrial Corp", quote: "Un software che parla la nostra lingua. Semplice, potente e reattivo. Non potremmo più farne a meno.", stars: 5 }
+            ].map((t, i) => (
+              <div key={i} style={{ background: 'white', padding: '3rem', borderRadius: '2.5rem', boxShadow: '0 20px 40px rgba(0,0,0,0.03)', border: '1px solid #f1f5f9' }}>
+                <div style={{ color: '#fbbf24', marginBottom: '1.5rem', fontSize: '1.2rem' }}>{'★'.repeat(t.stars)}</div>
+                <p style={{ fontSize: '1.1rem', lineHeight: '1.7', color: '#334155', marginBottom: '2.5rem', fontStyle: 'italic' }}>"{t.quote}"</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div style={{ width: '45px', height: '45px', background: 'var(--primary)', borderRadius: '50%', display: 'grid', placeItems: 'center', color: 'white', fontWeight: '800' }}>{t.name[0]}</div>
+                  <div>
+                    <div style={{ fontWeight: '800', fontSize: '1rem' }}>{t.name}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{t.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CASE STUDIES SECTION */}
+      <section id="cases" style={{ padding: '8rem 2rem' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: '900', marginBottom: '1rem' }}>Scelto dai leader di settore.</h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+            <div className="case-card" onClick={() => setView('case-study-1')} style={{ cursor: 'pointer', background: '#0f172a', color: 'white', padding: '3rem', borderRadius: '2.5rem', overflow: 'hidden', position: 'relative' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: '800', marginBottom: '1rem' }}>LOGISTICA</div>
+              <h3 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '1.5rem' }}>Esempio Polo Logistico</h3>
+              <p style={{ opacity: 0.7, marginBottom: '2rem' }}>Scopri come abbiamo ottimizzato 45 dipendenti su 3 turni.</p>
+              <button className="btn-secondary" style={{ background: 'white', border: 'none', color: '#0f172a', padding: '0.8rem 1.5rem', borderRadius: '12px' }}>Guarda Esempio</button>
+            </div>
+            <div className="case-card" onClick={() => setView('case-study-2')} style={{ cursor: 'pointer', background: 'var(--primary)', color: 'white', padding: '3rem', borderRadius: '2.5rem', overflow: 'hidden', position: 'relative' }}>
+              <div style={{ fontSize: '0.8rem', color: 'white', opacity: 0.8, fontWeight: '800', marginBottom: '1rem' }}>SANITÀ</div>
+              <h3 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '1.5rem' }}>Esempio Clinica Medica</h3>
+              <p style={{ opacity: 0.9, marginBottom: '2rem' }}>Gestione turni infermieristici e reperibilità semplificata.</p>
+              <button className="btn-secondary" style={{ background: '#0f172a', border: 'none', color: 'white', padding: '0.8rem 1.5rem', borderRadius: '12px' }}>Guarda Esempio</button>
             </div>
           </div>
         </div>
@@ -1061,6 +1115,78 @@ const LandingPage = ({ config, setView, onEnter }) => {
   );
 };
 
+const CaseStudy = ({ id, onBack }) => {
+  const data = {
+    1: {
+      title: "Polo Logistico Nord-Est",
+      subtitle: "Gestione di 45 dipendenti su 3 turni 24/7",
+      image: logisticsMockup,
+      stats: [
+        { label: "Efficienza", val: "+40%" },
+        { label: "Errori Copertura", val: "Zero" },
+        { label: "Tempo Risparmiato", val: "15h/sett" }
+      ],
+      desc: "Il polo logistico doveva gestire rotazioni complesse con 3 squadre fisse e una squadra Jolly per le sostituzioni. Turni Pro ha automatizzato la generazione annuale eliminando i conflitti di ferie."
+    },
+    2: {
+      title: "Clinica Medica Sanitas",
+      subtitle: "Pianificazione turni infermieristici e reperibilità",
+      image: medicalMockup,
+      stats: [
+        { label: "Soddisfazione Team", val: "95%" },
+        { label: "Cambi Turno", val: "Smart" },
+        { label: "Reperibilità", val: "Auto" }
+      ],
+      desc: "La clinica necessitava di un sistema per gestire le reperibilità notturne e i riposi compensativi. Grazie all'algoritmo di Turni Pro, la copertura è sempre garantita secondo le normative."
+    }
+  }[id];
+
+  return (
+    <div className="fade-in" style={{ padding: '6rem 2rem', background: 'white', minHeight: '100vh' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 'bold', cursor: 'pointer', marginBottom: '2rem', fontSize: '1.1rem' }}>← Torna alla Home</button>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+           <div>
+              <h1 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>{data.title}</h1>
+              <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>{data.subtitle}</p>
+              <div style={{ display: 'flex', gap: '2rem', marginBottom: '3rem' }}>
+                {data.stats.map((s, i) => (
+                  <div key={i}>
+                    <div style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--primary)' }}>{s.val}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+              <p style={{ lineHeight: '1.8', color: '#475569', fontSize: '1.1rem' }}>{data.desc}</p>
+           </div>
+           <div style={{ background: '#f1f5f9', borderRadius: '2rem', padding: '2.5rem' }}>
+              <img src={data.image} alt={data.title} style={{ width: '100%', borderRadius: '1.5rem', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }} />
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const VideoOverlay = ({ onClose }) => (
+  <div className="dialog-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(10px)', display: 'grid', placeItems: 'center', zIndex: 30000 }}>
+    <div style={{ width: '90%', maxWidth: '1000px', position: 'relative' }}>
+      <button onClick={onClose} style={{ position: 'absolute', top: '-40px', right: '0', background: 'transparent', border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer' }}>×</button>
+      <div style={{ aspectRatio: '16/9', background: '#000', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
+        <iframe 
+          width="100%" 
+          height="100%" 
+          src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
+          title="Shift Pro Demo" 
+          frameBorder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowFullScreen
+        ></iframe>
+      </div>
+    </div>
+  </div>
+);
+
 const LoginOverlay = ({ onLogin, onCancel }) => {
   const [pwd, setPwd] = useState("");
   return (
@@ -1101,7 +1227,7 @@ const PaywallOverlay = ({ onUnlock }) => {
             className="btn-primary" 
             style={{ width: '100%', padding: '1.25rem', borderRadius: '15px', fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem' }}
           >
-            Sblocca Versione Pro — €7,99
+            Sblocca Versione Pro — €7,99 / mese
           </button>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Pagamento unico • Accesso a vita</div>
        </div>
@@ -1222,6 +1348,7 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [userRole, setUserRole] = useState('viewer');
+  const [showVideo, setShowVideo] = useState(false);
   
   const [dialog, setDialog] = useState({ 
     isOpen: false, 
@@ -1300,6 +1427,9 @@ export default function App() {
   // 1. Calcolo se siamo in modalità landing in modo sicuro
   const isLanding = (view || '').toString().startsWith('landing') || (view || '').toString().startsWith('case-study');
 
+  if (view === 'case-study-1') return <CaseStudy id={1} onBack={() => setView('landing')} />;
+  if (view === 'case-study-2') return <CaseStudy id={2} onBack={() => setView('landing')} />;
+
   // 2. Se siamo in landing, mostriamo SEMPRE la landing page (Priorità assoluta)
   if (isLanding) {
     return (
@@ -1312,7 +1442,9 @@ export default function App() {
           config={config} 
           setView={setView} 
           onEnter={() => { setView('app'); setTab('calendar'); }} 
+          onPlayVideo={() => setShowVideo(true)}
         />
+        {showVideo && <VideoOverlay onClose={() => setShowVideo(false)} />}
         <Dialog 
           isOpen={dialog.isOpen}
           type={dialog.type}
