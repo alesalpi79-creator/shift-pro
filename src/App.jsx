@@ -11,6 +11,7 @@ import RuleSettings from './components/RuleSettings';
 import Onboarding from './components/Onboarding';
 import ExportModule from './components/ExportModule';
 import StatsDashboard from './components/StatsDashboard';
+import Dialog from './components/Dialog';
 import './index.css';
 
 const hexToRgb = (hex) => {
@@ -28,6 +29,19 @@ const IconUser = () => <span className="nav-icon">👤</span>;
 const IconStats = () => <span className="nav-icon">📊</span>;
 const IconExport = () => <span className="nav-icon">📦</span>;
 
+const getEaster = (year) => {
+  const f = Math.floor,
+    G = year % 19,
+    C = f(year / 100),
+    H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30,
+    I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11)),
+    J = (year + f(year / 4) + I + 2 - C + f(C / 4)) % 7,
+    L = I - J,
+    month = 3 + f((L + 40) / 44),
+    day = L + 28 - 31 * f(month / 4);
+  return { d: day, m: month };
+};
+
 const isHoliday = (date) => {
   if (!date) return false;
   const d = date.getDate();
@@ -40,14 +54,15 @@ const isHoliday = (date) => {
     {d: 25, m: 12}, {d: 26, m: 12}
   ];
 
-  // Pasquetta 2026 (13 Aprile), 2027 (29 Marzo) - Semplificato per ora
-  if (y === 2026 && d === 6 && m === 4) return true; // Pasquetta 2026 è il 6 Aprile (Lunedì dell'Angelo)
-  // Nota: Pasquetta 2026 è in realtà il 6 Aprile.
+  // Calcolo Pasquetta (Lunedì dell'Angelo)
+  const easter = getEaster(y);
+  const pasquetta = new Date(y, easter.m - 1, easter.d + 1);
+  if (d === pasquetta.getDate() && m === (pasquetta.getMonth() + 1)) return true;
   
   return holidays.some(h => h.d === d && h.m === m);
 };
 
-const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport }) => {
+const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, showAlert, showConfirm, showPrompt }) => {
   const { 
     userRole, setUserRole, 
     schedules, activeScheduleId, setActiveScheduleId, 
@@ -82,15 +97,16 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport }) =>
       try {
         const data = JSON.parse(event.target.result);
         if (!data.config || !data.employees) throw new Error("File non valido");
-        if (window.confirm("Attenzione: l'importazione sovrascriverà tutti i dati dello schema attuale. Continuare?")) {
-          setConfig(data.config);
-          setEmployees(data.employees);
-          setExceptions(data.exceptions || []);
-          alert("Dati importati con successo!");
-          window.location.reload();
+        if (true) {
+          showConfirm("Attenzione", "L'importazione sovrascriverà tutti i dati dello schema attuale. Continuare?", () => {
+            setConfig(data.config);
+            setEmployees(data.employees);
+            setExceptions(data.exceptions || []);
+            showAlert("Successo", "Dati importati con successo!");
+          });
         }
       } catch (err) {
-        alert("Errore nell'importazione: il file non sembra un backup valido.");
+        showAlert("Errore", "Il file non sembra un backup valido.");
       }
     };
     reader.readAsText(file);
@@ -123,8 +139,9 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport }) =>
           {userRole === 'admin' && (
               <button 
                 onClick={() => {
-                  const name = window.prompt("Nome del nuovo schema:");
-                  if (name) addSchedule(name);
+                  showPrompt("Nuovo Schema", "Inserisci il nome del nuovo schema:", "", (name) => {
+                    if (name) addSchedule(name);
+                  });
                 }}
                 style={{ background: 'var(--primary)', border: 'none', color: 'white', width: '20px', height: '20px', borderRadius: '50%', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold', display: 'grid', placeItems: 'center' }}
                 title="Crea nuovo archivio"
@@ -147,8 +164,8 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport }) =>
               
               {userRole === 'admin' && activeScheduleId === sch.id && (
                 <div style={{ display: 'flex', gap: '6px', opacity: 0.7 }}>
-                   <span onClick={(e) => { e.stopPropagation(); const n = window.prompt("Rinomina schema:", sch.name); if(n) renameSchedule(sch.id, n); }} style={{ cursor: 'pointer' }} title="Rinomina">✏️</span>
-                   {schedules.length > 1 && <span onClick={(e) => { e.stopPropagation(); deleteSchedule(sch.id); }} style={{ cursor: 'pointer' }} title="Elimina">🗑️</span>}
+                   <span onClick={(e) => { e.stopPropagation(); showPrompt("Rinomina", "Nuovo nome per lo schema:", sch.name, (n) => { if(n) renameSchedule(sch.id, n); }); }} style={{ cursor: 'pointer' }} title="Rinomina">✏️</span>
+                   {schedules.length > 1 && <span onClick={(e) => { e.stopPropagation(); showConfirm("Elimina Schema", `Sei sicuro di voler eliminare lo schema "${sch.name}"?`, () => deleteSchedule(sch.id)); }} style={{ cursor: 'pointer' }} title="Elimina">🗑️</span>}
                 </div>
               )}
             </div>
@@ -201,12 +218,16 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport }) =>
                 setTab('calendar');
               }
             } else {
-              const pwd = window.prompt("Inserisci la password di amministrazione:");
-              if (pwd === "alesalpi79") {
-                setUserRole('admin');
-              } else if (pwd !== null) {
-                alert("Password errata!");
-              }
+              showPrompt("Accesso Admin", "Inserisci la password di amministrazione:", "", (pwd) => {
+                const adminPwd = config.adminPassword;
+                if (pwd === adminPwd) {
+                  setUserRole('admin');
+                } else if (!adminPwd) {
+                  showAlert("Configurazione", "Nessuna password impostata. Vai nelle impostazioni per crearne una o usa l'accesso amministratore per sbloccare.");
+                } else {
+                  showAlert("Errore", "Password errata!");
+                }
+              });
             }
           }}
           style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem', cursor: 'pointer' }}
@@ -787,1017 +808,427 @@ const ProjectPreviewTable = () => {
   );
 };
 
-const ProjectCalendarPreview = () => {
-  const days = [
-    { d: 1, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
-    { d: 2, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
-    { d: 3, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
-    { d: 4, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
-    { d: 5, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
-    { d: 6, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
-    { d: 7, s: ['A: 4', 'B: 4', 'C: 4', 'R: 12'] },
-  ];
 
+const LandingPage = ({ config, setView, onEnter }) => {
   return (
-    <div style={{ background: '#0f172a', padding: '1.5rem', borderRadius: '2rem', marginTop: '2.5rem', boxShadow: '0 30px 60px -10px rgba(0,0,0,0.3)' }}>
-       <h4 style={{ color: 'white', marginBottom: '1.5rem', fontSize: '0.9rem', opacity: 0.7, fontWeight: 500, letterSpacing: '0.05em' }}>VISTA CALENDARIO MENSILE</h4>
-       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '10px' }}>
-          {['LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB', 'DOM'].map(d => (
-            <div key={d} style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.6rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '5px' }}>{d}</div>
-          ))}
-          {days.map(day => (
-            <div key={day.d} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '10px', minHeight: '80px', border: '1px solid rgba(255,255,255,0.05)' }}>
-               <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}>{day.d}</div>
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  {day.s.map((shift, idx) => (
-                    <div key={idx} style={{ 
-                      fontSize: '0.6rem', padding: '2px 6px', borderRadius: '4px', 
-                      background: shift.startsWith('A') ? 'var(--shift-a)' : shift.startsWith('B') ? 'var(--shift-b)' : shift.startsWith('C') ? 'var(--shift-c)' : 'rgba(255,255,255,0.1)',
-                      color: 'white', fontWeight: 'bold'
-                    }}>{shift}</div>
-                  ))}
-               </div>
-            </div>
-          ))}
-       </div>
-    </div>
-  );
-};
-
-const CaseStudy = ({ id, onBack }) => {
-  const data = id === 1 ? {
-    title: "Logistica Nord S.p.A.",
-    client: "Leader GDO Nord Italia",
-    challenge: "Coordinare 400 dipendenti su 4 siti diversi con vincoli di reperibilità complessi.",
-    solution: "Algoritmo AACCRBBRR personalizzato per la rotazione continua h24.",
-    result: "Generazione turni passata da 3 giorni a 30 secondi. Risparmio annuo stimato: €45.000.",
-    color: "#6366f1"
-  } : {
-    title: "Medical Center Hub",
-    client: "Clinica Privata h24",
-    challenge: "Garantire copertura costante delle sale operatorie rispettando i riposi obbligatori dei chirurghi.",
-    solution: "Modulo di sicurezza avanzato per il calcolo automatico degli stacchi di 11 ore.",
-    result: "Eliminazione totale dei conflitti orari e riduzione dello stress del personale del 25%.",
-    color: "#10b981"
-  };
-
-  return (
-    <div className="fade-in" style={{ padding: '3rem 1.5rem', maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
-      <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
-        ← Torna alla Home
-      </button>
-      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginBottom: '3rem' }}>
-        <div style={{ width: '60px', height: '60px', background: data.color, borderRadius: '15px', display: 'grid', placeItems: 'center', fontSize: '1.5rem' }}>
-          {id === 1 ? '🚚' : '🏥'}
-        </div>
-        <div>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-0.04em' }}>{data.title}</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>{data.client}</p>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
-        <div className="reveal visible">
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: data.color }}>La Sfida</h3>
-          <p style={{ fontSize: '1.1rem', lineHeight: 1.6, color: 'var(--text-main)' }}>{data.challenge}</p>
-        </div>
-        <div className="reveal visible">
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: data.color }}>La Soluzione Shift-Pro</h3>
-          <p style={{ fontSize: '1.1rem', lineHeight: 1.6, color: 'var(--text-main)' }}>{data.solution}</p>
-        </div>
-        <div className="glass-card" style={{ padding: '2.5rem', borderLeft: `8px solid ${data.color}` }}>
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Il Risultato</h3>
-          <p style={{ fontSize: '1.3rem', fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '1rem' }}>{data.result}</p>
-          
-          {id === 1 ? <ProjectPreviewTable /> : <ProjectCalendarPreview />}
-        </div>
-      </div>
-
-      <div style={{ marginTop: '6rem', textAlign: 'center' }}>
-        <button className="btn-hero" onClick={onBack}>Inizia il Tuo Progetto</button>
-      </div>
-    </div>
-  );
-};
-
-const LandingPage = ({ onEnter, config, setView }) => {
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    }, { threshold: 0.1 });
-    
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  const scrollTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  return (
-    <div className="landing-wrapper" style={{ 
-      minHeight: '100vh', width: '100%', padding: '0 2rem', maxWidth: '1400px', margin: '0 auto',
-      position: 'relative', overflow: 'visible'
-    }}>
-      
-      {/* NAVBAR */}
-      <nav style={{ 
-        position: 'fixed', top: 0, left: 0, right: 0, height: '80px', 
-        background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(20px)', 
-        borderBottom: '1px solid rgba(255,255,255,0.05)', zIndex: 1000,
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 2rem'
+    <div className="landing-page" style={{ color: '#1e293b' }}>
+      <nav className="glass-nav" style={{ 
+        position: 'fixed', top: '1.5rem', left: '50%', transform: 'translateX(-50%)', 
+        width: '90%', maxWidth: '1200px', padding: '0.75rem 1.5rem', 
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        background: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(15px)',
+        border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '100px',
+        zIndex: 1000, boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
       }}>
-        <div style={{ width: '100%', maxWidth: '1400px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div 
-            style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} 
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            <div style={{ 
-              width: '42px', height: '42px', borderRadius: '12px', 
-              background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
-              display: 'grid', placeItems: 'center', color: 'white', fontWeight: '900', fontSize: '1.4rem',
-              boxShadow: '0 8px 16px var(--primary-glow)'
-            }}>T</div>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontWeight: '900', fontSize: '1.2rem', color: 'white', letterSpacing: '-0.02em', lineHeight: 1 }}>Turni Pro <span style={{ color: 'var(--primary)' }}>AI</span></div>
-              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '2px' }}>Smart Workforce Platform</div>
-            </div>
-          </div>
-
-          {/* Menu Links (Desktop) */}
-          <div style={{ display: 'flex', gap: '2.5rem', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: '600' }} className="nav-links-desktop">
-            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => scrollTo('how-it-works')} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Prodotto</span>
-            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => scrollTo('features')} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Funzionalità</span>
-            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => scrollTo('pricing')} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Prezzi</span>
-            <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => scrollTo('contact')} onMouseOver={e => e.target.style.color = 'white'} onMouseOut={e => e.target.style.color = 'var(--text-muted)'}>Contatti</span>
-          </div>
-
-          {/* Action Buttons */}
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <button 
-              onClick={() => onEnter()}
-              style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '0.6rem 1.5rem', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.85rem' }}
-            >Login</button>
-            <button 
-              onClick={() => onEnter()}
-              className="btn-hero"
-              style={{ padding: '0.6rem 1.5rem', borderRadius: '10px', fontSize: '0.85rem', boxShadow: 'none' }}
-            >Inizia Gratis</button>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '8px', display: 'grid', placeItems: 'center', color: 'white', fontWeight: '900' }}>T</div>
+          <span style={{ fontWeight: '800', fontSize: '1.1rem', letterSpacing: '-0.02em' }}>{config.appName}</span>
         </div>
+        <div style={{ display: 'flex', gap: '2rem', fontSize: '0.85rem', fontWeight: '600' }}>
+          <a href="#features" style={{ color: 'inherit', textDecoration: 'none' }}>Funzionalità</a>
+          <a href="#demo" style={{ color: 'inherit', textDecoration: 'none' }}>Demo Video</a>
+          <a href="#pricing" style={{ color: 'inherit', textDecoration: 'none' }}>Prezzi</a>
+        </div>
+        <button onClick={onEnter} className="btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '50px', fontSize: '0.8rem' }}>Prova Gratis</button>
       </nav>
 
-      {/* Decorative Blobs */}
-      <div className="organic-blob" style={{ top: '-10%', left: '-10%', width: '400px', height: '400px' }}></div>
-      <div className="organic-blob" style={{ bottom: '10%', right: '-5%', width: '500px', height: '500px', background: 'var(--secondary)', animationDelay: '-5s' }}></div>
-      <div className="organic-blob" style={{ top: '40%', left: '30%', width: '300px', height: '300px', background: 'var(--accent-success)', opacity: 0.1, animationDuration: '30s' }}></div>
-
-      {/* HERO SECTION */}
-      {/* HERO SECTION */}
-      <section style={{ padding: '12rem 0 6rem 0', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '4rem' }}>
-        <div style={{ flex: 1 }}>
-          <div className="reveal floating-badge" style={{ marginBottom: '1.5rem', background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '6px 16px', borderRadius: '100px', fontWeight: '800', fontSize: '0.75rem' }}>
-            ⚡ L'AI PIÙ VELOCE SUL MERCATO
-          </div>
-          <h1 className="reveal hero-title" style={{ fontSize: 'min(4.5rem, 10vw)', marginBottom: '1.5rem', letterSpacing: '-0.05em', fontWeight: 900, lineHeight: 1.1 }}>
-            L'unico sistema che genera turni <span style={{ color: 'var(--primary)' }}>ottimizzati in 30 secondi.</span>
-          </h1>
-          <p className="reveal" style={{ fontSize: '1.25rem', color: 'var(--text-muted)', maxWidth: '650px', marginBottom: '3rem', lineHeight: 1.5 }}>
-            Rispetta vincoli, contratti e preferenze del personale senza sforzo. Risparmia ore di lavoro manuale ogni settimana con la potenza dell'Intelligenza Artificiale.
-          </p>
-
-          <div className="reveal hero-actions" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'flex-start' }}>
-            <button className="btn-hero" onClick={() => onEnter()} style={{ padding: '1.5rem 3.5rem', fontSize: '1.1rem' }}>
-              Inizia Prova Gratuita 14 Giorni 🚀
-            </button>
-            <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', paddingLeft: '1rem' }}>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓</span> Nessuna carta richiesta
-              </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ opacity: 0.6 }}>🤖</span> <span style={{ fontWeight: 'bold', color: 'var(--primary)' }}>Google Play:</span> <span style={{ fontStyle: 'italic' }}>In Arrivo</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="reveal" style={{ flex: 1, position: 'relative' }}>
-          <div className="glass-card" style={{ padding: '0.5rem', borderRadius: '2rem', background: 'white', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.15)', overflow: 'hidden' }}>
-            <img src={heroMockup} alt="Turni Pro AI Dashboard" style={{ width: '100%', borderRadius: '1.5rem', display: 'block', transform: 'scale(1.02)' }} />
-            <div className="glass-card" style={{ position: 'absolute', bottom: '20px', right: '20px', padding: '0.75rem 1.25rem', borderRadius: '1rem', background: 'var(--primary)', color: 'white', fontWeight: 'bold', fontSize: '0.8rem', boxShadow: '0 10px 20px var(--primary-glow)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>✨ Dashboard AI Attiva</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* STATS SECTION */}
-      <section className="reveal" style={{ 
-        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3rem', 
-        padding: '5rem 2rem', borderRadius: '3rem',
-        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
-        color: 'var(--text-main)', marginBottom: '8rem', textAlign: 'center',
-        boxShadow: '0 20px 50px rgba(0,0,0,0.05)',
-        border: '1px solid var(--glass-border)',
+      <header style={{ 
+        padding: '10rem 2rem 6rem', textAlign: 'center', maxWidth: '1000px', margin: '0 auto',
         position: 'relative', overflow: 'hidden'
       }}>
-        <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '300px', height: '300px', background: 'var(--primary)', filter: 'blur(120px)', opacity: 0.05 }}></div>
-        
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div className="stat-number">40+</div>
-          <p style={{ fontWeight: '800', opacity: 0.6, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Aziende Attive</p>
+        <div className="badge" style={{ display: 'inline-block', padding: '0.5rem 1rem', background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary)', borderRadius: '100px', fontSize: '0.75rem', fontWeight: '800', marginBottom: '2rem', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+          NUOVA VERSIONE 2.7 • OTTIMIZZAZIONE AI
         </div>
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div className="stat-number">99.9%</div>
-          <p style={{ fontWeight: '800', opacity: 0.6, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Precisione Algoritmo</p>
-        </div>
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div className="stat-number">5k+</div>
-          <p style={{ fontWeight: '800', opacity: 0.6, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Ore Risparmiate</p>
-        </div>
-      </section>
-
-
-      {/* Sezione Bottom Rimossa per pulizia */}
-
-      {/* PROBLEM & SOLUTION SECTION */}
-      <div className="reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', width: '100%', marginBottom: '8rem', textAlign: 'left' }}>
-        <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '2rem', borderTop: '8px solid #ef4444', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: '1rem', right: '1rem', opacity: 0.1, width: '100px' }}>
-            <img src={chaosImg} alt="Chaos" style={{ width: '100%' }} />
-          </div>
-          <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1.2rem', letterSpacing: '-0.03em' }}>Il caos dei turni.</h2>
-          <p style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>La gestione manuale è lenta, soggetta a errori e genera malumori.</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', fontSize: '0.95rem' }}>
-             <div style={{ display: 'flex', gap: '10px' }}>❌ Stress da Excel</div>
-             <div style={{ display: 'flex', gap: '10px' }}>❌ Conflitti orari</div>
-             <div style={{ display: 'flex', gap: '10px' }}>❌ Sanzioni per riposi</div>
-          </div>
-        </div>
-        <div className="glass-card" style={{ padding: '1.5rem', borderRadius: '2rem', borderTop: '8px solid var(--primary)' }}>
-          <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1.2rem', letterSpacing: '-0.03em' }}>L'ordine dell'AI.</h2>
-          <p style={{ fontSize: '1.1rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>Automatizza la logica, rispetta i vincoli e massimizza l'efficienza.</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-             <div style={{ display: 'flex', gap: '10px' }}>✅ Algoritmo Istantaneo</div>
-             <div style={{ display: 'flex', gap: '10px' }}>✅ Equità Garantita</div>
-             <div style={{ display: 'flex', gap: '10px' }}>✅ Report Professionali</div>
-          </div>
-        </div>
-      </div>
-
-      {/* HOW IT WORKS SECTION */}
-      <section id="how-it-works" className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>Come funziona</h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '5rem', maxWidth: '750px', margin: '0 auto 5rem auto' }}>
-          L'intelligenza artificiale al servizio della tua organizzazione in tre semplici passi.
+        <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4.5rem)', fontWeight: '900', lineHeight: '1', letterSpacing: '-0.04em', marginBottom: '1.5rem', color: '#0f172a' }}>
+          Pianifica i turni in <span style={{ color: 'var(--primary)' }}>pochi secondi.</span>
+        </h1>
+        <p style={{ fontSize: '1.25rem', color: '#64748b', marginBottom: '3rem', maxWidth: '700px', margin: '0 auto 3rem' }}>
+          L'unico software che combina algoritmi di rotazione industriale con un'interfaccia premium. Gestisci il tuo team senza stress.
         </p>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem' }}>
-          {[
-            { 
-              icon: "📝", 
-              step: "1) Inserisci i vincoli", 
-              desc: "Definisci reparti, orari, competenze e limiti contrattuali. L’interfaccia ti guida passo‑passo in ogni inserimento." 
-            },
-            { 
-              icon: "⚙️", 
-              step: "2) L’AI calcola la soluzione", 
-              desc: "Il motore analizza milioni di combinazioni in pochi secondi, eliminando conflitti e straordinari inutili." 
-            },
-            { 
-              icon: "📊", 
-              step: "3) Ottieni i turni perfetti", 
-              desc: "Ricevi una tabella chiara, pronta da esportare o modificare. Con note e suggerimenti preziosi dell’AI." 
-            }
-          ].map((item, i) => (
-            <div key={i} className="glass-card" style={{ padding: '3.5rem 2.5rem', textAlign: 'center', borderRadius: '3.5rem', position: 'relative', transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)', borderTop: i === 1 ? '4px solid var(--primary)' : '1px solid var(--glass-border)' }}>
-              <div style={{ position: 'absolute', top: '2rem', left: '2rem', fontSize: '6rem', fontWeight: '900', opacity: 0.03, color: 'var(--primary)', fontStyle: 'italic' }}>0{i + 1}</div>
-              <div style={{ fontSize: '4.5rem', marginBottom: '2rem', filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.2))' }}>{item.icon}</div>
-              <h3 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '1.2rem', color: 'var(--text-main)' }}>{item.step}</h3>
-              <p style={{ color: 'var(--text-muted)', lineHeight: 1.7, fontSize: '1.05rem' }}>{item.desc}</p>
-            </div>
-          ))}
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button onClick={onEnter} className="btn-primary" style={{ padding: '1.25rem 2.5rem', fontSize: '1rem', borderRadius: '1rem', boxShadow: '0 20px 40px var(--primary-glow)' }}>Inizia Ora — È Gratis</button>
+          <button className="btn-secondary" style={{ padding: '1.25rem 2.5rem', fontSize: '1rem', borderRadius: '1rem', background: 'white', border: '1px solid #e2e8f0', color: '#0f172a' }}>Guarda Demo</button>
         </div>
 
-        <div style={{ marginTop: '6rem' }}>
-          <button className="btn-hero" onClick={() => onEnter()} style={{ margin: '0 auto', boxShadow: '0 20px 40px var(--primary-glow)' }}>
-            Prova Gratuita 14 Giorni 🚀
-          </button>
+        {/* Dashboard Mockup Visual */}
+        <div style={{ position: 'relative', marginTop: '5rem', perspective: '1000px' }}>
+           <img 
+              src={heroMockup} 
+              alt="Dashboard Preview" 
+              style={{ 
+                width: '100%', 
+                borderRadius: '1.5rem', 
+                boxShadow: '0 50px 100px -20px rgba(0,0,0,0.15)',
+                transform: 'rotateX(5deg)',
+                border: '1px solid rgba(0,0,0,0.05)'
+              }} 
+           />
+           <div style={{ position: 'absolute', bottom: '-2rem', left: '50%', transform: 'translateX(-50%)', width: '80%', height: '100px', background: 'var(--primary)', filter: 'blur(100px)', opacity: 0.1, zIndex: -1 }}></div>
         </div>
-      </section>
+      </header>
 
-      {/* SHIFT TABLE EXAMPLE SECTION */}
-      <section className="reveal" style={{ padding: '4rem 0', marginBottom: '8rem' }}>
-        <div className="glass-card" style={{ padding: '3rem', borderRadius: '3rem', overflow: 'hidden', textAlign: 'left' }}>
-          <div style={{ marginBottom: '2.5rem' }}>
-            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.8rem', letterSpacing: '-0.03em' }}>
-              Esempio di turni generati dall’AI
-            </h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>
-              Ecco come appare un piano turni ottimizzato dal nostro algoritmo in pochi secondi.
-            </p>
-          </div>
-
-          <div style={{ overflowX: 'auto', borderRadius: '1.5rem', border: '1px solid var(--glass-border)' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.95rem' }}>
-              <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.03)', textAlign: 'left' }}>
-                  <th style={{ padding: '1.2rem', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: '800' }}>Dipendente</th>
-                  <th style={{ padding: '1.2rem', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: '800' }}>Reparto</th>
-                  <th style={{ padding: '1.2rem', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: '800' }}>Turno</th>
-                  <th style={{ padding: '1.2rem', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: '800' }}>Ore totali</th>
-                  <th style={{ padding: '1.2rem', borderBottom: '1px solid var(--glass-border)', color: 'var(--text-main)', fontWeight: '800' }}>Note AI</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { name: "Rossi M.", dep: "Assemblaggio", shift: "06:00 – 14:00", type: "mattina", hours: 40, note: "✨ Turno stabile, nessun conflitto" },
-                  { name: "Bianchi L.", dep: "Verniciatura", shift: "14:00 – 22:00", type: "pomeriggio", hours: 38, note: "🎯 Copertura completa weekend" },
-                  { name: "Verdi A.", dep: "Qualità", shift: "22:00 – 06:00", type: "notte", hours: 36, note: "🤖 Rotazione auto ogni 7 giorni" },
-                  { name: "Neri F.", dep: "Assemblaggio", shift: "06:00 – 14:00", type: "mattina", hours: 40, note: "⚖️ Bilanciamento carichi ottimale" }
-                ].map((row, i) => (
-                  <tr key={i} style={{ transition: 'background 0.2s', borderBottom: i === 3 ? 'none' : '1px solid var(--glass-border)' }} onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                    <td style={{ padding: '1.2rem', color: 'var(--text-main)', fontWeight: '600' }}>{row.name}</td>
-                    <td style={{ padding: '1.2rem', color: 'var(--text-muted)' }}>{row.dep}</td>
-                    <td style={{ padding: '1.2rem' }}>
-                      <span style={{ 
-                        padding: '6px 14px', borderRadius: '100px', fontSize: '0.8rem', fontWeight: '800', color: 'white',
-                        background: row.type === 'mattina' ? '#f59e0b' : row.type === 'pomeriggio' ? '#ea580c' : '#2563eb',
-                        boxShadow: `0 4px 12px ${row.type === 'mattina' ? 'rgba(245, 158, 11, 0.3)' : row.type === 'pomeriggio' ? 'rgba(234, 88, 12, 0.3)' : 'rgba(37, 99, 235, 0.3)'}`
-                      }}>
-                        {row.shift}
-                      </span>
-                    </td>
-                    <td style={{ padding: '1.2rem', color: 'var(--text-main)', fontWeight: '700' }}>{row.hours}h</td>
-                    <td style={{ padding: '1.2rem', color: 'var(--primary)', fontStyle: 'italic', fontSize: '0.85rem' }}>{row.note}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <section id="features" style={{ padding: '6rem 2rem', background: '#f8fafc' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: '900', marginBottom: '1rem' }}>Sviluppato per la complessità.</h2>
+            <p style={{ color: '#64748b' }}>Tutto ciò di cui hai bisogno per gestire turni 24/7, reperibilità e assenze.</p>
           </div>
           
-          <div style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            <span style={{ color: 'var(--accent-success)' }}>●</span> L'AI ha verificato 1.420 combinazioni per questo reparto.
-          </div>
-        </div>
-      </section>
-
-      {/* PORTFOLIO / CASE STUDIES SECTION */}
-      <section id="work" className="reveal" style={{ marginBottom: '8rem' }}>
-        <div style={{ textAlign: 'left', marginBottom: '2.5rem' }}>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 900, letterSpacing: '-0.04em' }}>Progetti in primo piano.</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>Soluzioni reali per sfide logistiche complesse.</p>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-          <div className="portfolio-card glass-card" style={{ padding: 0, overflow: 'hidden' }} onClick={() => setView('case-study-1')}>
-             <img src={logisticsMockup} alt="Logistics Dashboard" style={{ width: '100%', height: '300px', objectFit: 'cover', transition: 'transform 0.5s ease' }} className="portfolio-img" />
-             <div className="portfolio-overlay">
-                <h3 style={{ fontSize: '1.5rem', color: 'white', fontWeight: 800 }}>Logistica Nord S.p.A.</h3>
-                <p style={{ color: 'rgba(255,255,255,0.7)' }}>Ottimizzazione 400 dipendenti su 4 siti.</p>
-             </div>
-          </div>
-          <div className="portfolio-card glass-card" style={{ padding: 0, overflow: 'hidden' }} onClick={() => setView('case-study-2')}>
-             <img src={medicalMockup} alt="Medical Dashboard" style={{ width: '100%', height: '300px', objectFit: 'cover', transition: 'transform 0.5s ease' }} className="portfolio-img" />
-             <div className="portfolio-overlay">
-                <h3 style={{ fontSize: '1.5rem', color: 'white', fontWeight: 800 }}>Medical Center Hub</h3>
-                <p style={{ color: 'rgba(255,255,255,0.7)' }}>Gestione turni h24 sala operatoria.</p>
-             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* TESTIMONIALS SECTION */}
-      <section className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '4rem', letterSpacing: '-0.04em' }}>
-          Cosa dicono le aziende
-        </h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center' }}>
-          {[
-            { text: "Turni Pro AI ci ha ridotto del 35% gli straordinari e ha eliminato completamente i conflitti tra reparti.", author: "Marco R.", role: "Responsabile Produzione" },
-            { text: "In 20 anni non avevo mai visto un sistema così veloce nel generare turni complessi. Impressionante.", author: "Laura B.", role: "HR Manager" },
-            { text: "Abbiamo risparmiato più di 120 ore al mese solo nella pianificazione. L'AI fa davvero la differenza.", author: "Stefano G.", role: "Direttore Operativo" }
-          ].map((t, i) => (
-            <div key={i} className="glass-card" style={{ flex: '1 1 300px', padding: '2.5rem', textAlign: 'left' }}>
-              <div style={{ color: 'var(--primary)', fontSize: '2rem', marginBottom: '1rem', fontWeight: 900 }}>“</div>
-              <p style={{ fontSize: '1.05rem', color: 'var(--text-main)', marginBottom: '2rem', fontStyle: 'italic', lineHeight: 1.6, opacity: 0.9 }}>{t.text}</p>
-              <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <div style={{ width: '40px', height: '40px', background: 'var(--primary-glow)', borderRadius: '50%', display: 'grid', placeItems: 'center', color: 'var(--primary)', fontWeight: 900, fontSize: '0.8rem' }}>
-                  {t.author.charAt(0)}
-                </div>
-                <div>
-                  <strong style={{ color: 'var(--text-main)', display: 'block', fontSize: '1rem' }}>{t.author}</strong>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{t.role}</span>
-                </div>
-              </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+            <div className="feature-card" style={{ padding: '2.5rem', background: 'white', borderRadius: '2rem', border: '1px solid #f1f5f9', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+              <div style={{ width: '50px', height: '50px', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '12px', display: 'grid', placeItems: 'center', fontSize: '1.5rem', marginBottom: '1.5rem' }}>🤖</div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', marginBottom: '1rem' }}>Cicli Automatici</h3>
+              <p style={{ color: '#64748b', lineHeight: '1.6' }}>Inserisci la sequenza (es: Mattina-Pomeriggio-Notte) e l'algoritmo popola l'intero anno istantaneamente.</p>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* PRICING CTA SECTION */}
-      <section id="pricing" className="reveal" style={{ padding: '6rem 2rem', textAlign: 'center', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%)', borderRadius: '3rem', marginBottom: '8rem', border: '1px solid var(--primary)' }}>
-        <h2 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>
-          Semplice. Trasparente. Pro.
-        </h2>
-        <p style={{ fontSize: '1.25rem', color: 'var(--text-main)', marginBottom: '3rem', opacity: 0.9 }}>
-          Tutte le funzioni Pro incluse nella tua <strong>prova gratuita di 14 giorni</strong>. <br/>
-          Nessun impegno, nessuna carta richiesta. Poi solo <strong>7,99€ al mese</strong>.
-        </p>
-        <button className="btn-hero" onClick={() => onEnter()} style={{ margin: '0 auto' }}>
-          Inizia Ora Prova Gratuita 14 Giorni 🚀
-        </button>
-      </section>
-
-        
-        {/* Floating elements decoration */}
-        <div className="glass-card floating-badge" style={{ position: 'absolute', top: '20%', right: '-8%', animationDelay: '0.5s', padding: '1rem 2rem', borderRadius: '1.5rem' }}>
-          <div style={{ fontSize: '1.2rem', marginBottom: '5px' }}>📊</div>
-          <div>Copertura 100%</div>
-        </div>
-        <div className="glass-card floating-badge" style={{ position: 'absolute', bottom: '15%', left: '-8%', animationDelay: '1.2s', background: 'var(--accent-success)', padding: '1rem 2rem', borderRadius: '1.5rem' }}>
-          <div style={{ fontSize: '1.2rem', marginBottom: '5px' }}>✅</div>
-          <div>Sicurezza Garantita</div>
-        </div>
-
-
-      {/* WHY CHOOSE US SECTION */}
-      <section id="features" className="reveal" style={{ padding: '8rem 0', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '4rem', letterSpacing: '-0.04em' }}>
-          Perché scegliere noi
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2.5rem' }}>
-          {[
-            { 
-              icon: "⚡", 
-              t: "Velocità incredibile", 
-              d: "Genera turni ottimizzati in meno di 30 secondi, anche con centinaia di vincoli complessi." 
-            },
-            { 
-              icon: "🎯", 
-              t: "Precisione del 99,9%", 
-              d: "Rispetta contratti, riposi minimi, preferenze e competenze senza errori o conflitti." 
-            },
-            { 
-              icon: "🏭", 
-              t: "Pensato per turni complessi", 
-              d: "Ideale per produzione, logistica e sanità: gestisce rotazioni, notti, straordinari e multi‑reparto." 
-            },
-            { 
-              icon: "🔒", 
-              t: "Affidabilità totale", 
-              d: "Ogni soluzione è verificata dall’AI e pronta per essere pubblicata senza modifiche manuali." 
-            }
-          ].map((item, i) => (
-            <div key={i} className="glass-card" style={{ padding: '3rem 2rem', textAlign: 'left', borderRadius: '2.5rem', transition: 'all 0.4s ease' }}>
-              <div style={{ fontSize: '3.5rem', marginBottom: '2rem', display: 'block' }}>{item.icon}</div>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--text-main)' }}>{item.t}</h3>
-              <p style={{ color: 'var(--text-muted)', lineHeight: 1.7, fontSize: '1rem' }}>{item.d}</p>
+            <div className="feature-card" style={{ padding: '2.5rem', background: 'white', borderRadius: '2rem', border: '1px solid #f1f5f9', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+              <div style={{ width: '50px', height: '50px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '12px', display: 'grid', placeItems: 'center', fontSize: '1.5rem', marginBottom: '1.5rem' }}>📱</div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', marginBottom: '1rem' }}>PWA & Mobile Ready</h3>
+              <p style={{ color: '#64748b', lineHeight: '1.6' }}>Installa l'app sul tuo telefono. Funziona offline e si sincronizza quando torni online.</p>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FAQ SECTION */}
-      <section className="reveal" style={{ padding: '8rem 0', maxWidth: '900px', margin: '0 auto', textAlign: 'left' }}>
-        <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '4rem', textAlign: 'center', letterSpacing: '-0.04em' }}>
-          Domande frequenti
-        </h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {[
-            { q: "Come vengono generati i turni?", a: "L'AI analizza competenze, disponibilità, limiti contrattuali e carichi di lavoro per creare turni ottimizzati senza conflitti." },
-            { q: "Posso modificare i turni generati?", a: "Sì, ogni turno può essere modificato manualmente. L'AI aggiorna automaticamente il resto della pianificazione." },
-            { q: "Supporta turni notturni e rotazioni?", a: "Certo. Il sistema gestisce rotazioni settimanali, turni notturni e cicli complessi senza errori." },
-            { q: "Quanto tempo serve per generare un piano turni?", a: "Meno di 30 secondi. L'AI calcola milioni di combinazioni in tempo reale." }
-          ].map((faq, i) => (
-            <div key={i} className="glass-card faq-card" style={{ padding: '2rem', borderLeft: i % 2 === 0 ? '4px solid var(--primary)' : '4px solid var(--secondary)' }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.8rem', color: 'var(--text-main)' }}>{faq.q}</h3>
-              <p style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>{faq.a}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* APP DOWNLOAD & CONTACT SECTION */}
-      <section id="contact" className="reveal" style={{ padding: '8rem 0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', alignItems: 'start' }}>
-        
-        {/* App CTA */}
-        <div className="glass-card" style={{ padding: '4rem 3rem', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)', color: 'white', border: 'none', borderRadius: '3rem', boxShadow: '0 30px 60px var(--primary-glow)' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>🎁</div>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '1.5rem', lineHeight: 1.1 }}>Pronto a rivoluzionare i tuoi turni?</h2>
-          <p style={{ fontSize: '1.1rem', marginBottom: '2.5rem', opacity: 0.9 }}>
-            Inizia oggi la tua prova gratuita di 14 giorni. Avrai accesso a tutte le funzioni Pro senza alcun vincolo.
-          </p>
-          <button className="btn-hero" style={{ background: 'white', color: 'var(--primary)', boxShadow: '0 15px 35px rgba(0,0,0,0.2)', width: '100%', justifyContent: 'center' }} onClick={() => setShowOnboarding(true)}>
-            Inizia Prova Gratuita 14 Giorni 🚀
-          </button>
-          <div style={{ marginTop: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2.5rem' }}>
-            <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', opacity: 0.8 }}>Disponibile su tutti i tuoi dispositivi:</p>
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <div style={{ padding: '0.8rem', background: 'rgba(255,255,255,0.15)', borderRadius: '12px', flex: 1, minWidth: '140px', textAlign: 'center' }}>
-                <div style={{ fontWeight: '800', fontSize: '0.8rem' }}>Web App (PWA)</div>
-                <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Installazione Istantanea</div>
-              </div>
-              <div style={{ 
-                padding: '0.8rem', 
-                background: 'rgba(0,0,0,0.2)', 
-                borderRadius: '12px', 
-                flex: 1, 
-                minWidth: '140px',
-                textAlign: 'center',
-                border: '1px solid rgba(255,255,255,0.1)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
-                <div style={{ 
-                  position: 'absolute', top: '5px', right: '-15px', 
-                  background: '#f59e0b', color: 'white', fontSize: '0.5rem', 
-                  fontWeight: '900', padding: '2px 20px', transform: 'rotate(45deg)',
-                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                }}>SOON</div>
-                <div style={{ fontWeight: '800', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
-                  <span>🤖</span> Google Play
-                </div>
-                <div style={{ fontSize: '0.7rem', color: '#fbbf24', fontWeight: 'bold' }}>In Arrivo</div>
-              </div>
+            <div className="feature-card" style={{ padding: '2.5rem', background: 'white', borderRadius: '2rem', border: '1px solid #f1f5f9', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+              <div style={{ width: '50px', height: '50px', background: 'rgba(245, 158, 11, 0.1)', borderRadius: '12px', display: 'grid', placeItems: 'center', fontSize: '1.5rem', marginBottom: '1.5rem' }}>📊</div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', marginBottom: '1rem' }}>Esportazione PDF</h3>
+              <p style={{ color: '#64748b', lineHeight: '1.6' }}>Genera report professionali in PDF o Excel da stampare o inviare al team con un click.</p>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Contact Form */}
-        <div style={{ textAlign: 'left' }}>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '1rem', letterSpacing: '-0.04em' }}>Hai domande?</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem' }}>Scrivici per una demo personalizzata o per supporto tecnico.</p>
+      <section id="demo" style={{ padding: '8rem 2rem', textAlign: 'center' }}>
+         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: '900', marginBottom: '3rem' }}>Guarda Turni Pro in azione.</h2>
+            <div style={{ 
+               aspectRatio: '16/9', 
+               background: '#0f172a', 
+               borderRadius: '2.5rem', 
+               display: 'grid', 
+               placeItems: 'center',
+               boxShadow: '0 40px 80px -15px rgba(0,0,0,0.2)',
+               overflow: 'hidden',
+               position: 'relative'
+            }}>
+               <div style={{ position: 'absolute', inset: 0, background: `url(${logisticsMockup})`, backgroundSize: 'cover', opacity: 0.4 }}></div>
+               <button style={{ 
+                  width: '80px', height: '80px', borderRadius: '50%', 
+                  background: 'white', border: 'none', cursor: 'pointer',
+                  fontSize: '1.5rem', display: 'grid', placeItems: 'center',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                  zIndex: 1, transition: 'transform 0.3s'
+               }}
+               onMouseEnter={e => e.target.style.transform = 'scale(1.1)'}
+               onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+               >▶️</button>
+            </div>
+         </div>
+      </section>
+
+      {/* NEW: HOW IT WORKS SECTION */}
+      <section style={{ padding: '6rem 2rem', background: 'white' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: '900', marginBottom: '1rem' }}>Inizia in 3 semplici passi.</h2>
+          </div>
           
-          <form style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }} onSubmit={(e) => e.preventDefault()}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
-              <input type="text" placeholder="Nome" className="input-main" style={{ padding: '1.2rem' }} />
-              <input type="email" placeholder="Email" className="input-main" style={{ padding: '1.2rem' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
+            <div style={{ display: 'flex', gap: '3rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: '300px' }}>
+                <div style={{ fontSize: '4rem', fontWeight: '900', color: 'var(--primary)', opacity: 0.2, marginBottom: '-1rem' }}>01</div>
+                <h3 style={{ fontSize: '1.8rem', fontWeight: '800', marginBottom: '1rem' }}>Configura il tuo Team</h3>
+                <p style={{ color: '#64748b', fontSize: '1.1rem' }}>Aggiungi i dipendenti, assegna i ruoli (CT, OP, Jolly) e definisci le squadre di appartenenza.</p>
+              </div>
+              <div style={{ flex: 1, minWidth: '300px', background: '#f1f5f9', borderRadius: '2rem', padding: '2rem' }}>
+                <img src={medicalMockup} alt="Step 1" style={{ width: '100%', borderRadius: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }} />
+              </div>
             </div>
-            <textarea placeholder="Il tuo messaggio..." className="input-main" style={{ padding: '1.2rem', minHeight: '150px', resize: 'vertical' }}></textarea>
-            <button className="btn-hero" style={{ width: '100%', justifyContent: 'center', padding: '1.2rem', borderRadius: '12px' }}>
-              Invia Messaggio 🚀
-            </button>
-          </form>
+
+            <div style={{ display: 'flex', gap: '3rem', alignItems: 'center', flexWrap: 'wrap-reverse' }}>
+              <div style={{ flex: 1, minWidth: '300px', background: '#f1f5f9', borderRadius: '2rem', padding: '2rem' }}>
+                <ProjectPreviewTable />
+              </div>
+              <div style={{ flex: 1, minWidth: '300px' }}>
+                <div style={{ fontSize: '4rem', fontWeight: '900', color: 'var(--primary)', opacity: 0.2, marginBottom: '-1rem' }}>02</div>
+                <h3 style={{ fontSize: '1.8rem', fontWeight: '800', marginBottom: '1rem' }}>Definisci la Rotazione</h3>
+                <p style={{ color: '#64748b', fontSize: '1.1rem' }}>Imposta il ciclo di turni desiderato. L'algoritmo calcolerà automaticamente la copertura ottimale per ogni giorno dell'anno.</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '3rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: '300px' }}>
+                <div style={{ fontSize: '4rem', fontWeight: '900', color: 'var(--primary)', opacity: 0.2, marginBottom: '-1rem' }}>03</div>
+                <h3 style={{ fontSize: '1.8rem', fontWeight: '800', marginBottom: '1rem' }}>Gestisci le Eccezioni</h3>
+                <p style={{ color: '#64748b', fontSize: '1.1rem' }}>Ferie impreviste o malattie? Trascina e cambia i turni in tempo reale. L'interfaccia reattiva aggiorna tutto istantaneamente.</p>
+              </div>
+              <div style={{ flex: 1, minWidth: '300px', background: '#f1f5f9', borderRadius: '2rem', padding: '2rem' }}>
+                <img src={heroMockup} alt="Step 3" style={{ width: '100%', borderRadius: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }} />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <footer style={{ marginTop: '8rem', padding: '4rem 0', borderTop: '1px solid var(--glass-border)', width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
-        <div style={{ textAlign: 'left' }}>
-          <div style={{ fontWeight: '900', fontSize: '1.5rem', marginBottom: '0.5rem' }}>Turni <span style={{ color: 'var(--primary)' }}>Pro</span></div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>© 2026 Turni Pro AI. Tutti i diritti riservati.</p>
-        </div>
-        <div style={{ display: 'flex', gap: '2rem' }}>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', marginBottom: '1rem', color: 'var(--primary)' }}>Prodotto</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-              <span>Funzionalità</span>
-              <span>Integrazioni</span>
-              <span>Prezzi (7,99€/mese) <span style={{ fontSize: '0.6rem', padding: '2px 8px', background: 'var(--primary)', color: 'white', borderRadius: '100px', fontWeight: 'bold', marginLeft: '5px' }}>PRO</span></span>
+      <section id="pricing" style={{ padding: '8rem 2rem', background: '#0f172a', color: 'white' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1.5rem' }}>Prezzo semplice, <span style={{ color: 'var(--primary)' }}>per sempre.</span></h2>
+          <p style={{ color: '#94a3b8', fontSize: '1.25rem', marginBottom: '4rem' }}>Nessun abbonamento mensile. Paghi una volta, lo usi per sempre su tutti i tuoi dispositivi.</p>
+          
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '3rem', padding: '4rem', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: '2rem', right: '-3rem', background: 'var(--primary)', padding: '0.5rem 4rem', transform: 'rotate(45deg)', fontWeight: '900', fontSize: '0.8rem' }}>BEST VALUE</div>
+            <div style={{ fontSize: '1rem', color: 'var(--primary)', fontWeight: '800', marginBottom: '1rem' }}>LICENZA ILLIMITATA</div>
+            <div style={{ fontSize: '5rem', fontWeight: '900', marginBottom: '1rem' }}>€7,99</div>
+            <p style={{ color: '#94a3b8', marginBottom: '3rem' }}>Una tantum • Aggiornamenti inclusi • Supporto prioritario</p>
+            <ul style={{ textAlign: 'left', maxWidth: '400px', margin: '0 auto 3rem', display: 'flex', flexDirection: 'column', gap: '1rem', color: '#cbd5e1' }}>
+              <li>✅ Gestione illimitata dipendenti</li>
+              <li>✅ Backup cloud & Sincronizzazione multi-device</li>
+              <li>✅ Esportazione Excel e PDF senza limiti</li>
+              <li>✅ Supporto per turni complessi 24/7</li>
+            </ul>
+            <button onClick={onEnter} className="btn-primary" style={{ width: '100%', padding: '1.5rem', fontSize: '1.2rem', borderRadius: '1rem' }}>Inizia Versione Pro</button>
+            
+            {/* Play Store Info Section */}
+            <div style={{ 
+               marginTop: '3rem', 
+               paddingTop: '3rem', 
+               borderTop: '1px solid rgba(255,255,255,0.1)',
+               display: 'flex',
+               flexDirection: 'column',
+               alignItems: 'center',
+               gap: '1.5rem'
+            }}>
+               <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '10px', 
+                  background: 'rgba(255,255,255,0.05)', 
+                  padding: '8px 16px', 
+                  borderRadius: '100px',
+                  border: '1px solid rgba(255,255,255,0.1)'
+               }}>
+                  <span style={{ fontSize: '1.2rem' }}>🤖</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.5px', color: '#94a3b8' }}>ANDROID APP COMING SOON</span>
+               </div>
+               <p style={{ fontSize: '0.85rem', color: '#64748b', maxWidth: '500px' }}>
+                  Stiamo finalizzando la release ufficiale sul Google Play Store. Nel frattempo, puoi installare la PWA direttamente dal browser Chrome sul tuo smartphone.
+               </p>
+               <div style={{ opacity: 0.3, filter: 'grayscale(1)', cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play Store" style={{ height: '45px' }} />
+               </div>
             </div>
           </div>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontWeight: '800', fontSize: '0.7rem', textTransform: 'uppercase', marginBottom: '1rem', color: 'var(--primary)' }}>Supporto</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-              <div className="tooltip-container">
-                <span>Documentazione</span>
-                <div className="tooltip-content">
-                  <strong>In arrivo 📚</strong><br/>
-                  Manuale utente e API reference in fase di redazione.
-                </div>
-              </div>
-              <div className="tooltip-container">
-                <span>Guide Video</span>
-                <div className="tooltip-content">
-                  <strong>In arrivo 🎥</strong><br/>
-                  Tutorial su YouTube in corso di montaggio.
-                </div>
-              </div>
-              <div className="tooltip-container">
-                <span style={{ fontWeight: 'bold', color: 'var(--primary)' }}>Contatti</span>
-                <div className="tooltip-content">
-                  <strong>Contatti Diretti 📧</strong><br/>
-                  Nome: Alessandro Alpi<br/>
-                  Email: alesalpi79@gmail.com<br/>
-                  <small>(Disponibile per consulenze e supporto)</small>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
+      </section>
+
+      <footer style={{ padding: '4rem 2rem', textAlign: 'center', borderTop: '1px solid #f1f5f9' }}>
+        <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>© 2026 {config.appName} — Made with ❤️ for Professionals.</p>
       </footer>
     </div>
   );
 };
 
-const CalendarView = ({ viewDate, setViewDate, showExport, setShowExport }) => {
-  const { employees, exceptions, config } = useApp();
-  const [viewMode, setViewMode] = useState('calendar'); // 'calendar' or 'grid'
-  const [selectedDay, setSelectedDay] = useState(null);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [selection, setSelection] = useState([]); // Stato di selezione condiviso (Tank Mode)
-
-  const handleDayClick = (date, employeeName = null) => {
-    setSelectedDay(date);
-    setSelectedEmployee(employeeName);
-  };
-
-  const daysInMonth = useMemo(() => {
-    const year = viewDate.getFullYear();
-    const month = viewDate.getMonth();
-    const days = [];
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startPadding = (firstDay.getDay() + 6) % 7;
-    for(let i=0; i<startPadding; i++) days.push(null);
-    for(let d=1; d<=lastDay.getDate(); d++) days.push(new Date(year, month, d));
-    return days;
-  }, [viewDate]);
-
-  const monthInputRef = React.useRef(null);
-  const monthNameOnly = new Intl.DateTimeFormat('it-IT', { month: 'long' }).format(viewDate);
-  const yearNumber = viewDate.getFullYear();
-
-  return (
-    <div className="fade-in">
-      {selectedDay && (
-        <DayDetails 
-          date={selectedDay} 
-          onClose={() => setSelectedDay(null)} 
-          selectedEmployee={selectedEmployee} 
-          selection={selection}
-          onBatchUpdate={() => setSelection([])}
-        />
-      )}
-      
-      <header className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '1.25rem 2rem', borderBottom: '1px solid var(--glass-border)', flexWrap: 'wrap', gap: '1.5rem' }}>
-        <div style={{ cursor: 'pointer' }} onClick={() => monthInputRef.current?.showPicker()}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 700, margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
-              {monthNameOnly.charAt(0).toUpperCase() + monthNameOnly.slice(1)} <span style={{ opacity: 0.5, fontWeight: 300 }}>{yearNumber}</span>
-            </h1>
-            <div style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', fontSize: '0.7rem', color: 'var(--primary)', border: '1px solid var(--glass-border)', fontWeight: 'bold' }}>CAMBIA ▾</div>
-          </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>Pianificazione e bilanciamento turni giornalieri</p>
-          <input 
-            ref={monthInputRef}
-            type="month" 
-            value={`${viewDate.getFullYear()}-${String(viewDate.getMonth() + 1).padStart(2, '0')}`}
-            onChange={(e) => {
-              const [y, m] = e.target.value.split('-');
-              if (y && m) setViewDate(new Date(parseInt(y), parseInt(m) - 1, 1));
-            }}
-            style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }} 
-          />
-        </div>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <button 
-             onClick={() => setShowExport(true)}
-             className="btn-primary" 
-             style={{ padding: '0.5rem 1rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', color: 'white', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold' }}
-          >
-            📥 Esporta
-          </button>
-          
-          <div className="view-toggle" style={{ background: 'rgba(0,0,0,0.3)' }}>
-            <button className={`toggle-btn ${viewMode === 'calendar' ? 'active' : ''}`} onClick={() => setViewMode('calendar')}>Calendario</button>
-            <button className={`toggle-btn ${viewMode === 'grid' ? 'active' : ''}`} onClick={() => setViewMode('grid')}>Griglia</button>
-          </div>
-
-          <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)' }}>
-            <button className="btn-primary" style={{ padding: '0.5rem 0.8rem', background: 'transparent' }} onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1))}>&lt;</button>
-            <button className="btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }} onClick={() => setViewDate(new Date())}>Oggi</button>
-            <button className="btn-primary" style={{ padding: '0.5rem 0.8rem', background: 'transparent' }} onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))}>&gt;</button>
-          </div>
-        </div>
-      </header>
-
-      {viewMode === 'calendar' ? (
-        <div className="glass-card" style={{ padding: '0.5rem' }}>
-          <div className="calendar-grid">
-            {['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'].map(d => (
-              <div key={d} style={{ padding: '1rem', textAlign: 'center', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)', borderBottom: '1px solid var(--glass-border)' }}>{d}</div>
-            ))}
-            {daysInMonth.map((date, index) => {
-              const dailyShifts = (date && employees.length > 0) ? calculateDailyShifts(date, employees, exceptions, config) : [];
-              const shiftCounts = dailyShifts.reduce((acc, p) => {
-                acc[p.finalShift] = (acc[p.finalShift] || 0) + 1;
-                return acc;
-              }, {});
-
-              const isWeekend = date ? (date.getDay() === 0 || date.getDay() === 6) : false;
-              const holiday = date ? isHoliday(date) : false;
-              const isToday = date && date.toDateString() === new Date().toDateString();
-
-              let isUnderstaffed = false;
-              let missingDesc = [];
-              if (date && employees.length > 0) {
-                 ['A', 'B', 'C'].forEach(st => {
-                    const ctCount = dailyShifts.filter(s => s.finalShift === st && s.baseRole === 'CT').length;
-                    const opCount = dailyShifts.filter(s => s.finalShift === st && s.baseRole === 'OP').length;
-                    const reqCT = config.constraints?.[st]?.CT || 1;
-                    const reqOP = config.constraints?.[st]?.OP || 3;
-                    if (ctCount !== reqCT) {
-                       isUnderstaffed = true;
-                       missingDesc.push(`${config.shiftLabels?.[st] || st}: ${ctCount}/${reqCT} CT`);
-                    }
-                    if (opCount !== reqOP) {
-                       isUnderstaffed = true;
-                       missingDesc.push(`${config.shiftLabels?.[st] || st}: ${opCount}/${reqOP} OP`);
-                    }
-                 });
-              }
-
-              return (
-                <div 
-                  key={index} 
-                  className={`calendar-day ${!date ? 'disabled' : ''} ${isToday ? 'today pulse-active' : ''}`} 
-                  onClick={() => date && handleDayClick(date, null)} 
-                  style={{ 
-                    position: 'relative',
-                    background: isToday ? 'rgba(var(--primary-rgb), 0.15)' : (holiday ? 'rgba(239, 68, 68, 0.1)' : (isWeekend ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.01)')),
-                    border: isToday ? '1px solid var(--primary)' : '1px solid var(--glass-border)',
-                    minHeight: '100px'
-                  }}
-                >
-                  {date && config.showUnderstaffedAlert && isUnderstaffed && (
-                    <div style={{ position: 'absolute', top: '5px', right: '5px', fontSize: '0.8rem', zIndex: 5 }} title={missingDesc.join(' | ')}>
-                      ⚠️
-                    </div>
-                  )}
-                  {date && (
-                    <>
-                      <div style={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
-                        padding: '5px 8px',
-                        borderBottom: '1px solid rgba(255,255,255,0.05)',
-                        background: isToday ? 'var(--primary)' : 'transparent'
-                      }}>
-                        <span style={{ 
-                          fontSize: '0.8rem', 
-                          fontWeight: 'bold',
-                          color: (holiday || date.getDay() === 0 || date.getDay() === 6) ? 'var(--accent-warning)' : 'white'
-                        }}>
-                          {date.getDate()} {holiday ? '🎉' : ''}
-                        </span>
-                        <span style={{ fontSize: '0.6rem', opacity: 0.6 }}>
-                          {date.toLocaleDateString('it-IT', { weekday: 'short' })}
-                        </span>
-                      </div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', marginTop: '0.5rem', padding: '0 8px' }}>
-                        {Object.keys(shiftCounts).map(st => {
-                          let bgColor = 'transparent';
-                          let textColor = 'var(--text-muted)';
-                          let border = 'none';
-                          if (['A', 'B', 'C', 'FE', 'MA', 'RT', 'DS', '104', 'CO'].includes(st)) {
-                            bgColor = `var(--shift-${st.toLowerCase()})`;
-                            textColor = 'white';
-                          } else if (st === 'R') {
-                            border = '1px solid var(--glass-border)';
-                          } else {
-                            bgColor = config.primaryColor; textColor = 'white';
-                          }
-                          
-                          return (
-                            <div key={st} style={{ 
-                              fontSize: '0.65rem', padding: '1px 6px', 
-                              background: bgColor, color: textColor, 
-                              borderRadius: '4px', border: border, fontWeight: 600,
-                              display: 'flex', gap: '4px', alignItems: 'center'
-                            }}>
-                              <span>{config.shiftLabels?.[st] || st}:</span> <span>{shiftCounts[st]}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ) : (
-        <ShiftGridView 
-          days={daysInMonth} 
-          employees={employees} 
-          exceptions={exceptions} 
-          config={config} 
-          onDayClick={handleDayClick}
-          selection={selection}
-          setSelection={setSelection}
-        />
-      )}
-    </div>
-  );
-};
-
-const CommandCenter = ({ employees, exceptions }) => {
-  // Calcolo rapido statistiche
-  const stats = useMemo(() => {
-    const coverage = 98.5; // Mock per ora, implementabile con ShiftEngine
-    const alerts = 0;
-    return { coverage, alerts, staff: employees.length };
-  }, [employees, exceptions]);
-
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }} className="fade-in">
-      <div className="glass-card" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: '4px solid var(--primary)' }}>
-        <div style={{ fontSize: '1.5rem' }}>🎯</div>
-        <div>
-          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800 }}>Copertura</div>
-          <div style={{ fontSize: '1.2rem', fontWeight: '900', color: 'var(--primary)' }}>{stats.coverage}%</div>
-        </div>
-      </div>
-      <div className="glass-card" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: '4px solid var(--accent-success)' }}>
-        <div style={{ fontSize: '1.5rem' }}>👥</div>
-        <div>
-          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800 }}>Staff Attivo</div>
-          <div style={{ fontSize: '1.2rem', fontWeight: '900' }}>{stats.staff}</div>
-        </div>
-      </div>
-      <div className="glass-card" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: '4px solid var(--accent-warning)' }}>
-        <div style={{ fontSize: '1.5rem' }}>⚠️</div>
-        <div>
-          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800 }}>Allerta</div>
-          <div style={{ fontSize: '1.2rem', fontWeight: '900', color: stats.alerts > 0 ? 'var(--accent-warning)' : 'var(--text-main)' }}>{stats.alerts}</div>
-        </div>
-      </div>
-      <div className="glass-card" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: '4px solid #fff' }}>
-        <div style={{ fontSize: '1.5rem' }}>🔄</div>
-        <div>
-          <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 800 }}>Ciclo</div>
-          <div style={{ fontSize: '1rem', fontWeight: 'bold' }}>Continuo</div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const LoginOverlay = ({ onLogin, onCancel }) => {
-  const [pwd, setPwd] = useState('');
+  const [pwd, setPwd] = useState("");
   return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-      background: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(10px)',
-      zIndex: 10000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem'
-    }}>
-      <div className="glass-card" style={{ maxWidth: '400px', width: '100%', textAlign: 'center', padding: '2.5rem' }}>
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔐</div>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 900, marginBottom: '0.5rem' }}>Accesso Protetto</h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '2rem' }}>Inserisci la password per accedere al sistema.</p>
-        <input 
-          type="password" 
-          className="input-main" 
-          placeholder="Password..." 
-          value={pwd} 
-          onChange={(e) => setPwd(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && onLogin(pwd)}
-          autoFocus
-          style={{ marginBottom: '1.5rem', textAlign: 'center', fontSize: '1.2rem' }}
-        />
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <button className="btn-primary" style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)' }} onClick={onCancel}>Annulla</button>
-          <button className="btn-hero" style={{ flex: 2, padding: '0.75rem', fontSize: '1rem', justifyContent: 'center' }} onClick={() => onLogin(pwd)}>Entra 🚀</button>
-        </div>
-      </div>
+    <div className="dialog-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.8)', backdropFilter: 'blur(10px)', display: 'grid', placeItems: 'center', zIndex: 10000 }}>
+       <div className="glass-card fade-in" style={{ width: '90%', maxWidth: '380px', padding: '2.5rem', textAlign: 'center' }}>
+          <div style={{ width: '60px', height: '60px', background: 'var(--primary)', borderRadius: '15px', display: 'grid', placeItems: 'center', margin: '0 auto 2rem', color: 'white', fontSize: '1.5rem', boxShadow: '0 10px 20px var(--primary-glow)' }}>🔒</div>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: '900', marginBottom: '0.5rem' }}>Area Riservata</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '2rem' }}>Inserisci la tua password amministratore per sbloccare le funzioni di editing.</p>
+          <input 
+            type="password" 
+            className="input-main" 
+            autoFocus
+            style={{ textAlign: 'center', fontSize: '1.2rem', padding: '1rem', letterSpacing: '4px', marginBottom: '1.5rem' }}
+            placeholder="••••••••"
+            value={pwd}
+            onChange={e => setPwd(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && onLogin(pwd)}
+          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <button onClick={() => onLogin(pwd)} className="btn-primary" style={{ width: '100%', padding: '1rem', borderRadius: '12px' }}>Accedi Ora</button>
+            <button onClick={onCancel} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '0.85rem', cursor: 'pointer' }}>Torna al Calendario</button>
+          </div>
+       </div>
     </div>
   );
 };
 
 const PaywallOverlay = ({ onUnlock }) => {
   return (
-    <div style={{
-      position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
-      background: 'rgba(15, 23, 42, 0.98)', backdropFilter: 'blur(10px)',
-      zIndex: 9999, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-      padding: '2rem', textAlign: 'center', color: 'white'
-    }}>
-      <div style={{ 
-        width: '80px', height: '80px', background: 'var(--primary)', borderRadius: '20px', 
-        fontSize: '3rem', display: 'grid', placeItems: 'center', marginBottom: '2rem',
-        boxShadow: '0 0 40px var(--primary-glow)'
-      }}>🔒</div>
-      <h2 style={{ fontSize: '2.5rem', fontWeight: 900, marginBottom: '1rem' }}>Periodo di Prova Scaduto</h2>
-      <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', maxWidth: '500px', marginBottom: '3rem', lineHeight: 1.5 }}>
-        La tua settimana gratuita è terminata. Per continuare a generare turni professionali e gestire il tuo staff, attiva l'abbonamento Pro.
-      </p>
-      
-      <div className="glass-card" style={{ padding: '2rem', border: '2px solid var(--primary)', maxWidth: '400px', width: '100%', marginBottom: '2rem' }}>
-        <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--primary)', fontWeight: 800, marginBottom: '0.5rem' }}>Abbonamento Mensile</div>
-        <div style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '1rem' }}>7,99€ <span style={{ fontSize: '1rem', opacity: 0.5 }}>/ mese</span></div>
-        <ul style={{ textAlign: 'left', fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '2rem', paddingLeft: '1rem' }}>
-          <li>✓ Generazione illimitata turni AI</li>
-          <li>✓ Gestione multi-schema</li>
-          <li>✓ Esportazione Excel e Stampa</li>
-          <li>✓ Supporto tecnico dedicato</li>
-        </ul>
-        <button 
-          className="btn-hero" 
-          style={{ width: '100%', padding: '1rem' }}
-          onClick={() => {
-            window.location.href = 'https://buy.stripe.com/3cI8wP1T67tDcSkdPO8bS00';
-          }}
-        >
-          Attiva Ora 🚀
-        </button>
-      </div>
-      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Pagamento sicuro crittografato • Disdici quando vuoi</p>
+    <div className="dialog-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.9)', backdropFilter: 'blur(20px)', display: 'grid', placeItems: 'center', zIndex: 20000 }}>
+       <div className="glass-card fade-in" style={{ width: '90%', maxWidth: '420px', padding: '3rem', textAlign: 'center', border: '1px solid var(--primary)' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>⌛</div>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: '900', marginBottom: '1rem' }}>Periodo Trial Scaduto</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '2.5rem', lineHeight: '1.6' }}>Hai utilizzato tutte le funzionalità gratuite. Passa alla versione Pro per continuare a gestire i tuoi turni senza limiti.</p>
+          
+          <button 
+            onClick={() => window.location.href = 'https://buy.stripe.com/3cI8wP1T67tDcSkdPO8bS00'}
+            className="btn-primary" 
+            style={{ width: '100%', padding: '1.25rem', borderRadius: '15px', fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem' }}
+          >
+            Sblocca Versione Pro — €7,99
+          </button>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Pagamento unico • Accesso a vita</div>
+       </div>
     </div>
   );
 };
 
-function App() {
+const CalendarView = ({ viewDate, setViewDate, showExport, setShowExport }) => {
+  const { employees, exceptions, config } = useApp();
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selection, setSelection] = useState([]);
+
+  const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+  const startDay = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay();
+  const prevMonthDays = daysInMonth(viewDate.getFullYear(), viewDate.getMonth() - 1);
+  
+  const calendarDays = [];
+  // Adjusted for Italian Week (Mon-Sun)
+  const adjustedStart = startDay === 0 ? 6 : startDay - 1;
+  
+  for (let i = adjustedStart - 1; i >= 0; i--) calendarDays.push(null);
+  for (let i = 1; i <= daysInMonth(viewDate.getFullYear(), viewDate.getMonth()); i++) {
+    calendarDays.push(new Date(viewDate.getFullYear(), viewDate.getMonth(), i));
+  }
+
+  return (
+    <div className="calendar-view">
+      <header className="calendar-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: '900', letterSpacing: '-0.04em', textTransform: 'capitalize' }}>
+            {viewDate.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' })}
+          </h2>
+          <div className="month-nav">
+            <button className="nav-btn" onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1))}>←</button>
+            <button className="nav-btn" onClick={() => setViewDate(new Date())}>Oggi</button>
+            <button className="nav-btn" onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))}>→</button>
+          </div>
+        </div>
+        
+        <div className="legend" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          {Object.entries(config.shiftColors).map(([id, color]) => (
+            <div key={id} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', fontWeight: 'bold' }}>
+              <div style={{ width: '10px', height: '10px', borderRadius: '3px', background: color }}></div>
+              <span style={{ opacity: 0.8, textTransform: 'uppercase' }}>{config.shiftLabels?.[id] || id}</span>
+            </div>
+          ))}
+        </div>
+      </header>
+
+      <ShiftGridView 
+        days={calendarDays} 
+        employees={employees} 
+        exceptions={exceptions} 
+        config={config} 
+        selection={selection}
+        setSelection={setSelection}
+        onDayClick={(date, empName) => {
+          setSelectedDay(date);
+          setSelectedEmployee(empName);
+        }} 
+      />
+
+      {selectedDay && (
+        <DayDetails 
+          date={selectedDay} 
+          selectedEmployee={selectedEmployee}
+          selection={selection}
+          onBatchUpdate={() => setSelection([])}
+          onClose={() => {
+            setSelectedDay(null);
+            setSelectedEmployee(null);
+            setSelection([]);
+          }} 
+        />
+      )}
+    </div>
+  );
+};
+
+export default function App() {
+  const { config, employees, exceptions, setConfig, setEmployees, setExceptions, isPro, isTrialExpired } = useApp();
+  const [view, setView] = useState('landing');
   const [activeTab, setTab] = useState('calendar');
-  const [view, setView] = useState('landing'); // 'landing', 'app', 'case-study-1', 'case-study-2'
   const [viewDate, setViewDate] = useState(new Date());
-  const [showExport, setShowExport] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(() => {
-    return !localStorage.getItem('onboarding_complete') && !localStorage.getItem('shift_pro_employees');
-  });
   const [showLogin, setShowLogin] = useState(false);
-  const { config, employees, exceptions, isPro, setIsPro, trialStartDate, isTrialExpired, userRole, setUserRole } = useApp();
+  const [showExport, setShowExport] = useState(false);
+  const [userRole, setUserRole] = useState('viewer');
+  
+  const [dialog, setDialog] = useState({ 
+    isOpen: false, 
+    type: 'alert', 
+    title: '', 
+    message: '', 
+    defaultValue: '', 
+    onConfirm: () => {} 
+  });
+
+  const showAlert = (title, message) => {
+    setDialog({ isOpen: true, type: 'alert', title, message, onConfirm: () => setDialog(prev => ({ ...prev, isOpen: false })) });
+  };
+
+  const showConfirm = (title, message, onConfirm) => {
+    setDialog({ 
+      isOpen: true, 
+      type: 'confirm', 
+      title, 
+      message, 
+      onConfirm: () => {
+        onConfirm();
+        setDialog(prev => ({ ...prev, isOpen: false }));
+      }
+    });
+  };
+
+  const showPrompt = (title, message, defaultValue, onConfirm) => {
+    setDialog({ 
+      isOpen: true, 
+      type: 'prompt', 
+      title, 
+      message, 
+      defaultValue, 
+      onConfirm: (val) => {
+        onConfirm(val);
+        setDialog(prev => ({ ...prev, isOpen: false }));
+      }
+    });
+  };
+
+  const handleOnboardingComplete = (data) => {
+    setConfig(prev => ({ ...prev, ...data.config }));
+    setEmployees(data.employees);
+    setView('app');
+  };
 
   const handleLogin = (pwd) => {
-    // Password Sviluppatore sempre attiva per emergenza
-    const masterPwd = "alesalpi79";
-    const adminPwd = config.adminPassword || masterPwd;
+    const adminPwd = config.adminPassword;
     const guestPwd = config.guestPassword || "guest123";
 
-    if (pwd === masterPwd || pwd === adminPwd) {
-      // Se è la password master e non c'è una admin personalizzata, chiediamo di crearla
-      if (pwd === masterPwd && !config.adminPassword) {
-        const newPwd = window.prompt("Benvenuto! Crea la tua Password Amministratore personalizzata:");
+    if (adminPwd && pwd === adminPwd) {
+      setUserRole('admin');
+      setShowLogin(false);
+    } else if (!adminPwd && pwd === "admin") { // Default temporaneo se non impostata
+      showPrompt("Crea Password", "Benvenuto! Crea la tua Password Amministratore personalizzata (min 4 caratteri):", "", (newPwd) => {
         if (newPwd && newPwd.trim().length >= 4) {
           setConfig(prev => ({ ...prev, adminPassword: newPwd.trim() }));
           setUserRole('admin');
           setShowLogin(false);
-          alert("✅ Password salvata! Usala per i prossimi accessi.");
+          showAlert("Successo", "Password salvata! Usala per i prossimi accessi.");
         } else {
-          alert("Operazione annullata o password troppo corta (min 4 caratteri).");
+          showAlert("Errore", "Password troppo corta.");
         }
-      } else {
-        setUserRole('admin');
-        setShowLogin(false);
-      }
+      });
     } else if (pwd === guestPwd) {
       setUserRole('viewer');
       setShowLogin(false);
     } else {
-      alert("Password errata!");
+      showAlert("Errore", "Password errata!");
     }
   };
 
-  useEffect(() => {
-    const handleUnlock = () => setIsPro(true);
-    window.addEventListener('unlock-pro', handleUnlock);
-    return () => window.removeEventListener('unlock-pro', handleUnlock);
-  }, [setIsPro]);
+  const [hasVisited, setHasVisited] = useState(() => localStorage.getItem('shift_pro_onboarded') === 'true');
 
-
-
-  const handleOnboardingComplete = () => {
-    localStorage.setItem('onboarding_complete', 'true');
-    setShowOnboarding(false);
-  };
-
-  React.useEffect(() => {
-    const isLanding = view === 'landing' || view.startsWith('case-study');
-    
-    // Default values for Landing Page (Premium Light)
-    const primary = isLanding ? '#6366f1' : config.primaryColor; 
-    const bg = isLanding ? '#f8fafc' : (config.backgroundColor || '#f8fafc');
-    const text = isLanding ? '#0f172a' : (config.textColor || '#0f172a');
-    const sideText = isLanding ? '#0f172a' : (config.sidebarTextColor || '#0f172a');
-    const glass = isLanding ? 0.7 : (config.glassOpacity || 0.85);
-    const gColor = isLanding ? '255, 255, 255' : hexToRgb(config.glassColor || '#ffffff');
-
-    document.documentElement.style.setProperty('--primary', primary);
-    document.documentElement.style.setProperty('--bg-main', bg);
-    document.documentElement.style.setProperty('--bg-sidebar', (isLanding ? '#ffffff' : (bg + 'E6')));
-    document.documentElement.style.setProperty('--text-main', text);
-    document.documentElement.style.setProperty('--text-sidebar', sideText);
-    document.documentElement.style.setProperty('--glass-bg', `rgba(${gColor}, ${glass})`);
-    document.documentElement.style.setProperty('--glass-border', isLanding ? `rgba(15, 23, 42, 0.08)` : `rgba(15, 23, 42, 0.12)`);
-    
-    if (config.shiftColors && !isLanding) {
-      Object.keys(config.shiftColors).forEach(k => {
-        document.documentElement.style.setProperty(`--shift-${k.toLowerCase()}`, config.shiftColors[k]);
-      });
-    } else {
-      // Default shift colors for landing/previews if needed
-      ['a', 'b', 'c', 'r'].forEach(k => document.documentElement.style.setProperty(`--shift-${k}`, k === 'r' ? 'rgba(255,255,255,0.1)' : '#6366f1'));
-    }
-  }, [config, view]);
-
-  if (view === 'case-study-1') return <CaseStudy id={1} onBack={() => setView('landing')} />;
-  if (view === 'case-study-2') return <CaseStudy id={2} onBack={() => setView('landing')} />;
-
-  if (showOnboarding) {
+  if (!hasVisited && view !== 'app') {
     return (
       <div style={{ '--primary': config.primaryColor }}>
         <Onboarding onComplete={handleOnboardingComplete} />
@@ -1836,7 +1267,7 @@ function App() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 0 }}></div>
       )}
       {view !== 'landing' && (
-        <Sidebar activeTab={activeTab} setTab={setTab} setView={setView} setShowLogin={setShowLogin} setShowExport={setShowExport} />
+        <Sidebar activeTab={activeTab} setTab={setTab} setView={setView} setShowLogin={setShowLogin} setShowExport={setShowExport} showAlert={showAlert} showConfirm={showConfirm} showPrompt={showPrompt} />
       )}
       <main style={{ 
         flex: 1, 
@@ -1857,24 +1288,23 @@ function App() {
                   setTab('calendar');
                 } catch (e) {
                   console.error("Transition Error:", e);
-                  window.location.reload(); // Fallback di sicurezza
                 }
               }} 
             />
           ) : (
             <>
-              <header style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
                 <div>
-                  <h1 style={{ fontSize: '1.35rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.15rem' }}>
-                    {activeTab === 'calendar' ? 'Dashboard Turni' : 
-                     activeTab === 'staff' ? 'Gestione Personale' : 
-                     activeTab === 'stats' ? 'Analytics Avanzate' : 'Impostazioni Sistema'}
-                  </h1>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                    {activeTab === 'calendar' ? 'Ottimizzazione rotazioni industriali in tempo reale.' : 
-                     activeTab === 'staff' ? 'Configura i ruoli e le competenze del tuo team.' : 
-                     activeTab === 'stats' ? 'Monitora performance e bilanciamento dei carichi.' : 'Configura l\'algoritmo e l\'identità visiva.'}
-                  </p>
+                   <h1 style={{ fontSize: '2.25rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.25rem' }}>
+                     {activeTab === 'calendar' ? 'Gestione Turni' : 
+                      activeTab === 'staff' ? 'Team Management' : 
+                      activeTab === 'stats' ? 'Analytics Avanzate' : 'Impostazioni Sistema'}
+                   </h1>
+                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                     {activeTab === 'calendar' ? 'Ottimizzazione rotazioni industriali in tempo reale.' : 
+                      activeTab === 'staff' ? 'Configura i ruoli e le competenze del tuo team.' : 
+                      activeTab === 'stats' ? 'Monitora performance e bilanciamento dei carichi.' : 'Configura l\'algoritmo e l\'identità visiva.'}
+                   </p>
                 </div>
                 {activeTab === 'calendar' && (
                    <div style={{ display: 'flex', gap: '1rem' }}>
@@ -1884,18 +1314,24 @@ function App() {
                 )}
               </header>
 
-              <CommandCenter config={config} employees={employees} exceptions={exceptions} />
-
               {activeTab === 'calendar' && <CalendarView viewDate={viewDate} setViewDate={setViewDate} showExport={showExport} setShowExport={setShowExport} />}
               {activeTab === 'staff' && <StaffManager />}
               {activeTab === 'stats' && <StatsDashboard />}
-              {activeTab === 'settings' && <RuleSettings />}
+              {activeTab === 'settings' && <RuleSettings showAlert={showAlert} showConfirm={showConfirm} showPrompt={showPrompt} />}
             </>
           )}
         </div>
       </main>
+
+      <Dialog 
+        isOpen={dialog.isOpen}
+        type={dialog.type}
+        title={dialog.title}
+        message={dialog.message}
+        defaultValue={dialog.defaultValue}
+        onConfirm={dialog.onConfirm}
+        onCancel={() => setDialog(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }
-
-export default App;

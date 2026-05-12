@@ -91,7 +91,7 @@ const PremiumColorPicker = ({ value, onChange, label, isOpen, onToggle, selected
   );
 };
 
-export default function RuleSettings() {
+export default function RuleSettings({ showAlert, showConfirm, showPrompt }) {
   const { config, setConfig, employees, setEmployees, exceptions, setExceptions, userRole } = useApp();
   const [activeSection, setActiveSection] = useState('design');
   
@@ -137,29 +137,30 @@ export default function RuleSettings() {
   };
 
   const addNewShift = () => {
-    const name = window.prompt("Inserisci la sigla del nuovo turno (es. ST, PERM, ...):");
-    if (name && name.trim()) {
-      const id = name.trim().toUpperCase();
-      if (config.shiftColors[id]) {
-        alert("Questa sigla esiste già!");
-        return;
+    showPrompt("Nuovo Turno", "Inserisci la sigla del nuovo turno (es. ST, PERM, ...):", "", (name) => {
+      if (name && name.trim()) {
+        const id = name.trim().toUpperCase();
+        if (config.shiftColors[id]) {
+          showAlert("Errore", "Questa sigla esiste già!");
+          return;
+        }
+        const newColors = { ...safeShiftColors, [id]: '#6366f1' };
+        const newLabels = { ...safeShiftLabels, [id]: id };
+        setConfig(prev => ({
+          ...prev,
+          shiftColors: newColors,
+          shiftLabels: newLabels
+        }));
       }
-      const newColors = { ...safeShiftColors, [id]: '#6366f1' };
-      const newLabels = { ...safeShiftLabels, [id]: id };
-      setConfig(prev => ({
-        ...prev,
-        shiftColors: newColors,
-        shiftLabels: newLabels
-      }));
-    }
+    });
   };
 
   const removeShift = (id) => {
     if (['A', 'B', 'C', 'R'].includes(id)) {
-      alert("I turni base (A, B, C, R) non possono essere rimossi.");
+      showAlert("Attenzione", "I turni base (A, B, C, R) non possono essere rimossi.");
       return;
     }
-    if (window.confirm(`Rimuovere la sigla ${id}?`)) {
+    showConfirm("Rimuovi Turno", `Rimuovere la sigla ${id}?`, () => {
       const newColors = { ...safeShiftColors };
       const newLabels = { ...safeShiftLabels };
       delete newColors[id];
@@ -169,7 +170,7 @@ export default function RuleSettings() {
         shiftColors: newColors,
         shiftLabels: newLabels
       }));
-    }
+    });
   };
 
   const handleExport = () => {
@@ -201,15 +202,16 @@ export default function RuleSettings() {
         const data = JSON.parse(event.target.result);
         if (!data.config || !data.employees) throw new Error("File non valido");
 
-        if (window.confirm("Attenzione: l'importazione sovrascriverà tutti i dati attuali. Continuare?")) {
-          setConfig(data.config);
-          setEmployees(data.employees);
-          setExceptions(data.exceptions || []);
-          alert("Dati importati con successo! L'app verrà ricaricata.");
-          window.location.reload();
+        if (true) {
+          showConfirm("Attenzione", "L'importazione sovrascriverà tutti i dati attuali. Continuare?", () => {
+            setConfig(data.config);
+            setEmployees(data.employees);
+            setExceptions(data.exceptions || []);
+            showAlert("Successo", "Dati importati con successo!");
+          });
         }
       } catch (err) {
-        alert("Errore nell'importazione: il file non sembra un backup valido di Shift-Pro.");
+        showAlert("Errore", "Il file non sembra un backup valido di Shift-Pro.");
       }
     };
     reader.readAsText(file);
@@ -341,7 +343,7 @@ export default function RuleSettings() {
                       if (!config.backgroundMode) saveConfig('backgroundMode', 'cover');
                     };
                     reader.readAsDataURL(file);
-                  } else if (file) alert("Immagine troppo grande (>1.5MB)");
+                  } else if (file) showAlert("Errore", "Immagine troppo grande (>1.5MB)");
                 }} />
               </label>
             </div>
@@ -505,17 +507,18 @@ export default function RuleSettings() {
         <h3 style={{ fontSize: '1rem', margin: 0 }}>Vincoli Personale per Turno</h3>
         <button 
           onClick={() => {
-            const name = window.prompt("Nome del nuovo ruolo (es. Supervisore, Tecnico...):");
-            if (name && name.trim()) {
-              const newRoles = [...(config.roles || [])];
-              const id = name.trim().toUpperCase().substring(0, 3);
-              if (newRoles.find(r => r.id === id)) {
-                alert("Esiste già un ruolo con ID simile.");
-                return;
+            showPrompt("Nuovo Ruolo", "Nome del nuovo ruolo (es. Supervisore, Tecnico...):", "", (name) => {
+              if (name && name.trim()) {
+                const newRoles = [...(config.roles || [])];
+                const id = name.trim().toUpperCase().substring(0, 3);
+                if (newRoles.find(r => r.id === id)) {
+                  showAlert("Errore", "Esiste già un ruolo con ID simile.");
+                  return;
+                }
+                newRoles.push({ id, label: name.trim(), color: '#6366f1' });
+                saveConfig('roles', newRoles);
               }
-              newRoles.push({ id, label: name.trim(), color: '#6366f1' });
-              saveConfig('roles', newRoles);
-            }
+            });
           }}
           className="btn-primary" 
           style={{ padding: '6px 12px', fontSize: '0.7rem' }}
@@ -535,20 +538,21 @@ export default function RuleSettings() {
                     style={{ fontSize: '0.8rem', color: 'var(--text-muted)', cursor: 'pointer' }}
                     title="Clicca per rinominare"
                     onClick={() => {
-                      const newName = window.prompt(`Rinomina "${role.label}":`, role.label);
-                      if (newName && newName.trim()) {
-                        const newRoles = config.roles.map(r => r.id === role.id ? { ...r, label: newName.trim() } : r);
-                        saveConfig('roles', newRoles);
-                      }
+                      showPrompt("Rinomina Ruolo", `Rinomina "${role.label}":`, role.label, (newName) => {
+                        if (newName && newName.trim()) {
+                          const newRoles = config.roles.map(r => r.id === role.id ? { ...r, label: newName.trim() } : r);
+                          saveConfig('roles', newRoles);
+                        }
+                      });
                     }}
                   >{role.label}</span>
                   { !['CT', 'OP'].includes(role.id) && (
                     <button 
                       onClick={() => {
-                        if (window.confirm(`Eliminare il ruolo "${role.label}"?`)) {
+                        showConfirm("Elimina Ruolo", `Eliminare il ruolo "${role.label}"?`, () => {
                           const newRoles = config.roles.filter(r => r.id !== role.id);
                           saveConfig('roles', newRoles);
-                        }
+                        });
                       }}
                       style={{ background: 'transparent', border: 'none', color: 'var(--accent-danger)', fontSize: '0.6rem', cursor: 'pointer', padding: 0 }}
                     >🗑️</button>
@@ -668,7 +672,7 @@ export default function RuleSettings() {
                 if (e.target.value.toUpperCase() === 'ADMIN2026') {
                   window.dispatchEvent(new CustomEvent('unlock-pro'));
                   e.target.value = '';
-                  alert("✅ Accesso Sviluppatore Attivato! Versione PRO sbloccata.");
+                  showAlert("Successo", "Accesso Sviluppatore Attivato! Versione PRO sbloccata.");
                 }
               }}
             />
@@ -702,10 +706,11 @@ export default function RuleSettings() {
           className="btn-primary" 
           style={{ background: 'var(--accent-danger)', width: '100%' }}
           onClick={() => {
-            if(window.confirm("CANCELLARE TUTTO?")) {
+            showConfirm("Reset Totale", "CANCELLARE TUTTO DEFINITIVAMENTE?", () => {
               localStorage.clear();
-              window.location.reload();
-            }
+              // In questo caso il reload è accettabile per resettare lo stato globale in modo pulito
+              window.location.reload(); 
+            });
           }}
         >
           🗑️ Ripristino Fabbrica

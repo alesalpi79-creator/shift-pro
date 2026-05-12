@@ -109,16 +109,11 @@ export const AppProvider = ({ children }) => {
   };
 
   const deleteSchedule = (id) => {
-    if (schedules.length <= 1) {
-      alert("Non puoi eliminare l'ultimo schema rimasto.");
-      return;
-    }
-    if (window.confirm("Sei sicuro di voler eliminare definitivamente questo schema e tutti i suoi dati?")) {
-      const newSchedules = schedules.filter(s => s.id !== id);
-      setSchedules(newSchedules);
-      if (activeScheduleId === id) {
-        setActiveScheduleId(newSchedules[0].id);
-      }
+    if (schedules.length <= 1) return;
+    const newSchedules = schedules.filter(s => s.id !== id);
+    setSchedules(newSchedules);
+    if (activeScheduleId === id) {
+      setActiveScheduleId(newSchedules[0].id);
     }
   };
 
