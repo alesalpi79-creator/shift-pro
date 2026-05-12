@@ -433,7 +433,7 @@ const DayDetails = ({ date, onClose, selectedEmployee = null, selection = [], on
              {/* Riepilogo Copertura */}
              <div className="glass-card" style={{ padding: '0.75rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)' }}>
                 {info.map((inf, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: i < 2 ? '4px' : 0 }}>
+                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: i < 2 ? '4px' : 0 }}>
                     <span style={{ fontWeight: 'bold' }}>{inf.shiftName}:</span>
                     <span>{inf.ctCount} CT / {inf.opCount} OP</span>
                   </div>
@@ -1296,13 +1296,15 @@ const CalendarView = ({ viewDate, setViewDate, showExport, setShowExport }) => {
 };
 
 export default function App() {
-  const { config, employees, exceptions, setConfig, setEmployees, setExceptions, isPro, isTrialExpired } = useApp();
+  const { config, employees, exceptions, setConfig, setEmployees, setExceptions, isPro, setIsPro, isTrialExpired } = useApp();
   const [view, setView] = useState('landing');
   const [activeTab, setTab] = useState('calendar');
   const [viewDate, setViewDate] = useState(new Date());
   const [showLogin, setShowLogin] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [userRole, setUserRole] = useState('viewer');
+  
+  const [hasVisited, setHasVisited] = useState(() => localStorage.getItem('shift_pro_onboarded') === 'true');
   
   const [dialog, setDialog] = useState({ 
     isOpen: false, 
@@ -1345,8 +1347,12 @@ export default function App() {
   };
 
   const handleOnboardingComplete = (data) => {
-    setConfig(prev => ({ ...prev, ...data.config }));
-    setEmployees(data.employees);
+    if (data) {
+      if (data.config) setConfig(prev => ({ ...prev, ...data.config }));
+      if (data.employees) setEmployees(data.employees);
+    }
+    localStorage.setItem('shift_pro_onboarded', 'true');
+    setHasVisited(true);
     setView('app');
   };
 
@@ -1376,7 +1382,6 @@ export default function App() {
     }
   };
 
-  const [hasVisited] = useState(() => localStorage.getItem('shift_pro_onboarded') === 'true');
 
   // 1. Calcolo se siamo in modalità landing in modo sicuro
   const isLanding = (view || '').toString().startsWith('landing') || (view || '').toString().startsWith('case-study');
