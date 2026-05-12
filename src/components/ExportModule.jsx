@@ -8,13 +8,22 @@ import { useApp } from '../context/AppContext';
 import { calculateDailyShifts } from '../logic/ShiftEngine';
 
 export default function ExportModule({ onClose, currentViewDate }) {
-  const { employees, exceptions, config } = useApp();
+  const { employees, exceptions, config, isPro, setIsPro } = useApp();
   const [format, setFormat] = useState('pdf');
   const [period, setPeriod] = useState('current'); // 'current', 'specific', 'year'
   const [specificMonth, setSpecificMonth] = useState(currentViewDate.getMonth());
 
   const months = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
   const viewYear = currentViewDate.getFullYear();
+
+  const handleYearClick = () => {
+    if (!isPro) {
+        // Option to trigger a "Go Pro" dialog or just alert for now
+        // But better to show it's disabled or requires premium
+        return;
+    }
+    setPeriod('year');
+  };
 
   const getMonthData = (year, monthIdx) => {
     const lastDay = new Date(year, monthIdx + 1, 0).getDate();
@@ -53,6 +62,13 @@ export default function ExportModule({ onClose, currentViewDate }) {
   };
 
   const handleExport = async () => {
+    // Safety check for Premium features
+    if (period === 'year' && !isPro) {
+        alert("L'esportazione annuale richiede il pacchetto Premium.");
+        setPeriod('current');
+        return;
+    }
+
     // Generate data
     const dataToExport = [];
     if (period === 'year') {
@@ -266,12 +282,83 @@ export default function ExportModule({ onClose, currentViewDate }) {
                 </select>
              </div>
 
-             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginTop: '0.5rem' }}>
-                <input type="radio" checked={period === 'year'} onChange={() => setPeriod('year')} />
-                <b>Tutto l'anno (12 Mesi) {period === 'year' && format === 'excel' ? '- Multi Fogli' : ''}</b>
-             </label>
+             <div 
+                style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between',
+                    marginTop: '0.5rem',
+                    padding: '8px',
+                    borderRadius: '8px',
+                    background: !isPro ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
+                    border: !isPro ? '1px dashed var(--primary)' : 'none',
+                    opacity: !isPro && period === 'year' ? 1 : (period === 'year' ? 1 : 0.8),
+                    cursor: 'pointer'
+                }}
+                onClick={handleYearClick}
+             >
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flex: 1 }}>
+                    <input 
+                        type="radio" 
+                        checked={period === 'year'} 
+                        onChange={handleYearClick}
+                        disabled={!isPro}
+                    />
+                    <span style={{ fontWeight: period === 'year' ? 'bold' : 'normal' }}>
+                        Tutto l'anno (12 Mesi)
+                    </span>
+                </label>
+                {!isPro && (
+                    <span style={{ 
+                        fontSize: '0.7rem', 
+                        background: 'var(--primary)', 
+                        color: 'white', 
+                        padding: '2px 6px', 
+                        borderRadius: '4px',
+                        fontWeight: 'bold'
+                    }}>
+                        PREMIUM 👑
+                    </span>
+                )}
+             </div>
+
+             {!isPro && period !== 'year' && (
+                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem', fontStyle: 'italic' }}>
+                    Sblocca l'esportazione annuale con il pacchetto Premium.
+                 </p>
+             )}
           </div>
         </div>
+
+        {!isPro && period === 'year' && (
+            <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid #f59e0b', borderRadius: '8px' }}>
+                <p style={{ fontSize: '0.85rem', color: '#f59e0b', margin: 0 }}>
+                    L'esportazione annuale è una funzione Premium. Abbonati per scaricare la pianificazione completa.
+                </p>
+                <button 
+                    onClick={() => {
+                        // For demo purposes, we can set isPro to true, 
+                        // but in production this would go to the payment flow
+                        if(confirm("Vuoi attivare la prova gratuita del pacchetto Premium?")) {
+                            setIsPro(true);
+                        }
+                    }}
+                    style={{ 
+                        marginTop: '0.5rem', 
+                        background: '#f59e0b', 
+                        color: 'white', 
+                        border: 'none', 
+                        padding: '4px 10px', 
+                        borderRadius: '4px', 
+                        fontSize: '0.8rem', 
+                        cursor: 'pointer',
+                        fontWeight: 'bold'
+                    }}
+                >
+                    Scopri Premium
+                </button>
+            </div>
+        )}
 
         <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
           <button onClick={onClose} style={{ flex: 1, padding: '0.75rem', background: 'transparent', border: '1px solid var(--glass-border)', color: 'white', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}>Annulla</button>
