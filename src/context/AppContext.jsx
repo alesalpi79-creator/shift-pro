@@ -5,6 +5,7 @@ const AppContext = createContext();
 export const DEFAULT_CONFIG = {
   appName: "Turni Pro",
   appTagline: "Motore AI Industriale",
+  appLogo: "/pwa-512x512.png",
   primaryColor: "#6366f1",
   backgroundColor: "#f8fafc",
   textColor: "#0f172a",

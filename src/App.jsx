@@ -117,11 +117,18 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
       <div style={{ marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '1rem', padding: '0 0.5rem' }}>
         <div style={{ 
           width: '42px', height: '42px', 
-          background: `linear-gradient(135deg, ${config.primaryColor}, #fff)`, 
-          boxShadow: `0 8px 25px ${config.primaryColor}66`,
+          background: config.appLogo ? 'none' : `linear-gradient(135deg, ${config.primaryColor}, #fff)`, 
+          boxShadow: config.appLogo ? 'none' : `0 8px 25px ${config.primaryColor}66`,
           borderRadius: '12px', display: 'grid', placeItems: 'center', fontWeight: '900',
-          color: 'var(--bg-main)', fontSize: '1.4rem'
-        }}>{config.appName.charAt(0)}</div>
+          color: 'var(--bg-main)', fontSize: '1.4rem',
+          overflow: 'hidden'
+        }}>
+          {config.appLogo ? (
+            <img src={config.appLogo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            config.appName.charAt(0)
+          )}
+        </div>
         <div>
           <h2 style={{ fontSize: '1.25rem', letterSpacing: '-0.04em', fontWeight: '800', lineHeight: 1 }}>{config.appName}</h2>
           {config.appTagline && (
@@ -198,15 +205,6 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
         )}
 
 
-        {config.appLogo && (
-          <div style={{ marginTop: '3rem', padding: '1rem', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '15px', border: '1px solid var(--glass-border)' }}>
-            <img 
-              src={config.appLogo} 
-              alt="Azienda" 
-              style={{ width: '100%', maxHeight: '120px', objectFit: 'contain', filter: 'drop-shadow(0 5px 15px rgba(0,0,0,0.2))' }} 
-            />
-          </div>
-        )}
       </nav>
 
       <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-md)', marginTop: 'auto' }}>
@@ -858,7 +856,19 @@ const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
         zIndex: 1000, boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '8px', display: 'grid', placeItems: 'center', color: 'white', fontWeight: '900' }}>T</div>
+          <div style={{ 
+            width: '32px', height: '32px', 
+            background: config.appLogo ? 'none' : 'var(--primary)', 
+            borderRadius: '8px', display: 'grid', placeItems: 'center', 
+            color: 'white', fontWeight: '900',
+            overflow: 'hidden'
+          }}>
+            {config.appLogo ? (
+              <img src={config.appLogo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              config.appName.charAt(0)
+            )}
+          </div>
           <span style={{ fontWeight: '800', fontSize: '1.1rem', letterSpacing: '-0.02em' }}>{config.appName}</span>
         </div>
         <div style={{ display: 'flex', gap: '2rem', fontSize: '0.85rem', fontWeight: '600' }}>
