@@ -1295,9 +1295,39 @@ export default function App() {
     }
   };
 
-  const [hasVisited, setHasVisited] = useState(() => localStorage.getItem('shift_pro_onboarded') === 'true');
+  const [hasVisited] = useState(() => localStorage.getItem('shift_pro_onboarded') === 'true');
 
-  if (!hasVisited && view !== 'app') {
+  // 1. Calcolo se siamo in modalità landing in modo sicuro
+  const isLanding = (view || '').toString().startsWith('landing') || (view || '').toString().startsWith('case-study');
+
+  // 2. Se siamo in landing, mostriamo SEMPRE la landing page (Priorità assoluta)
+  if (isLanding) {
+    return (
+      <div className="landing-wrapper" style={{ 
+        minHeight: '100vh', 
+        background: 'radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%)',
+        color: '#1e293b'
+      }}>
+        <LandingPage 
+          config={config} 
+          setView={setView} 
+          onEnter={() => { setView('app'); setTab('calendar'); }} 
+        />
+        <Dialog 
+          isOpen={dialog.isOpen}
+          type={dialog.type}
+          title={dialog.title}
+          message={dialog.message}
+          defaultValue={dialog.defaultValue}
+          onConfirm={dialog.onConfirm}
+          onCancel={() => setDialog(prev => ({ ...prev, isOpen: false }))}
+        />
+      </div>
+    );
+  }
+
+  // 3. Se non abbiamo mai visitato l'app e non siamo in landing, mostriamo l'Onboarding
+  if (!hasVisited && view === 'app') {
     return (
       <div style={{ '--primary': config.primaryColor }}>
         <Onboarding onComplete={handleOnboardingComplete} />
@@ -1305,93 +1335,78 @@ export default function App() {
     );
   }
 
-  const isLanding = view === 'landing' || view.startsWith('case-study');
-
+  // Altrimenti mostriamo l'app completa
   return (
-    <div className={isLanding ? "landing-mode" : "app-mode"} style={{ minHeight: '100vh', display: 'flex', flexDirection: isLanding ? 'column' : 'row' }}>
-      
-      {/* Background Layer */}
-      <div style={{
-        position: 'fixed',
-        top: 0, left: 0, 
-        width: '100vw', height: '100vh',
-        background: isLanding 
-          ? 'radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%)' 
-          : (config.backgroundColor || 'var(--bg-main)'),
-        backgroundImage: (!isLanding && config.backgroundImage) ? `url(${config.backgroundImage})` : 'none',
-        backgroundSize: config.backgroundMode === 'repeat' ? 'auto' : config.backgroundMode || 'cover',
-        backgroundRepeat: config.backgroundMode === 'repeat' ? 'repeat' : 'no-repeat',
-        backgroundPosition: 'center',
-        zIndex: -1,
-        pointerEvents: 'none'
-      }}></div>
+    <div className="app-mode" style={{ 
+      minHeight: '100vh', 
+      display: 'flex',
+      background: config.backgroundColor || 'var(--bg-main)',
+      backgroundImage: config.backgroundImage ? `url(${config.backgroundImage})` : 'none',
+      backgroundSize: config.backgroundMode === 'repeat' ? 'auto' : config.backgroundMode || 'cover',
+      backgroundRepeat: config.backgroundMode === 'repeat' ? 'repeat' : 'no-repeat',
+      backgroundPosition: 'center',
+      position: 'relative'
+    }}>
+      {config.backgroundImage && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 0 }}></div>
+      )}
 
-      {view !== 'landing' && showLogin && (
+      {showLogin && (
         <LoginOverlay onLogin={handleLogin} onCancel={() => setShowLogin(false)} />
       )}
       
       {showExport && <ExportModule onClose={() => setShowExport(false)} currentViewDate={viewDate} />}
       
-      {view !== 'landing' && !isPro && isTrialExpired && (
+      {!isPro && isTrialExpired && (
         <PaywallOverlay onUnlock={() => setIsPro(true)} />
       )}
 
-      {view !== 'landing' && (
-        <Sidebar 
-          activeTab={activeTab} 
-          setTab={setTab} 
-          setView={setView} 
-          setShowLogin={setShowLogin} 
-          setShowExport={setShowExport} 
-          showAlert={showAlert} 
-          showConfirm={showConfirm} 
-          showPrompt={showPrompt} 
-        />
-      )}
+      <Sidebar 
+        activeTab={activeTab} 
+        setTab={setTab} 
+        setView={setView} 
+        setShowLogin={setShowLogin} 
+        setShowExport={setShowExport} 
+        showAlert={showAlert} 
+        showConfirm={showConfirm} 
+        showPrompt={showPrompt} 
+      />
 
       <main style={{ 
         flex: 1, 
         minWidth: 0, 
-        padding: view === 'landing' ? '0' : '1.5rem', 
+        padding: '1.5rem', 
         position: 'relative',
         zIndex: 1,
         overflowY: 'auto'
       }}>
-        {view === 'landing' ? (
-          <LandingPage 
-            config={config} 
-            setView={setView} 
-            onEnter={() => { setView('app'); setTab('calendar'); }} 
-          />
-        ) : (
-          <div style={{ maxWidth: '1600px', margin: '0 auto' }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-              <div>
-                 <h1 style={{ fontSize: '2.25rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.25rem' }}>
-                   {activeTab === 'calendar' ? 'Gestione Turni' : 
-                    activeTab === 'staff' ? 'Team Management' : 
-                    activeTab === 'stats' ? 'Analytics Avanzate' : 'Impostazioni Sistema'}
-                 </h1>
-                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                   {activeTab === 'calendar' ? 'Ottimizzazione rotazioni industriali in tempo reale.' : 
-                    activeTab === 'staff' ? 'Configura i ruoli e le competenze del tuo team.' : 
-                    activeTab === 'stats' ? 'Monitora performance e bilanciamento dei carichi.' : 'Configura l\'algoritmo e l\'identità visiva.'}
-                 </p>
-              </div>
-              {activeTab === 'calendar' && (
-                 <div style={{ display: 'flex', gap: '1rem' }}>
-                   <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowExport(true)}>📥 Esporta PDF</button>
-                   <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => window.print()}>🖨️ Stampa</button>
-                 </div>
-              )}
-            </header>
+        <div style={{ maxWidth: '1600px', margin: '0 auto' }}>
+          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+            <div>
+               <h1 style={{ fontSize: '2.25rem', fontWeight: '900', letterSpacing: '-0.04em', marginBottom: '0.25rem' }}>
+                 {activeTab === 'calendar' ? 'Gestione Turni' : 
+                  activeTab === 'staff' ? 'Team Management' : 
+                  activeTab === 'stats' ? 'Analytics Avanzate' : 'Impostazioni Sistema'}
+               </h1>
+               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                 {activeTab === 'calendar' ? 'Ottimizzazione rotazioni industriali in tempo reale.' : 
+                  activeTab === 'staff' ? 'Configura i ruoli e le competenze del tuo team.' : 
+                  activeTab === 'stats' ? 'Monitora performance e bilanciamento dei carichi.' : 'Configura l\'algoritmo e l\'identità visiva.'}
+               </p>
+            </div>
+            {activeTab === 'calendar' && (
+               <div style={{ display: 'flex', gap: '1rem' }}>
+                 <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setShowExport(true)}>📥 Esporta PDF</button>
+                 <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => window.print()}>🖨️ Stampa</button>
+               </div>
+            )}
+          </header>
 
-            {activeTab === 'calendar' && <CalendarView viewDate={viewDate} setViewDate={setViewDate} showExport={showExport} setShowExport={setShowExport} />}
-            {activeTab === 'staff' && <StaffManager />}
-            {activeTab === 'stats' && <StatsDashboard />}
-            {activeTab === 'settings' && <RuleSettings showAlert={showAlert} showConfirm={showConfirm} showPrompt={showPrompt} />}
-          </div>
-        )}
+          {activeTab === 'calendar' && <CalendarView viewDate={viewDate} setViewDate={setViewDate} showExport={showExport} setShowExport={setShowExport} />}
+          {activeTab === 'staff' && <StaffManager />}
+          {activeTab === 'stats' && <StatsDashboard />}
+          {activeTab === 'settings' && <RuleSettings showAlert={showAlert} showConfirm={showConfirm} showPrompt={showPrompt} />}
+        </div>
       </main>
 
       <Dialog 
