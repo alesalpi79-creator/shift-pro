@@ -973,8 +973,13 @@ const LandingPage = ({ onEnter, config, setView }) => {
             <button className="btn-hero" onClick={() => onEnter()} style={{ padding: '1.5rem 3.5rem', fontSize: '1.1rem' }}>
               Inizia Prova Gratuita 14 Giorni 🚀
             </button>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '1rem' }}>
-              <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓</span> Nessuna carta richiesta — Attivazione istantanea
+            <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', paddingLeft: '1rem' }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: '#10b981', fontWeight: 'bold' }}>✓</span> Nessuna carta richiesta
+              </div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ opacity: 0.6 }}>🤖</span> <span style={{ fontWeight: 'bold', color: 'var(--primary)' }}>Google Play:</span> <span style={{ fontStyle: 'italic' }}>In Arrivo</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1289,11 +1294,33 @@ const LandingPage = ({ onEnter, config, setView }) => {
             Inizia Prova Gratuita 14 Giorni 🚀
           </button>
           <div style={{ marginTop: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '2.5rem' }}>
-            <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', opacity: 0.8 }}>Installabile anche come App (PWA) su tutti i dispositivi:</p>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <div style={{ padding: '0.8rem', background: 'rgba(255,255,255,0.15)', borderRadius: '12px', flex: 1, textAlign: 'center' }}>
-                <div style={{ fontWeight: '800', fontSize: '0.8rem' }}>iOS / Android</div>
-                <div style={{ fontSize: '0.7rem' }}>Aggiungi a Home</div>
+            <p style={{ fontSize: '0.9rem', marginBottom: '1.5rem', opacity: 0.8 }}>Disponibile su tutti i tuoi dispositivi:</p>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ padding: '0.8rem', background: 'rgba(255,255,255,0.15)', borderRadius: '12px', flex: 1, minWidth: '140px', textAlign: 'center' }}>
+                <div style={{ fontWeight: '800', fontSize: '0.8rem' }}>Web App (PWA)</div>
+                <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Installazione Istantanea</div>
+              </div>
+              <div style={{ 
+                padding: '0.8rem', 
+                background: 'rgba(0,0,0,0.2)', 
+                borderRadius: '12px', 
+                flex: 1, 
+                minWidth: '140px',
+                textAlign: 'center',
+                border: '1px solid rgba(255,255,255,0.1)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{ 
+                  position: 'absolute', top: '5px', right: '-15px', 
+                  background: '#f59e0b', color: 'white', fontSize: '0.5rem', 
+                  fontWeight: '900', padding: '2px 20px', transform: 'rotate(45deg)',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                }}>SOON</div>
+                <div style={{ fontWeight: '800', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
+                  <span>🤖</span> Google Play
+                </div>
+                <div style={{ fontSize: '0.7rem', color: '#fbbf24', fontWeight: 'bold' }}>In Arrivo</div>
               </div>
             </div>
           </div>
