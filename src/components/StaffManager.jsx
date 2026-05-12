@@ -112,7 +112,7 @@ export default function StaffManager() {
             value={newRole}
             onChange={e => setNewRole(e.target.value)}
           >
-            {config.roles.map(r => (
+            {(config?.roles || []).map(r => (
               <option key={r.id} value={r.id}>{r.label}</option>
             ))}
           </select>
@@ -139,7 +139,7 @@ export default function StaffManager() {
                 <div style={{ display: 'flex', gap: '0.5rem', width: '100%', alignItems: 'center', flexWrap: 'wrap' }}>
                   <input className="input-main" style={{ padding: '0.4rem', flex: '1 1 100%' }} value={editName} onChange={ev => setEditName(ev.target.value)} />
                   <select className="input-main" style={{ padding: '0.4rem', width: '80px' }} value={editRole} onChange={ev => setEditRole(ev.target.value)}>
-                    {config.roles.map(r => <option key={r.id} value={r.id}>{r.id}</option>)}
+                    {(config?.roles || []).map(r => <option key={r.id} value={r.id}>{r.id}</option>)}
                   </select>
                   {editRole === 'OP' && (
                     <select 
@@ -203,8 +203,8 @@ export default function StaffManager() {
                         })()}
                       </div>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: config.roles.find(r => r.id === e.role)?.color }}>
-                          {config.roles.find(r => r.id === e.role)?.label}
+                        <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: (config?.roles || []).find(r => r.id === e.role)?.color }}>
+                          {(config?.roles || []).find(r => r.id === e.role)?.label}
                         </span>
                         {e.role === 'OP' && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Squadra {e.team || 1}</span>}
                         <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', background: 'rgba(0,0,0,0.05)', padding: '2px 4px', borderRadius: '3px' }}>Off: {e.offset || 0}</span>
