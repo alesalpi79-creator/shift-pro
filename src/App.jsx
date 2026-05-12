@@ -464,6 +464,42 @@ const DayDetails = ({ date, onClose, selectedEmployee = null, selection = [], on
   );
 };
 
+const DailySummaryView = ({ days, employees, exceptions, config, onDayClick }) => {
+  const realDays = useMemo(() => days.filter(d => d), [days]);
+
+  return (
+    <div className="fade-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+      {realDays.map(date => {
+        const shifts = calculateDailyShifts(date, employees, exceptions, config);
+        const dateStr = date.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+        const isHolidayDay = isHoliday(date) || date.getDay() === 0;
+
+        const renderGroup = (label, members, color) => (
+          <div style={{ marginBottom: '0.8rem' }}>
+            <div style={{ fontSize: '0.7rem', fontWeight: '800', color: color || 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{label}</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+              {members.length > 0 ? members.map(m => (
+                <div key={m.name} style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', border: `1px solid ${color}44` }}>
+                  {m.name}
+                </div>
+              )) : <span style={{ fontSize: '0.75rem', opacity: 0.3 }}>-</span>}
+            </div>
+          </div>
+        );
+
+        return (
+          <div key={date.toISOString()} className="glass-card" onClick={() => onDayClick(date)} style={{ cursor: 'pointer', borderTop: isHolidayDay ? '4px solid var(--accent-warning)' : '1px solid var(--glass-border)' }}>
+            <h3 style={{ fontSize: '1rem', marginBottom: '1rem', textTransform: 'capitalize', color: isHolidayDay ? 'var(--accent-warning)' : 'inherit' }}>{dateStr}</h3>
+            {renderGroup('Mattina (A)', shifts.filter(s => s.finalShift === 'A'), 'var(--shift-a)')}
+            {renderGroup('Pomeriggio (C)', shifts.filter(s => s.finalShift === 'C'), 'var(--shift-c)')}
+            {renderGroup('Notte (B)', shifts.filter(s => s.finalShift === 'B'), 'var(--shift-b)')}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, selection, setSelection }) => {
   const { userRole, setExceptions } = useApp();
   const [isSelecting, setIsSelecting] = useState(false);
@@ -1078,6 +1114,7 @@ const CalendarView = ({ viewDate, setViewDate, showExport, setShowExport }) => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selection, setSelection] = useState([]);
+  const [calendarMode, setCalendarMode] = useState('grid');
 
   const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
   const startDay = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay();
@@ -1104,6 +1141,27 @@ const CalendarView = ({ viewDate, setViewDate, showExport, setShowExport }) => {
             <button className="nav-btn" onClick={() => setViewDate(new Date())}>Oggi</button>
             <button className="nav-btn" onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))}>→</button>
           </div>
+          
+          <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '12px', border: '1px solid var(--glass-border)', marginLeft: '1rem' }}>
+            <button 
+              onClick={() => setCalendarMode('grid')}
+              style={{ 
+                padding: '0.5rem 1rem', fontSize: '0.75rem', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                background: calendarMode === 'grid' ? 'var(--primary)' : 'transparent',
+                color: calendarMode === 'grid' ? 'white' : 'var(--text-muted)',
+                fontWeight: 'bold', transition: 'all 0.2s'
+              }}
+            >Griglia</button>
+            <button 
+              onClick={() => setCalendarMode('summary')}
+              style={{ 
+                padding: '0.5rem 1rem', fontSize: '0.75rem', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                background: calendarMode === 'summary' ? 'var(--primary)' : 'transparent',
+                color: calendarMode === 'summary' ? 'white' : 'var(--text-muted)',
+                fontWeight: 'bold', transition: 'all 0.2s'
+              }}
+            >Riepilogo</button>
+          </div>
         </div>
         
         <div className="legend" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -1116,18 +1174,28 @@ const CalendarView = ({ viewDate, setViewDate, showExport, setShowExport }) => {
         </div>
       </header>
 
-      <ShiftGridView 
-        days={calendarDays} 
-        employees={employees} 
-        exceptions={exceptions} 
-        config={config} 
-        selection={selection}
-        setSelection={setSelection}
-        onDayClick={(date, empName) => {
-          setSelectedDay(date);
-          setSelectedEmployee(empName);
-        }} 
-      />
+      {calendarMode === 'grid' ? (
+        <ShiftGridView 
+          days={calendarDays} 
+          employees={employees} 
+          exceptions={exceptions} 
+          config={config} 
+          selection={selection}
+          setSelection={setSelection}
+          onDayClick={(date, empName) => {
+            setSelectedDay(date);
+            setSelectedEmployee(empName);
+          }} 
+        />
+      ) : (
+        <DailySummaryView 
+          days={calendarDays} 
+          employees={employees} 
+          exceptions={exceptions} 
+          config={config} 
+          onDayClick={(date) => setSelectedDay(date)}
+        />
+      )}
 
       {selectedDay && (
         <DayDetails 

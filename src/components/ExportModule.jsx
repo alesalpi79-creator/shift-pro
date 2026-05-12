@@ -63,10 +63,22 @@ export default function ExportModule({ onClose, currentViewDate }) {
 
   const handleExport = async () => {
     // Safety check for Premium features
-    if (period === 'year' && !isPro) {
-        alert("L'esportazione annuale richiede il pacchetto Premium.");
-        setPeriod('current');
-        return;
+    if (!isPro) {
+        if (period === 'year') {
+            alert("L'esportazione annuale richiede il pacchetto Premium.");
+            setPeriod('current');
+            return;
+        }
+        
+        const targetMonth = period === 'current' ? currentViewDate.getMonth() : parseInt(specificMonth);
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        
+        if (viewYear > currentYear || (viewYear === currentYear && targetMonth > currentMonth)) {
+            alert("L'esportazione di mesi futuri è una funzione Premium 👑");
+            setPeriod('current');
+            return;
+        }
     }
 
     // Generate data

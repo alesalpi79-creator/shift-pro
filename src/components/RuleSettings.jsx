@@ -144,8 +144,8 @@ export default function RuleSettings({ showAlert, showConfirm, showPrompt }) {
           showAlert("Errore", "Questa sigla esiste già!");
           return;
         }
-        const newColors = { ...safeShiftColors, [id]: '#6366f1' };
-        const newLabels = { ...safeShiftLabels, [id]: id };
+        const newColors = { ...(config?.shiftColors || {}), [id]: '#6366f1' };
+        const newLabels = { ...(config?.shiftLabels || {}), [id]: id };
         setConfig(prev => ({
           ...prev,
           shiftColors: newColors,
@@ -378,7 +378,7 @@ export default function RuleSettings({ showAlert, showConfirm, showPrompt }) {
             >+</button>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '1rem' }}>
-            {Object.keys(config.shiftColors).map(id => (
+            {Object.keys(config?.shiftColors || {}).map(id => (
               <div key={id} style={{ textAlign: 'center', position: 'relative' }}>
                 { !['A', 'B', 'C', 'R'].includes(id) && (
                   <button 
@@ -509,7 +509,7 @@ export default function RuleSettings({ showAlert, showConfirm, showPrompt }) {
           onClick={() => {
             showPrompt("Nuovo Ruolo", "Nome del nuovo ruolo (es. Supervisore, Tecnico...):", "", (name) => {
               if (name && name.trim()) {
-                const newRoles = [...(config.roles || [])];
+                const newRoles = [...(config?.roles || [])];
                 const id = name.trim().toUpperCase().substring(0, 3);
                 if (newRoles.find(r => r.id === id)) {
                   showAlert("Errore", "Esiste già un ruolo con ID simile.");
@@ -531,7 +531,7 @@ export default function RuleSettings({ showAlert, showConfirm, showPrompt }) {
             <div style={{ fontWeight: 'bold', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem', color: safeShiftColors[shiftId] || 'var(--primary)' }}>
               Turno {safeShiftLabels[shiftId] || shiftId}
             </div>
-            {(config.roles || []).map(role => (
+            {(config?.roles || []).map(role => (
               <div key={role.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <span 
@@ -540,7 +540,7 @@ export default function RuleSettings({ showAlert, showConfirm, showPrompt }) {
                     onClick={() => {
                       showPrompt("Rinomina Ruolo", `Rinomina "${role.label}":`, role.label, (newName) => {
                         if (newName && newName.trim()) {
-                          const newRoles = config.roles.map(r => r.id === role.id ? { ...r, label: newName.trim() } : r);
+                          const newRoles = (config?.roles || []).map(r => r.id === role.id ? { ...r, label: newName.trim() } : r);
                           saveConfig('roles', newRoles);
                         }
                       });
@@ -550,7 +550,7 @@ export default function RuleSettings({ showAlert, showConfirm, showPrompt }) {
                     <button 
                       onClick={() => {
                         showConfirm("Elimina Ruolo", `Eliminare il ruolo "${role.label}"?`, () => {
-                          const newRoles = config.roles.filter(r => r.id !== role.id);
+                          const newRoles = (config?.roles || []).filter(r => r.id !== role.id);
                           saveConfig('roles', newRoles);
                         });
                       }}
@@ -561,20 +561,20 @@ export default function RuleSettings({ showAlert, showConfirm, showPrompt }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <button 
                     onClick={() => {
-                      const constraints = config.constraints || {};
+                      const constraints = config?.constraints || {};
                       const val = Math.max(0, (constraints[shiftId]?.[role.id] || 0) - 1);
-                      const newConstraints = { ...config.constraints };
+                      const newConstraints = { ...(config?.constraints || {}) };
                       if (!newConstraints[shiftId]) newConstraints[shiftId] = {};
                       newConstraints[shiftId][role.id] = val;
                       saveConfig('constraints', newConstraints);
                     }}
                     style={{ width: '24px', height: '24px', borderRadius: '4px', border: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
                   >-</button>
-                  <span style={{ minWidth: '15px', textAlign: 'center', fontWeight: 'bold', fontSize: '0.9rem' }}>{config.constraints[shiftId]?.[role.id] || 0}</span>
+                  <span style={{ minWidth: '15px', textAlign: 'center', fontWeight: 'bold', fontSize: '0.9rem' }}>{config?.constraints?.[shiftId]?.[role.id] || 0}</span>
                   <button 
                     onClick={() => {
-                      const val = (config.constraints[shiftId]?.[role.id] || 0) + 1;
-                      const newConstraints = { ...config.constraints };
+                      const val = (config?.constraints?.[shiftId]?.[role.id] || 0) + 1;
+                      const newConstraints = { ...(config?.constraints || {}) };
                       if (!newConstraints[shiftId]) newConstraints[shiftId] = {};
                       newConstraints[shiftId][role.id] = val;
                       saveConfig('constraints', newConstraints);
