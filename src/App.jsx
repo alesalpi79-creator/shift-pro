@@ -1060,13 +1060,13 @@ const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
       <section id="pricing" style={{ padding: '8rem 2rem', background: '#0f172a', color: 'white' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1.5rem' }}>Prezzo semplice, <span style={{ color: 'var(--primary)' }}>per sempre.</span></h2>
-          <p style={{ color: '#94a3b8', fontSize: '1.25rem', marginBottom: '4rem' }}>Nessun abbonamento mensile. Paghi una volta, lo usi per sempre su tutti i tuoi dispositivi.</p>
+          <p style={{ color: '#94a3b8', fontSize: '1.25rem', marginBottom: '4rem' }}>Piani flessibili per ogni esigenza. Gestisci il tuo team con la potenza dell'AI.</p>
           
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '3rem', padding: '4rem', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: '2rem', right: '-3rem', background: 'var(--primary)', padding: '0.5rem 4rem', transform: 'rotate(45deg)', fontWeight: '900', fontSize: '0.8rem' }}>BEST VALUE</div>
-            <div style={{ fontSize: '1rem', color: 'var(--primary)', fontWeight: '800', marginBottom: '1rem' }}>LICENZA ILLIMITATA</div>
-            <div style={{ fontSize: '5rem', fontWeight: '900', marginBottom: '1rem' }}>€7,99</div>
-            <p style={{ color: '#94a3b8', marginBottom: '3rem' }}>Una tantum • Aggiornamenti inclusi • Supporto prioritario</p>
+            <div style={{ fontSize: '1rem', color: 'var(--primary)', fontWeight: '800', marginBottom: '1rem' }}>PIANO PREMIUM AI</div>
+            <div style={{ fontSize: '5rem', fontWeight: '900', marginBottom: '1rem' }}>€7,99 <span style={{ fontSize: '1.5rem', opacity: 0.5 }}>/ mese</span></div>
+            <p style={{ color: '#94a3b8', marginBottom: '3rem' }}>Abbonamento Mensile • Aggiornamenti inclusi • Supporto prioritario</p>
             <ul style={{ textAlign: 'left', maxWidth: '400px', margin: '0 auto 3rem', display: 'flex', flexDirection: 'column', gap: '1rem', color: '#cbd5e1' }}>
               <li>✅ Gestione illimitata dipendenti</li>
               <li>✅ Backup cloud & Sincronizzazione multi-device</li>
@@ -1229,7 +1229,7 @@ const PaywallOverlay = ({ onUnlock }) => {
           >
             Sblocca Versione Pro — €7,99 / mese
           </button>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Pagamento unico • Accesso a vita</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Abbonamento ricorrente • Disdici quando vuoi</div>
        </div>
     </div>
   );
