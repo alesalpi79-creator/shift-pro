@@ -655,8 +655,8 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
 
               return (
                 <th key={d.toISOString()} title={isUnderstaffed ? missingDesc.join(' | ') : 'Copertura OK'}
+                  className={(isHoliday(d) || d.getDay() === 0 || d.getDay() === 6) ? 'holiday-th' : ''}
                   style={{ 
-                    color: (isHoliday(d) || d.getDay() === 0 || d.getDay() === 6) ? 'var(--accent-warning)' : '#1e293b',
                     background: 'white',
                     borderTop: (d.getDay() === 0 || d.getDay() === 6 || isHoliday(d)) ? '3px solid var(--accent-warning)' : 'none'
                   }}

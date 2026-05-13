@@ -613,6 +613,11 @@ label, p {
   border-bottom: 2px solid var(--primary);
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   padding: 1rem 0.5rem !important;
+  color: #1e293b;
+}
+
+.shift-table th.holiday-th {
+  color: var(--accent-warning) !important;
 }
 
 .shift-table th:first-child {
@@ -825,9 +830,13 @@ button[data-shift="CF"] {
     top: 0;
     z-index: 100 !important;
     background: #1e293b !important; /* Solid background for mobile performance */
+    color: #f1f5f9 !important; /* Light slate for numbers */
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-bottom: 2px solid var(--primary);
+  }
+  .shift-table th.holiday-th {
+    color: var(--accent-warning) !important;
   }
   .glass-card {
     animation: none !important;
