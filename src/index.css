@@ -120,6 +120,10 @@ body::after {
   overflow-y: auto; /* Fix for bottom clipping */
 }
 
+.sidebar-nav {
+  flex: 1;
+}
+
 .nav-item {
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
@@ -722,25 +726,55 @@ button[data-shift="CF"] {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     overflow-y: visible;
   }
-  .sidebar > div:first-child { 
-    margin-bottom: 1rem !important;
+  .sidebar > div:first-child h2 + div {
+    display: none !important;
   }
-  .sidebar nav {
+  .sidebar > div:nth-child(2) {
+    margin-bottom: 1rem !important;
+    padding: 0.5rem !important;
+  }
+  .sidebar > div:nth-child(2) > div:last-child {
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    max-height: none !important;
+    scrollbar-width: none;
+  }
+  .sidebar > div:nth-child(2) > div:last-child::-webkit-scrollbar { display: none; }
+  .sidebar > div:nth-child(2) > div:last-child > div {
+    min-width: 120px;
+    padding: 0.4rem 0.75rem !important;
+  }
+  .sidebar-nav {
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
+    gap: 0.75rem;
     overflow-x: auto;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+    margin: 1rem 0;
+    scrollbar-width: none;
+    align-items: center;
+    flex: none;
   }
+  .sidebar-nav::-webkit-scrollbar { display: none; }
+
   .nav-item {
     margin-bottom: 0;
     white-space: nowrap;
-    padding: 0.5rem 0.8rem;
-    font-size: 0.85rem;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.75rem;
+    flex-direction: column;
+    gap: 0.4rem;
+    justify-content: center;
+    align-items: center;
+    min-width: 75px;
+    height: 75px;
+    flex-shrink: 0;
+  }
+  .nav-icon {
+    font-size: 1.1rem;
   }
   .sidebar > div:last-child {
-    margin-top: 0 !important;
+    margin-top: 1rem !important;
   }
   main {
     padding: 0.75rem !important;

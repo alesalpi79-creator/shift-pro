@@ -180,7 +180,7 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
         </div>
       </div>
 
-      <nav style={{ flex: 1 }}>
+      <nav className="sidebar-nav">
         <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => { setTab('home'); setView('landing'); }}>
           <span className="nav-icon">🏠</span> Home
         </div>
