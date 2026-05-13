@@ -1068,6 +1068,10 @@ const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
                alignItems: 'center',
                gap: '1.5rem'
             }}>
+               <div style={{ position: 'relative', width: '80px', height: '80px', marginBottom: '0.5rem' }}>
+                  <img src="/pwa-512x512.png" alt="App Icon" style={{ width: '100%', height: '100%', borderRadius: '18px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }} />
+                  <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'var(--primary)', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px', fontWeight: '900' }}>AI</div>
+               </div>
                <div style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
