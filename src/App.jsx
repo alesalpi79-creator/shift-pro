@@ -1440,7 +1440,7 @@ export default function App() {
 
   // Altrimenti mostriamo l'app completa
   return (
-    <div className="app-mode" style={{ 
+    <div className="app-container" style={{ 
       minHeight: '100vh', 
       display: 'flex',
       background: config.backgroundColor || 'var(--bg-main)',
