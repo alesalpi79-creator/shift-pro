@@ -843,6 +843,40 @@ button[data-shift="CF"] {
     opacity: 1 !important;
     transform: none !important;
   }
+
+  /* Landing Page Mobile Fixes */
+  .landing-page nav div:nth-child(2) {
+    display: none !important; /* Hide links like "Prezzi", "Contatti" etc on mobile */
+  }
+  .landing-page header {
+    padding-top: 8rem !important;
+    padding-bottom: 3rem !important;
+  }
+  .landing-page h1 {
+    font-size: 2.2rem !important;
+    line-height: 1.1 !important;
+  }
+  .landing-page section {
+    padding: 4rem 1rem !important;
+  }
+  .landing-page .feature-card, .landing-page .case-card {
+    padding: 1.5rem !important;
+    border-radius: 1.5rem !important;
+  }
+  .landing-page div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  .landing-page div[style*="display: flex"][style*="gap: 3rem"] {
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+  .landing-page div[style*="flex: 1"] {
+    min-width: 0 !important;
+  }
+  .landing-page div[style*="font-size: 5rem"] {
+    font-size: 3rem !important;
+  }
 }
 
 /* Tooltip Styles */
