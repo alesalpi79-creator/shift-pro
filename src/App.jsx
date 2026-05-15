@@ -117,18 +117,11 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
       <div style={{ marginBottom: '2.5rem', display: 'flex', alignItems: 'center', gap: '1rem', padding: '0 0.5rem' }}>
         <div style={{ 
           width: '42px', height: '42px', 
-          background: config.appLogo ? 'none' : `linear-gradient(135deg, ${config.primaryColor}, #fff)`, 
-          boxShadow: config.appLogo ? 'none' : `0 8px 25px ${config.primaryColor}66`,
+          background: `linear-gradient(135deg, ${config.primaryColor}, #fff)`, 
+          boxShadow: `0 8px 25px ${config.primaryColor}66`,
           borderRadius: '12px', display: 'grid', placeItems: 'center', fontWeight: '900',
-          color: 'var(--bg-main)', fontSize: '1.4rem',
-          overflow: 'hidden'
-        }}>
-          {config.appLogo ? (
-            <img src={config.appLogo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : (
-            config.appName.charAt(0)
-          )}
-        </div>
+          color: 'var(--bg-main)', fontSize: '1.4rem'
+        }}>{config.appName.charAt(0)}</div>
         <div>
           <h2 style={{ fontSize: '1.25rem', letterSpacing: '-0.04em', fontWeight: '800', lineHeight: 1 }}>{config.appName}</h2>
           {config.appTagline && (
@@ -180,7 +173,7 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
         </div>
       </div>
 
-      <nav className="sidebar-nav">
+      <nav style={{ flex: 1 }}>
         <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => { setTab('home'); setView('landing'); }}>
           <span className="nav-icon">🏠</span> Home
         </div>
@@ -205,6 +198,15 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
         )}
 
 
+        {config.appLogo && (
+          <div style={{ marginTop: '3rem', padding: '1rem', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '15px', border: '1px solid var(--glass-border)' }}>
+            <img 
+              src={config.appLogo} 
+              alt="Azienda" 
+              style={{ width: '100%', maxHeight: '120px', objectFit: 'contain', filter: 'drop-shadow(0 5px 15px rgba(0,0,0,0.2))' }} 
+            />
+          </div>
+        )}
       </nav>
 
       <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-md)', marginTop: 'auto' }}>
@@ -431,7 +433,7 @@ const DayDetails = ({ date, onClose, selectedEmployee = null, selection = [], on
              {/* Riepilogo Copertura */}
              <div className="glass-card" style={{ padding: '0.75rem', fontSize: '0.8rem', background: 'rgba(255,255,255,0.05)' }}>
                 {info.map((inf, i) => (
-                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: i < 2 ? '4px' : 0 }}>
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: i < 2 ? '4px' : 0 }}>
                     <span style={{ fontWeight: 'bold' }}>{inf.shiftName}:</span>
                     <span>{inf.ctCount} CT / {inf.opCount} OP</span>
                   </div>
@@ -655,8 +657,8 @@ const ShiftGridView = ({ days, employees, exceptions, config, onDayClick, select
 
               return (
                 <th key={d.toISOString()} title={isUnderstaffed ? missingDesc.join(' | ') : 'Copertura OK'}
-                  className={(isHoliday(d) || d.getDay() === 0 || d.getDay() === 6) ? 'holiday-th' : ''}
                   style={{ 
+                    color: (isHoliday(d) || d.getDay() === 0 || d.getDay() === 6) ? 'var(--accent-warning)' : '#1e293b',
                     background: 'white',
                     borderTop: (d.getDay() === 0 || d.getDay() === 6 || isHoliday(d)) ? '3px solid var(--accent-warning)' : 'none'
                   }}
@@ -844,7 +846,7 @@ const ProjectPreviewTable = () => {
 };
 
 
-const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
+const LandingPage = ({ config, setView, onEnter }) => {
   return (
     <div className="landing-page" style={{ color: '#1e293b' }}>
       <nav className="glass-nav" style={{ 
@@ -856,19 +858,7 @@ const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
         zIndex: 1000, boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ 
-            width: '32px', height: '32px', 
-            background: config.appLogo ? 'none' : 'var(--primary)', 
-            borderRadius: '8px', display: 'grid', placeItems: 'center', 
-            color: 'white', fontWeight: '900',
-            overflow: 'hidden'
-          }}>
-            {config.appLogo ? (
-              <img src={config.appLogo} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              config.appName.charAt(0)
-            )}
-          </div>
+          <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '8px', display: 'grid', placeItems: 'center', color: 'white', fontWeight: '900' }}>T</div>
           <span style={{ fontWeight: '800', fontSize: '1.1rem', letterSpacing: '-0.02em' }}>{config.appName}</span>
         </div>
         <div style={{ display: 'flex', gap: '2rem', fontSize: '0.85rem', fontWeight: '600' }}>
@@ -876,6 +866,7 @@ const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
           <a href="#testimonials" style={{ color: 'inherit', textDecoration: 'none' }}>Testimonianze</a>
           <a href="#cases" style={{ color: 'inherit', textDecoration: 'none' }}>Casi Studio</a>
           <a href="#pricing" style={{ color: 'inherit', textDecoration: 'none' }}>Prezzi</a>
+          <a href="#contact" style={{ color: 'inherit', textDecoration: 'none' }}>Contatti</a>
         </div>
         <button onClick={onEnter} className="btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '50px', fontSize: '0.8rem' }}>Prova Gratis</button>
       </nav>
@@ -890,12 +881,11 @@ const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
         <h1 style={{ fontSize: 'clamp(2.5rem, 8vw, 4.5rem)', fontWeight: '900', lineHeight: '1', letterSpacing: '-0.04em', marginBottom: '1.5rem', color: '#0f172a' }}>
           Gestisci i tuoi <span style={{ color: 'var(--primary)' }}>Turni Pro AI</span> in pochi secondi.
         </h1>
-        <p style={{ fontSize: '1.25rem', color: '#64748b', marginBottom: '3rem', maxWidth: '700px', margin: '0 auto 3rem' }}>
+        <h2 style={{ fontSize: 'clamp(1rem, 4vw, 1.25rem)', color: '#64748b', fontWeight: 'normal', marginBottom: '3rem', maxWidth: '700px', margin: '0 auto 3rem' }}>
           Turni Pro AI è l'unico software che combina algoritmi di rotazione industriale con un'interfaccia premium. Gestisci il tuo team senza stress.
-        </p>
+        </h2>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button onClick={onEnter} className="btn-primary" style={{ padding: '1.25rem 2.5rem', fontSize: '1rem', borderRadius: '1rem', boxShadow: '0 20px 40px var(--primary-glow)' }}>Inizia Ora — È Gratis</button>
-          <button className="btn-secondary" style={{ padding: '1.25rem 2.5rem', fontSize: '1rem', borderRadius: '1rem', background: 'white', border: '1px solid #e2e8f0', color: '#0f172a' }}>Guarda Demo</button>
         </div>
 
         {/* Dashboard Mockup Visual */}
@@ -1068,10 +1058,6 @@ const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
                alignItems: 'center',
                gap: '1.5rem'
             }}>
-               <div style={{ position: 'relative', width: '80px', height: '80px', marginBottom: '0.5rem' }}>
-                  <img src="/pwa-512x512.png" alt="App Icon" style={{ width: '100%', height: '100%', borderRadius: '18px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }} />
-                  <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'var(--primary)', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '10px', fontWeight: '900' }}>AI</div>
-               </div>
                <div style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
@@ -1095,8 +1081,110 @@ const LandingPage = ({ config, setView, onEnter, onPlayVideo }) => {
         </div>
       </section>
 
-      <footer style={{ padding: '4rem 2rem', textAlign: 'center', borderTop: '1px solid #f1f5f9' }}>
-        <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>© 2026 {config.appName} — Made with ❤️ for Professionals.</p>
+      <section id="contact" style={{ padding: '8rem 2rem', background: '#f8fafc' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+          <div>
+            <h2 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1.5rem', letterSpacing: '-0.04em' }}>Parliamo del tuo progetto.</h2>
+            <p style={{ color: '#64748b', fontSize: '1.1rem', marginBottom: '3rem' }}>Hai domande su come ottimizzare i turni della tua azienda? Il nostro team è a disposizione per una consulenza gratuita.</p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                <div style={{ width: '50px', height: '50px', background: 'white', borderRadius: '15px', display: 'grid', placeItems: 'center', boxShadow: '0 10px 20px rgba(0,0,0,0.05)', fontSize: '1.2rem' }}>📧</div>
+                <div>
+                  <div style={{ fontWeight: '800', fontSize: '0.9rem' }}>Email Supporto</div>
+                  <div style={{ color: 'var(--primary)', fontWeight: '700' }}>alesalpi79@gmail.com</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                <div style={{ width: '50px', height: '50px', background: 'white', borderRadius: '15px', display: 'grid', placeItems: 'center', boxShadow: '0 10px 20px rgba(0,0,0,0.05)', fontSize: '1.2rem' }}>📱</div>
+                <div>
+                  <div style={{ fontWeight: '800', fontSize: '0.9rem' }}>WhatsApp & Telegram</div>
+                  <div style={{ color: 'var(--primary)', fontWeight: '700' }}>Supporto Rapido 24/7</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ background: 'white', padding: '3rem', borderRadius: '2.5rem', boxShadow: '0 30px 60px rgba(0,0,0,0.05)', border: '1px solid #f1f5f9' }}>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '2rem' }}>Inviaci un messaggio</h3>
+            <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }} onSubmit={(e) => e.preventDefault()}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <input type="text" placeholder="Nome" className="input-main" style={{ padding: '1rem' }} />
+                <input type="email" placeholder="Email" className="input-main" style={{ padding: '1rem' }} />
+              </div>
+              <textarea placeholder="Come possiamo aiutarti?" className="input-main" style={{ padding: '1rem', minHeight: '120px', resize: 'vertical' }}></textarea>
+              <button className="btn-primary" style={{ width: '100%', padding: '1.25rem', borderRadius: '1rem', fontSize: '1rem' }}>Invia Messaggio</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <footer style={{ 
+        marginTop: '8rem', 
+        padding: '4rem 2rem', 
+        borderTop: '1px solid var(--glass-border)', 
+        background: 'white',
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'flex-start', 
+        flexWrap: 'wrap', 
+        gap: '3rem' 
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '40px', height: '40px', background: 'var(--primary)', borderRadius: '12px', display: 'grid', placeItems: 'center', color: 'white', fontWeight: '900', fontSize: '1.2rem' }}>T</div>
+          <div>
+            <div style={{ fontWeight: '800', fontSize: '1.1rem', letterSpacing: '-0.02em' }}>{config.appName}</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>© 2026 Professional Shift Management</div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '4rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <span style={{ fontWeight: 'bold', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Prodotto</span>
+            <a href="#features" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Funzionalità</a>
+            <a href="#testimonials" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Testimonianze</a>
+            <a href="#cases" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Casi Studio</a>
+            <a href="#pricing" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Prezzi</a>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <span style={{ fontWeight: 'bold', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Supporto</span>
+            <a href="#" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Guide Video</a>
+            <a href="#" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Documentazione</a>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <span style={{ fontWeight: 'bold', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Legal</span>
+            <a href="#" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Privacy Policy</a>
+            <a href="#" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Termini di Servizio</a>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <div className="tooltip-container">
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px', 
+              padding: '12px 24px', 
+              background: 'white', 
+              borderRadius: '12px', 
+              border: '1px solid var(--glass-border)', 
+              cursor: 'help', 
+              boxShadow: '0 10px 25px rgba(0,0,0,0.03)',
+              transition: 'all 0.3s'
+            }}>
+              <span style={{ fontSize: '1.2rem' }}>👨‍💻</span>
+              <span style={{ fontWeight: 'bold', fontSize: '0.85rem' }}>Contatti</span>
+            </div>
+            <div className="tooltip-content">
+              <strong style={{ display: 'block', marginBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px' }}>Contatti Diretti 📧</strong>
+              <div style={{ fontSize: '0.8rem', lineHeight: '1.6' }}>
+                Nome: <strong>Alessandro Alpi</strong><br/>
+                Email: <strong>alesalpi79@gmail.com</strong><br/>
+                <small style={{ opacity: 0.7, marginTop: '8px', display: 'block' }}>(Disponibile per consulenze e supporto)</small>
+              </div>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   );
@@ -1440,7 +1528,7 @@ export default function App() {
 
   // Altrimenti mostriamo l'app completa
   return (
-    <div className="app-container" style={{ 
+    <div className="app-mode" style={{ 
       minHeight: '100vh', 
       display: 'flex',
       background: config.backgroundColor || 'var(--bg-main)',
