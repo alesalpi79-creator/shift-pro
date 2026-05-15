@@ -857,7 +857,10 @@ const LandingPage = ({ config, setView, onEnter }) => {
         border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '100px',
         zIndex: 1000, boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div 
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}
+        >
           <div style={{ width: '32px', height: '32px', background: 'var(--primary)', borderRadius: '8px', display: 'grid', placeItems: 'center', color: 'white', fontWeight: '900' }}>T</div>
           <span style={{ fontWeight: '800', fontSize: '1.1rem', letterSpacing: '-0.02em' }}>{config.appName}</span>
         </div>
@@ -1130,7 +1133,10 @@ const LandingPage = ({ config, setView, onEnter }) => {
         flexWrap: 'wrap', 
         gap: '3rem' 
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div 
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          style={{ display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'pointer' }}
+        >
           <div style={{ width: '40px', height: '40px', background: 'var(--primary)', borderRadius: '12px', display: 'grid', placeItems: 'center', color: 'white', fontWeight: '900', fontSize: '1.2rem' }}>T</div>
           <div>
             <div style={{ fontWeight: '800', fontSize: '1.1rem', letterSpacing: '-0.02em' }}>{config.appName}</div>
