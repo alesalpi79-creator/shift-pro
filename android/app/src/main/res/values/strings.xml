@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">TurniPro</string>
-    <string name="title_activity_main">TurniPro</string>
+    <string name="app_name">Turni Pro AI</string>
+    <string name="title_activity_main">Turni Pro AI</string>
     <string name="package_name">com.alesa.turnipro</string>
     <string name="custom_url_scheme">com.alesa.turnipro</string>
 </resources>
