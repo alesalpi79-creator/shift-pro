@@ -9,8 +9,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['favicon.svg', 'icons.svg', 'sitemap.xml', 'robots.txt', 'privacy.html', 'google67e6969bb5c8f46f.html'],
+      includeAssets: ['favicon.svg', 'icons.svg', 'sitemap.xml', 'robots.txt', 'privacy.html', 'google67e6969bb5c8f46f.html', 'screenshot-wide.png', 'screenshot-narrow.png'],
       manifest: {
+        id: '/?source=pwa',
         name: 'Turni Pro AI',
         short_name: 'TurniPro',
         description: 'Gestione turni intelligente con intelligenza artificiale',
@@ -46,16 +47,18 @@ export default defineConfig({
         ],
         screenshots: [
           {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
+            src: 'screenshot-wide.png',
+            sizes: '1280x720',
             type: 'image/png',
-            form_factor: 'wide'
+            form_factor: 'wide',
+            label: 'Dashboard gestione turni'
           },
           {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
+            src: 'screenshot-narrow.png',
+            sizes: '540x960',
             type: 'image/png',
-            form_factor: 'narrow'
+            form_factor: 'narrow',
+            label: 'App mobile turni'
           }
         ]
       }
