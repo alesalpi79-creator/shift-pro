@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from './context/AppContext';
+import { Capacitor } from '@capacitor/core';
 // Trigger Deploy: Rename project v2.6.9
 import chaosImg from './assets/chaos.png';
 import heroMockup from './assets/hero_mockup.png';
@@ -173,7 +174,7 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
         </div>
       </div>
 
-      <nav style={{ flex: 1 }}>
+      <nav className="sidebar-nav" style={{ flex: 1 }}>
         <div className={`nav-item ${activeTab === 'home' ? 'active' : ''}`} onClick={() => { setTab('home'); setView('landing'); }}>
           <span className="nav-icon">🏠</span> Home
         </div>
@@ -198,18 +199,19 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
         )}
 
 
-        {config.appLogo && (
-          <div style={{ marginTop: '3rem', padding: '1rem', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '15px', border: '1px solid var(--glass-border)' }}>
-            <img 
-              src={config.appLogo} 
-              alt="Azienda" 
-              style={{ width: '100%', maxHeight: '120px', objectFit: 'contain', filter: 'drop-shadow(0 5px 15px rgba(0,0,0,0.2))' }} 
-            />
-          </div>
-        )}
       </nav>
 
-      <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-md)', marginTop: 'auto' }}>
+      {config.appLogo && (
+        <div className="sidebar-logo" style={{ marginTop: 'auto', padding: '1rem', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '15px', border: '1px solid var(--glass-border)', marginBottom: '1rem' }}>
+          <img 
+            src={config.appLogo} 
+            alt="Azienda" 
+            style={{ width: '100%', maxHeight: '120px', objectFit: 'contain', filter: 'drop-shadow(0 5px 15px rgba(0,0,0,0.2))' }} 
+          />
+        </div>
+      )}
+
+      <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-md)', marginTop: config.appLogo ? '0' : 'auto' }}>
         <div 
           onClick={() => {
             if (userRole === 'admin') {
@@ -242,11 +244,7 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
                 setTab('calendar');
               }
             } else {
-              if (!isPro && !isTrialExpired) {
-                setUserRole('admin');
-              } else {
-                setShowLogin(true);
-              }
+              setShowLogin(true);
             }
           }}
           className="btn-primary"
@@ -273,22 +271,6 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
               📥 Ripristina
               <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImport} />
             </label>
-          </div>
-        )}
-
-        {!isPro && (
-          <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--primary-glow)', borderRadius: '12px', border: '1px solid var(--primary)', textAlign: 'center' }}>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '5px' }}>VERSIONE TRIAL</div>
-            <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '10px' }}>Passa a Pro per sbloccare tutte le funzioni.</p>
-            <button 
-              className="btn-primary" 
-              style={{ width: '100%', fontSize: '0.7rem', background: 'var(--primary)', border: 'none' }}
-              onClick={() => {
-                window.location.href = 'https://buy.stripe.com/3cI8wP1T67tDcSkdPO8bS00';
-              }}
-            >
-              🚀 ATTIVA PRO
-            </button>
           </div>
         )}
       </div>
@@ -868,10 +850,9 @@ const LandingPage = ({ config, setView, onEnter }) => {
           <a href="#features" style={{ color: 'inherit', textDecoration: 'none' }}>Funzionalità</a>
           <a href="#testimonials" style={{ color: 'inherit', textDecoration: 'none' }}>Testimonianze</a>
           <a href="#cases" style={{ color: 'inherit', textDecoration: 'none' }}>Casi Studio</a>
-          <a href="#pricing" style={{ color: 'inherit', textDecoration: 'none' }}>Prezzi</a>
           <a href="#contact" style={{ color: 'inherit', textDecoration: 'none' }}>Contatti</a>
         </div>
-        <button onClick={onEnter} className="btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '50px', fontSize: '0.8rem' }}>Prova Gratis</button>
+        <button onClick={onEnter} className="btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '50px', fontSize: '0.8rem' }}>Inizia</button>
       </nav>
 
       <header style={{ 
@@ -888,7 +869,9 @@ const LandingPage = ({ config, setView, onEnter }) => {
           Turni Pro AI è l'unico software che combina algoritmi di rotazione industriale con un'interfaccia premium. Gestisci il tuo team senza stress.
         </h2>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button onClick={onEnter} className="btn-primary" style={{ padding: '1.25rem 2.5rem', fontSize: '1rem', borderRadius: '1rem', boxShadow: '0 20px 40px var(--primary-glow)' }}>Inizia Ora — È Gratis</button>
+          <button onClick={onEnter} className="btn-primary" style={{ padding: '1.25rem 2.5rem', fontSize: '1rem', borderRadius: '1rem', boxShadow: '0 20px 40px var(--primary-glow)' }}>
+            {Capacitor.isNativePlatform() ? 'Inizia Ora — App Gratuita' : 'Prova gratis per 14 giorni'}
+          </button>
         </div>
 
         {/* Dashboard Mockup Visual */}
@@ -1033,56 +1016,50 @@ const LandingPage = ({ config, setView, onEnter }) => {
         </div>
       </section>
 
-      <section id="pricing" style={{ padding: '8rem 2rem', background: '#0f172a', color: 'white' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1.5rem' }}>Prezzo semplice, <span style={{ color: 'var(--primary)' }}>per sempre.</span></h2>
-          <p style={{ color: '#94a3b8', fontSize: '1.25rem', marginBottom: '4rem' }}>Piani flessibili per ogni esigenza. Gestisci il tuo team con la potenza dell'AI.</p>
-          
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '3rem', padding: '4rem', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: '2rem', right: '-3rem', background: 'var(--primary)', padding: '0.5rem 4rem', transform: 'rotate(45deg)', fontWeight: '900', fontSize: '0.8rem' }}>BEST VALUE</div>
-            <div style={{ fontSize: '1rem', color: 'var(--primary)', fontWeight: '800', marginBottom: '1rem' }}>PIANO PREMIUM AI</div>
-            <div style={{ fontSize: '5rem', fontWeight: '900', marginBottom: '1rem' }}>€7,99 <span style={{ fontSize: '1.5rem', opacity: 0.5 }}>/ mese</span></div>
-            <p style={{ color: '#94a3b8', marginBottom: '3rem' }}>Abbonamento Mensile • Aggiornamenti inclusi • Supporto prioritario</p>
-            <ul style={{ textAlign: 'left', maxWidth: '400px', margin: '0 auto 3rem', display: 'flex', flexDirection: 'column', gap: '1rem', color: '#cbd5e1' }}>
-              <li>✅ Gestione illimitata dipendenti</li>
-              <li>✅ Backup cloud & Sincronizzazione multi-device</li>
-              <li>✅ Esportazione Excel e PDF senza limiti</li>
-              <li>✅ Supporto per turni complessi 24/7</li>
-            </ul>
-            <button onClick={onEnter} className="btn-primary" style={{ width: '100%', padding: '1.5rem', fontSize: '1.2rem', borderRadius: '1rem' }}>Inizia Versione Pro</button>
+      {/* STRIPE PRICING SECTION - HIDDEN ON NATIVE APPS TO COMPLY WITH GOOGLE PLAY */}
+      {!Capacitor.isNativePlatform() && (
+        <section id="pricing" style={{ padding: '8rem 2rem', background: 'white' }}>
+          <div style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: '900', marginBottom: '1rem' }}>Semplice. Trasparente. Completo.</h2>
+            <p style={{ color: '#64748b', fontSize: '1.1rem', marginBottom: '4rem' }}>Prova tutte le funzionalità Pro gratis per 14 giorni. Poi decidi se continuare.</p>
             
-            {/* Play Store Info Section */}
-            <div style={{ 
-               marginTop: '3rem', 
-               paddingTop: '3rem', 
-               borderTop: '1px solid rgba(255,255,255,0.1)',
-               display: 'flex',
-               flexDirection: 'column',
-               alignItems: 'center',
-               gap: '1.5rem'
-            }}>
-               <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '10px', 
-                  background: 'rgba(255,255,255,0.05)', 
-                  padding: '8px 16px', 
-                  borderRadius: '100px',
-                  border: '1px solid rgba(255,255,255,0.1)'
-               }}>
-                  <span style={{ fontSize: '1.2rem' }}>🤖</span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.5px', color: '#94a3b8' }}>ANDROID APP COMING SOON</span>
-               </div>
-               <p style={{ fontSize: '0.85rem', color: '#64748b', maxWidth: '500px' }}>
-                  Stiamo finalizzando la release ufficiale sul Google Play Store. Nel frattempo, puoi installare la PWA direttamente dal browser Chrome sul tuo smartphone.
-               </p>
-               <div style={{ opacity: 0.3, filter: 'grayscale(1)', cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play Store" style={{ height: '45px' }} />
-               </div>
+            <div style={{ background: '#f8fafc', borderRadius: '2.5rem', padding: '3rem', border: '2px solid var(--primary)', boxShadow: '0 20px 40px var(--primary-glow)', maxWidth: '450px', margin: '0 auto', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)', background: 'var(--primary)', color: 'white', padding: '0.5rem 1.5rem', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.8rem', letterSpacing: '1px' }}>PIÙ SCELTO</div>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '1rem', color: '#0f172a' }}>Turni Pro AI</h3>
+              <div style={{ fontSize: '4rem', fontWeight: '900', color: '#0f172a', lineHeight: 1, marginBottom: '0.5rem' }}>
+                7,99€<span style={{ fontSize: '1.2rem', color: '#64748b', fontWeight: 'normal' }}>/mese</span>
+              </div>
+              <p style={{ color: '#64748b', marginBottom: '2rem' }}>Fatturazione mensile, disdici quando vuoi.</p>
+              
+              <ul style={{ textAlign: 'left', listStyle: 'none', padding: 0, marginBottom: '3rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#334155', fontWeight: '500' }}>
+                  <span style={{ color: 'var(--primary)' }}>✔</span> Algoritmo AI illimitato
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#334155', fontWeight: '500' }}>
+                  <span style={{ color: 'var(--primary)' }}>✔</span> Gestione dipendenti illimitati
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#334155', fontWeight: '500' }}>
+                  <span style={{ color: 'var(--primary)' }}>✔</span> Esportazione PDF / Excel
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#334155', fontWeight: '500' }}>
+                  <span style={{ color: 'var(--primary)' }}>✔</span> PWA installabile su PC/Mac
+                </li>
+              </ul>
+              
+              <button 
+                onClick={() => {
+                   window.location.href = "https://buy.stripe.com/3cI8wP1T67tDcSkdPO8bS00"; 
+                }}
+                className="btn-hero" 
+                style={{ width: '100%', justifyContent: 'center', padding: '1rem', fontSize: '1rem', borderRadius: '1rem' }}
+              >
+                Inizia i 14 giorni di prova
+              </button>
+              <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: '#64748b' }}>Nessuna carta di credito richiesta per iniziare.</div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section id="contact" style={{ padding: '8rem 2rem', background: '#f8fafc' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '4rem', alignItems: 'center' }}>
@@ -1150,7 +1127,6 @@ const LandingPage = ({ config, setView, onEnter }) => {
             <a href="#features" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Funzionalità</a>
             <a href="#testimonials" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Testimonianze</a>
             <a href="#cases" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Casi Studio</a>
-            <a href="#pricing" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.85rem' }}>Prezzi</a>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <span style={{ fontWeight: 'bold', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Supporto</span>
@@ -1272,27 +1248,6 @@ const LoginOverlay = ({ onLogin, onCancel }) => {
             <button onClick={() => onLogin(pwd)} className="btn-primary" style={{ width: '100%', padding: '1rem', borderRadius: '12px' }}>Accedi Ora</button>
             <button onClick={onCancel} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '0.85rem', cursor: 'pointer' }}>Torna al Calendario</button>
           </div>
-       </div>
-    </div>
-  );
-};
-
-const PaywallOverlay = ({ onUnlock }) => {
-  return (
-    <div className="dialog-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.9)', backdropFilter: 'blur(20px)', display: 'grid', placeItems: 'center', zIndex: 20000 }}>
-       <div className="glass-card fade-in" style={{ width: '90%', maxWidth: '420px', padding: '3rem', textAlign: 'center', border: '1px solid var(--primary)' }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>⌛</div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: '900', marginBottom: '1rem' }}>Periodo Trial Scaduto</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '2.5rem', lineHeight: '1.6' }}>Hai utilizzato tutte le funzionalità gratuite. Passa alla versione Pro per continuare a gestire i tuoi turni senza limiti.</p>
-          
-          <button 
-            onClick={() => window.location.href = 'https://buy.stripe.com/3cI8wP1T67tDcSkdPO8bS00'}
-            className="btn-primary" 
-            style={{ width: '100%', padding: '1.25rem', borderRadius: '15px', fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem' }}
-          >
-            Sblocca Versione Pro — €7,99 / mese
-          </button>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Abbonamento ricorrente • Disdici quando vuoi</div>
        </div>
     </div>
   );
@@ -1554,10 +1509,6 @@ export default function App() {
       
       {showExport && <ExportModule onClose={() => setShowExport(false)} currentViewDate={viewDate} />}
       
-      {!isPro && isTrialExpired && (
-        <PaywallOverlay onUnlock={() => setIsPro(true)} />
-      )}
-
       <Sidebar 
         activeTab={activeTab} 
         setTab={setTab} 

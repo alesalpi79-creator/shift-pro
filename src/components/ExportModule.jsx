@@ -17,11 +17,6 @@ export default function ExportModule({ onClose, currentViewDate }) {
   const viewYear = currentViewDate.getFullYear();
 
   const handleYearClick = () => {
-    if (!isPro) {
-        // Option to trigger a "Go Pro" dialog or just alert for now
-        // But better to show it's disabled or requires premium
-        return;
-    }
     setPeriod('year');
   };
 
@@ -62,24 +57,6 @@ export default function ExportModule({ onClose, currentViewDate }) {
   };
 
   const handleExport = async () => {
-    // Safety check for Premium features
-    if (!isPro) {
-        if (period === 'year') {
-            alert("L'esportazione annuale richiede il pacchetto Premium.");
-            setPeriod('current');
-            return;
-        }
-        
-        const targetMonth = period === 'current' ? currentViewDate.getMonth() : parseInt(specificMonth);
-        const currentMonth = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
-        
-        if (viewYear > currentYear || (viewYear === currentYear && targetMonth > currentMonth)) {
-            alert("L'esportazione di mesi futuri è una funzione Premium 👑");
-            setPeriod('current');
-            return;
-        }
-    }
 
     // Generate data
     const dataToExport = [];
@@ -302,9 +279,9 @@ export default function ExportModule({ onClose, currentViewDate }) {
                     marginTop: '0.5rem',
                     padding: '8px',
                     borderRadius: '8px',
-                    background: !isPro ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
-                    border: !isPro ? '1px dashed var(--primary)' : 'none',
-                    opacity: !isPro && period === 'year' ? 1 : (period === 'year' ? 1 : 0.8),
+                    background: 'transparent',
+                    border: 'none',
+                    opacity: period === 'year' ? 1 : 0.8,
                     cursor: 'pointer'
                 }}
                 onClick={handleYearClick}
@@ -314,63 +291,14 @@ export default function ExportModule({ onClose, currentViewDate }) {
                         type="radio" 
                         checked={period === 'year'} 
                         onChange={handleYearClick}
-                        disabled={!isPro}
                     />
                     <span style={{ fontWeight: period === 'year' ? 'bold' : 'normal' }}>
                         Tutto l'anno (12 Mesi)
                     </span>
                 </label>
-                {!isPro && (
-                    <span style={{ 
-                        fontSize: '0.7rem', 
-                        background: 'var(--primary)', 
-                        color: 'white', 
-                        padding: '2px 6px', 
-                        borderRadius: '4px',
-                        fontWeight: 'bold'
-                    }}>
-                        PREMIUM 👑
-                    </span>
-                )}
              </div>
-
-             {!isPro && period !== 'year' && (
-                 <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem', fontStyle: 'italic' }}>
-                    Sblocca l'esportazione annuale con il pacchetto Premium.
-                 </p>
-             )}
           </div>
         </div>
-
-        {!isPro && period === 'year' && (
-            <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid #f59e0b', borderRadius: '8px' }}>
-                <p style={{ fontSize: '0.85rem', color: '#f59e0b', margin: 0 }}>
-                    L'esportazione annuale è una funzione Premium. Abbonati per scaricare la pianificazione completa.
-                </p>
-                <button 
-                    onClick={() => {
-                        // For demo purposes, we can set isPro to true, 
-                        // but in production this would go to the payment flow
-                        if(confirm("Vuoi attivare la prova gratuita del pacchetto Premium?")) {
-                            setIsPro(true);
-                        }
-                    }}
-                    style={{ 
-                        marginTop: '0.5rem', 
-                        background: '#f59e0b', 
-                        color: 'white', 
-                        border: 'none', 
-                        padding: '4px 10px', 
-                        borderRadius: '4px', 
-                        fontSize: '0.8rem', 
-                        cursor: 'pointer',
-                        fontWeight: 'bold'
-                    }}
-                >
-                    Scopri Premium
-                </button>
-            </div>
-        )}
 
         <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
           <button onClick={onClose} style={{ flex: 1, padding: '0.75rem', background: 'transparent', border: '1px solid var(--glass-border)', color: 'white', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}>Annulla</button>

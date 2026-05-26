@@ -155,9 +155,7 @@ export const AppProvider = ({ children }) => {
   }, [schedules, activeScheduleId]);
 
   // Gestione Trial e Pagamento
-  const [isPro, setIsPro] = useState(() => {
-    return localStorage.getItem('shift_pro_is_pro') === 'true';
-  });
+  const [isPro, setIsPro] = useState(true); // <-- Modificato per essere sempre true (tutto free)
 
   const [trialStartDate, setTrialStartDate] = useState(() => {
     const saved = localStorage.getItem('shift_pro_trial_start');
@@ -169,7 +167,7 @@ export const AppProvider = ({ children }) => {
 
   // Persistenza isPro
   useEffect(() => {
-    localStorage.setItem('shift_pro_is_pro', isPro);
+    localStorage.setItem('shift_pro_is_pro', 'true');
   }, [isPro]);
 
   const value = {
@@ -179,15 +177,9 @@ export const AppProvider = ({ children }) => {
     config, setConfig,
     employees, setEmployees,
     exceptions, setExceptions,
-    isPro, setIsPro,
+    isPro: true, setIsPro,
     trialStartDate,
-      isTrialExpired: (() => {
-        if (isPro) return false;
-        const start = new Date(trialStartDate).getTime();
-        const now = new Date().getTime();
-        const diffDays = (now - start) / (1000 * 60 * 60 * 24);
-        return diffDays > 14;
-      })()
+    isTrialExpired: false
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
