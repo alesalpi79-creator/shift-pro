@@ -1449,6 +1449,52 @@ export default function App() {
   // 1. Calcolo se siamo in modalità landing in modo sicuro
   const isLanding = (view || '').toString().startsWith('landing') || (view || '').toString().startsWith('case-study');
 
+  // Banner scadenza trial (solo web, non su Android)
+  const TrialExpiredBanner = () => (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      background: 'rgba(15, 23, 42, 0.92)', backdropFilter: 'blur(12px)',
+      zIndex: 99999, display: 'grid', placeItems: 'center'
+    }}>
+      <div style={{
+        background: 'white', borderRadius: '2rem', padding: '3rem',
+        maxWidth: '480px', width: '90%', textAlign: 'center',
+        boxShadow: '0 40px 80px rgba(0,0,0,0.3)'
+      }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⏰</div>
+        <h2 style={{ fontSize: '1.8rem', fontWeight: '900', marginBottom: '1rem', color: '#0f172a' }}>
+          La tua prova gratuita è terminata
+        </h2>
+        <p style={{ color: '#64748b', marginBottom: '2rem', lineHeight: '1.6' }}>
+          Hai esaurito i 14 giorni di prova gratuita. Abbonati per continuare a usare Turni Pro AI e non perdere nessun dato.
+        </p>
+        <div style={{ background: '#f8fafc', borderRadius: '1.5rem', padding: '1.5rem', marginBottom: '2rem', border: '2px solid #6366f1' }}>
+          <div style={{ fontSize: '2.5rem', fontWeight: '900', color: '#0f172a' }}>
+            7,99€<span style={{ fontSize: '1rem', color: '#64748b', fontWeight: 'normal' }}>/mese</span>
+          </div>
+          <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.5rem' }}>
+            Fatturazione mensile · Disdici quando vuoi
+          </div>
+        </div>
+        <button
+          onClick={() => { window.location.href = 'https://buy.stripe.com/3cI8wP1T67tDcSkdPO8bS00'; }}
+          style={{
+            width: '100%', padding: '1.25rem', borderRadius: '1rem',
+            background: 'linear-gradient(135deg, #6366f1, #ec4899)',
+            color: 'white', border: 'none', fontSize: '1.1rem',
+            fontWeight: '800', cursor: 'pointer', marginBottom: '1rem',
+            boxShadow: '0 10px 30px rgba(99,102,241,0.4)'
+          }}
+        >
+          🚀 Abbonati ora — Continua a usare l'app
+        </button>
+        <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+          Pagamento sicuro con Stripe 🔒
+        </div>
+      </div>
+    </div>
+  );
+
   if (view === 'case-study-1') return <CaseStudy id={1} onBack={() => setView('landing')} />;
   if (view === 'case-study-2') return <CaseStudy id={2} onBack={() => setView('landing')} />;
 
@@ -1503,6 +1549,8 @@ export default function App() {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', pointerEvents: 'none', zIndex: 0 }}></div>
       )}
 
+      {isTrialExpired && <TrialExpiredBanner />}
+      
       {showLogin && (
         <LoginOverlay onLogin={handleLogin} onCancel={() => setShowLogin(false)} />
       )}

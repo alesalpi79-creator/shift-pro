@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
 
 const AppContext = createContext();
 
@@ -155,7 +156,14 @@ export const AppProvider = ({ children }) => {
   }, [schedules, activeScheduleId]);
 
   // Gestione Trial e Pagamento
-  const [isPro, setIsPro] = useState(true); // <-- Modificato per essere sempre true (tutto free)
+  // Su app Android (nativa) è sempre gratuita per rispettare le policy Google Play.
+  // Sul sito web, il trial dura 14 giorni, poi l'utente deve abbonarsi.
+  const isNative = Capacitor.isNativePlatform();
+
+  const [isPro, setIsPro] = useState(() => {
+    if (isNative) return true; // Android: sempre gratis
+    return localStorage.getItem('shift_pro_is_pro') === 'true';
+  });
 
   const [trialStartDate, setTrialStartDate] = useState(() => {
     const saved = localStorage.getItem('shift_pro_trial_start');
@@ -165,9 +173,19 @@ export const AppProvider = ({ children }) => {
     return now;
   });
 
+  // Calcola se il trial è scaduto (solo sul web)
+  const isTrialExpired = !isNative && !isPro && (() => {
+    const start = new Date(trialStartDate);
+    const now = new Date();
+    const diffDays = (now - start) / (1000 * 60 * 60 * 24);
+    return diffDays > 14;
+  })();
+
   // Persistenza isPro
   useEffect(() => {
-    localStorage.setItem('shift_pro_is_pro', 'true');
+    if (!isNative) {
+      localStorage.setItem('shift_pro_is_pro', isPro ? 'true' : 'false');
+    }
   }, [isPro]);
 
   const value = {
@@ -177,9 +195,9 @@ export const AppProvider = ({ children }) => {
     config, setConfig,
     employees, setEmployees,
     exceptions, setExceptions,
-    isPro: true, setIsPro,
+    isPro: isNative ? true : isPro, setIsPro,
     trialStartDate,
-    isTrialExpired: false
+    isTrialExpired: isNative ? false : isTrialExpired
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
