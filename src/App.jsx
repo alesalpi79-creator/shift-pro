@@ -68,7 +68,7 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
     userRole, setUserRole, 
     schedules, activeScheduleId, setActiveScheduleId, 
     addSchedule, deleteSchedule, renameSchedule,
-    config, setConfig, employees, setEmployees, exceptions, setExceptions, isPro, isTrialExpired 
+    config, setConfig, employees, setEmployees, exceptions, setExceptions, isPro, isTrialExpired, trialStartDate
   } = useApp();
 
   const handleExport = () => {
@@ -274,6 +274,43 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
           </div>
         )}
       </div>
+
+      {/* Trial Banner - solo sul web, non su Android */}
+      {!Capacitor.isNativePlatform() && !isPro && (() => {
+        const start = new Date(trialStartDate);
+        const diffDays = Math.floor((new Date() - start) / (1000 * 60 * 60 * 24));
+        const daysLeft = Math.max(0, 14 - diffDays);
+        return (
+          <div style={{
+            marginTop: '1rem',
+            padding: '1rem',
+            background: daysLeft <= 3 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(99, 102, 241, 0.08)',
+            border: `1px solid ${daysLeft <= 3 ? 'rgba(239,68,68,0.3)' : 'rgba(99,102,241,0.2)'}`,
+            borderRadius: 'var(--radius-md)',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '0.7rem', fontWeight: '800', color: daysLeft <= 3 ? 'var(--accent-danger)' : 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.4rem' }}>
+              {daysLeft <= 3 ? '⚠️ Trial in scadenza' : '⏱️ Prova gratuita'}
+            </div>
+            <div style={{ fontSize: '1.5rem', fontWeight: '900', color: 'var(--text-main)', lineHeight: 1 }}>
+              {daysLeft} <span style={{ fontSize: '0.75rem', fontWeight: '500', color: 'var(--text-muted)' }}>giorni rimasti</span>
+            </div>
+            <button
+              onClick={() => { window.location.href = 'https://buy.stripe.com/3cI8wP1T67tDcSkdPO8bS00'; }}
+              style={{
+                marginTop: '0.75rem', width: '100%',
+                padding: '0.6rem', borderRadius: '8px',
+                background: 'linear-gradient(135deg, #6366f1, #ec4899)',
+                color: 'white', border: 'none', fontSize: '0.72rem',
+                fontWeight: '800', cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(99,102,241,0.3)'
+              }}
+            >
+              🚀 Abbonati — 7,99€/mese
+            </button>
+          </div>
+        );
+      })()}
     </div>
   );
 };
