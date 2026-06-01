@@ -201,16 +201,6 @@ const Sidebar = ({ activeTab, setTab, setView, setShowLogin, setShowExport, show
 
       </nav>
 
-      {config.appLogo && (
-        <div className="sidebar-logo" style={{ marginTop: 'auto', padding: '1rem', textAlign: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: '15px', border: '1px solid var(--glass-border)', marginBottom: '1rem' }}>
-          <img 
-            src={config.appLogo} 
-            alt="Azienda" 
-            style={{ width: '100%', maxHeight: '120px', objectFit: 'contain', filter: 'drop-shadow(0 5px 15px rgba(0,0,0,0.2))' }} 
-          />
-        </div>
-      )}
-
       <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-md)', marginTop: config.appLogo ? '0' : 'auto' }}>
         <div 
           onClick={() => {

@@ -725,61 +725,73 @@ button[data-shift="CF"] {
   .sidebar {
     width: 100%;
     height: auto;
+    max-height: none;
     position: relative;
-    padding: 1.5rem;
+    padding: 0.75rem 1rem;
     border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    overflow-y: visible;
+    border-bottom: 1px solid var(--glass-border);
+    overflow-y: hidden;
+    overflow-x: hidden;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
   }
-  .sidebar > div:first-child h2 + div {
+  /* Hide schema label text on mobile */
+  .sidebar > div:first-child > div:first-child {
     display: none !important;
   }
-  .sidebar > div:nth-child(2) {
-    margin-bottom: 1rem !important;
-    padding: 0.5rem !important;
+  /* Schema switcher: compact horizontal */
+  .sidebar > div:first-child {
+    width: 100%;
+    margin-bottom: 0 !important;
   }
-  .sidebar > div:nth-child(2) > div:last-child {
+  .sidebar > div:first-child > div:last-child {
     flex-direction: row !important;
     overflow-x: auto !important;
     max-height: none !important;
     scrollbar-width: none;
+    display: flex !important;
+    gap: 4px;
   }
-  .sidebar > div:nth-child(2) > div:last-child::-webkit-scrollbar { display: none; }
-  .sidebar > div:nth-child(2) > div:last-child > div {
-    min-width: 120px;
-    padding: 0.4rem 0.75rem !important;
+  .sidebar > div:first-child > div:last-child::-webkit-scrollbar { display: none; }
+  .sidebar > div:first-child > div:last-child > div {
+    min-width: 90px;
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.75rem !important;
   }
   .sidebar-nav {
     display: flex;
     flex-direction: row;
-    gap: 0.75rem;
+    gap: 0.5rem;
     overflow-x: auto;
-    padding: 0.5rem 0;
-    margin: 1rem 0;
+    padding: 0.25rem 0;
+    margin: 0;
     scrollbar-width: none;
     align-items: center;
     flex: none;
+    width: 100%;
   }
   .sidebar-nav::-webkit-scrollbar { display: none; }
-
   .nav-item {
     margin-bottom: 0;
     white-space: nowrap;
-    padding: 0.75rem 0.5rem;
-    font-size: 0.75rem;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.72rem;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.3rem;
     justify-content: center;
     align-items: center;
-    min-width: 75px;
-    height: 75px;
+    min-width: 65px;
+    height: 65px;
     flex-shrink: 0;
   }
   .nav-icon {
     font-size: 1.1rem;
   }
+  /* Hide user/admin box on mobile to save space */
   .sidebar > div:last-child {
-    margin-top: 1rem !important;
+    display: none !important;
   }
   main {
     padding: 0.75rem !important;
@@ -829,8 +841,8 @@ button[data-shift="CF"] {
     position: sticky !important;
     top: 0;
     z-index: 100 !important;
-    background: #1e293b !important; /* Solid background for mobile performance */
-    color: #f1f5f9 !important; /* Light slate for numbers */
+    background: #1e293b !important;
+    color: #f1f5f9 !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-bottom: 2px solid var(--primary);
@@ -846,7 +858,7 @@ button[data-shift="CF"] {
 
   /* Landing Page Mobile Fixes */
   .landing-page nav div:nth-child(2) {
-    display: none !important; /* Hide links like "Prezzi", "Contatti" etc on mobile */
+    display: none !important;
   }
   .landing-page header {
     padding-top: 8rem !important;
